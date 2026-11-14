@@ -1,0 +1,22 @@
+{
+  "name": "Turret Tales — GPS device test preview",
+  "short_name": "TT GPS Test",
+  "description": "Isolated GPS Follow / Free View device-test preview. Not the production app.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E9DFC7",
+  "theme_color": "#B5602E",
+  "icons": [
+    {
+      "src": "https://turrettales.de/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://turrettales.de/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
