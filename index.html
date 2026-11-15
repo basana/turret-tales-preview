@@ -4359,7 +4359,7 @@ function xmasDrawMap(opts) {
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
-  const xResetHtml = '<button class="poi-toggle-btn" style="background:rgba(246,238,221,0.95);border-color:var(--gold,#c8a878)" id="xResetBtn" title="Full map / Gesamte Karte">⊞</button>';
+  const xResetHtml = '<button class="poi-toggle-btn" style="background:rgba(246,238,221,0.95);border-color:var(--gold,#c8a878)" id="xResetBtn" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
   xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
   document.getElementById('xResetBtn').onclick = () => {
