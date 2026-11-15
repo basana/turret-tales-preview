@@ -2161,7 +2161,7 @@ function _showPoiToast(mapObj, poi, emoji) {
     toast.innerHTML = `${emoji} ${poi.name} · ${poi.city}`;
   }
   toast.classList.add('show');
-  toast.onclick = () => { mapObj.setView([poi.lat, poi.lng], 17); };
+  toast.onclick = () => { _focusPoiOnMap(mapObj, poi); };
   clearTimeout(toast._hideTimer);
   toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
