@@ -1242,6 +1242,8 @@
   }
   /* Christmas-market map uses the same in-map search position as the main map */
   .xmas-map-stage { position: relative; width: 100%; }
+  /* Keep Leaflet zoom +/- below the market search field */
+  .xmas-map-stage .leaflet-top.leaflet-left { top: 58px; }
   .xmas-search {
     position: absolute; z-index: 1200; top: 12px; left: 12px; right: auto;
     width: calc(56% - 12px); min-width: 0; margin: 0;
