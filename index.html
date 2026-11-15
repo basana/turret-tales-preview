@@ -1239,10 +1239,15 @@
     top: 50%; right: 12px; transform: translateY(-50%);
     gap: 9px; max-height: calc(100% - 24px);
   }
+  /* Christmas-market map uses the same in-map search position as the main map */
+  .xmas-map-stage { position: relative; width: 100%; }
   .xmas-search {
-    width: calc(56% - 12px); min-width: 0;
-    margin: 0 0 12px; box-sizing: border-box;
+    position: absolute; z-index: 1000; top: 12px; left: 12px; right: auto;
+    width: calc(56% - 12px); min-width: 0; margin: 0;
+    padding: 7px 10px; gap: 5px; box-sizing: border-box;
   }
+  .xmas-search .map-search-ticker { left: 30px; right: 28px; font-size: 12px; }
+  .xmas-search .map-search-input::placeholder { opacity: 0; }
   @media (max-width: 360px) {
     .map-search-wrap:not(.xmas-search) { width: calc(54% - 12px); }
     .map-legend { width: calc(46% - 12px); font-size: 10px; padding: 5px 6px; }
@@ -4360,7 +4365,39 @@ function xmasSearchEntries() {
 }
 function xmasSearchHtml() {
   const opts = xmasSearchEntries().map(e => `<option value="${e.label.replace(/"/g, '&quot;')}">`).join('');
-  return `<div class="map-search-wrap xmas-search"><span class="map-search-icon">🔎</span><input type="text" class="map-search-input" id="xmasSearch" list="xmasSearchList" autocomplete="off" autocapitalize="off" placeholder="${XMAS_SEARCH_PH[xmasLang] || XMAS_SEARCH_PH.en}"><datalist id="xmasSearchList">${opts}</datalist></div>`;
+  return `<div class="map-search-wrap xmas-search"><span class="map-search-icon">🔎</span><input type="text" class="map-search-input" id="xmasSearch" list="xmasSearchList" autocomplete="off" autocapitalize="off" placeholder="${XMAS_SEARCH_PH[xmasLang] || XMAS_SEARCH_PH.en}"><span class="map-search-ticker" id="xmasSearchTicker"></span><datalist id="xmasSearchList">${opts}</datalist></div>`;
+}
+function initXmasSearchTicker() {
+  const input = document.getElementById('xmasSearch');
+  const ticker = document.getElementById('xmasSearchTicker');
+  if (!input || !ticker) return;
+  if (window.xmasSearchTickerTimer) clearInterval(window.xmasSearchTickerTimer);
+  const t = (typeof UI !== 'undefined' && (UI[xmasLang] || UI.en)) || {};
+  const items = t.mapSearchTicker || (UI.en && UI.en.mapSearchTicker) || [];
+  if (!items.length) return;
+  let idx = 0;
+  function show() {
+    ticker.textContent = items[idx];
+    idx = (idx + 1) % items.length;
+  }
+  function start() {
+    if (input.value || document.activeElement === input) { ticker.style.display = 'none'; return; }
+    ticker.style.display = '';
+    show();
+    window.xmasSearchTickerTimer = setInterval(show, 3500);
+  }
+  function stop() {
+    if (window.xmasSearchTickerTimer) clearInterval(window.xmasSearchTickerTimer);
+    window.xmasSearchTickerTimer = null;
+    ticker.style.display = 'none';
+  }
+  input.addEventListener('focus', stop);
+  input.addEventListener('blur', () => { if (!input.value) start(); });
+  input.addEventListener('input', () => {
+    if (input.value) stop();
+    else if (!window.xmasSearchTickerTimer) start();
+  });
+  start();
 }
 function xmasSearchPick(val) {
   const v = (val || '').trim().toLowerCase();
@@ -4643,7 +4680,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasSearchHtml() + xmasGpsBtnHtml() + `<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + `<div class="xmas-map-stage">${xmasSearchHtml()}<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
@@ -4671,6 +4708,7 @@ function renderChristmas(townKey) {
     <div class="xmas-chips">${chips}</div>
     ${body}
   </div>`;
+  initXmasSearchTicker();
   el.querySelectorAll('.xmas-lang').forEach(b => b.addEventListener('click', () => {
     xmasLang = b.dataset.xl;
     try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
