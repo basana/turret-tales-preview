@@ -2115,13 +2115,25 @@ const POI_TOILETTEN = [
 
 let apothekenLayer = null, toilettenLayer = null;
 let xmasApoLayer = null, xmasWcLayer = null;
+function _focusPoiOnMap(mapObj, poi) {
+  if (!mapObj || !poi) return;
+  mapObj._poiFocusActive = true;
+  // Keep the selected POI in the most visible central area, slightly left
+  // of the screen centre so the right-side quick buttons cannot cover it.
+  mapObj.setView([poi.lat, poi.lng], 17, { animate: true });
+  mapObj.once('moveend', () => {
+    if (!mapObj._poiFocusActive) return;
+    const size = mapObj.getSize();
+    mapObj.panBy([Math.min(44, Math.round(size.x * 0.08)), 0], { animate: true });
+  });
+}
 function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   const lg = L.layerGroup();
   data.forEach(p => {
     const ic = L.divIcon({ className: '', html: `<div class="poi-marker ${cssClass}">${emoji}</div>`, iconSize: [52, 52], iconAnchor: [26, 26] });
     const m = L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
     m.on('click', () => {
-      mapObj.setView([p.lat, p.lng], 17, { animate: true });
+      _focusPoiOnMap(mapObj, p);
       _showPoiToast(mapObj, p, emoji);
     });
   });
@@ -2254,19 +2266,21 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
     if (d < minD) { minD = d; nearest = p; }
   });
   if (nearest) {
-    // GPS is always available here (function returns early if not) — show user + nearest POI together
-    mapObj.fitBounds([ref, [nearest.lat, nearest.lng]], { padding: [40, 40], maxZoom: 17, animate: true });
+    // The requested destination takes priority over the user's GPS position.
+    // GPS continues updating in the background but must not pull the camera away.
+    mapObj._poiGpsZoomed = true;
+    _focusPoiOnMap(mapObj, nearest);
     _showPoiToast(mapObj, nearest, emoji);
   }
 }
 function togglePoiLayer(type) {
   if (!leafletMap) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!toilettenLayer) _stopPoiEmergency(); return; }
+    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!toilettenLayer) { leafletMap._poiFocusActive = false; _stopPoiEmergency(); } return; }
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
   } else {
-    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!apothekenLayer) _stopPoiEmergency(); return; }
+    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!apothekenLayer) { leafletMap._poiFocusActive = false; _stopPoiEmergency(); } return; }
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
   }
@@ -2280,11 +2294,11 @@ function _hidePoiToasts(mapObj) {
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   if (type === 'apotheke') {
-    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasWcLayer) _stopPoiEmergency(); return; }
+    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasWcLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); } return; }
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
   } else {
-    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasApoLayer) _stopPoiEmergency(); return; }
+    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasApoLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); } return; }
     xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
   }
@@ -4556,9 +4570,8 @@ function xmasStartGps() {
     if (xmasMapObj) {
       if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
       else xmasDrawGpsLayers();
-      // POI re-zoom: on first GPS fix while POI active, zoom to nearest
+      // If POI mode was activated before the first GPS fix, focus it now.
       if (!xmasMapObj._poiGpsZoomed && (xmasApoLayer || xmasWcLayer)) {
-        xmasMapObj._poiGpsZoomed = true;
         if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
         else if (xmasWcLayer) _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
       }
@@ -6992,8 +7005,8 @@ function startGps() {
       }
       // Programmatic GPS camera changes must not be mistaken for a user's zoom gesture.
       markGpsProgrammaticView();
-      // First GPS fix: fitBounds to show user + nearest castle together
-      if (leafletMap && !leafletMap._gpsFitDone && gpsFollowMode) {
+      // In POI mode the destination owns the camera; GPS remains a background position source.
+      if (leafletMap && gpsFollowMode && !leafletMap._poiFocusActive && !leafletMap._gpsFitDone) {
         leafletMap._gpsFitDone = true;
         const ni = findNearestCastleIndex(latitude, longitude);
         if (ni >= 0) {
@@ -7002,13 +7015,13 @@ function startGps() {
         } else {
           leafletMap.panTo([latitude, longitude]);
         }
-      } else if (leafletMap && gpsFollowMode) {
+      } else if (leafletMap && gpsFollowMode && !leafletMap._poiFocusActive) {
         leafletMap.panTo([latitude, longitude]);
       }
 
       gpsLastLat = latitude; gpsLastLng = longitude;
-      // POI re-zoom: on first GPS fix while POI active, zoom to nearest
-      if (gpsFollowMode && !leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
+      // If POI mode was activated before the first GPS fix, focus it now.
+      if (!leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
         leafletMap._poiGpsZoomed = true;
         if (apothekenLayer) _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
         else if (toilettenLayer) _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
