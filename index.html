@@ -1000,7 +1000,8 @@
   .nearest-toast { display:none; position:absolute; z-index:1000; bottom:12px; left:12px; right:60px; background:rgba(122,16,38,0.95); color:#F5ECD6; border-radius:14px; padding:10px 14px; box-shadow:0 4px 14px rgba(0,0,0,0.35); font:700 14px var(--sans); cursor:pointer; backdrop-filter:blur(4px); }
   .nearest-toast.show { display:block; }
   .nearest-toast .toast-dist { font-size:16px; }
-  .nearest-toast.poi-info-toast { bottom:auto; top:56px; }
+  /* POI distance toast: keep it in the lower clear area, above map controls */
+  .nearest-toast.poi-info-toast { top:auto; bottom:16px; left:12px; right:96px; z-index:1300; }
   .gps-panel {
     position: absolute; z-index: 1000; top: 126px; left: 12px; display: none;
     flex-direction: column; gap: 7px; max-width: 210px;
@@ -1242,7 +1243,7 @@
   /* Christmas-market map uses the same in-map search position as the main map */
   .xmas-map-stage { position: relative; width: 100%; }
   .xmas-search {
-    position: absolute; z-index: 1000; top: 12px; left: 12px; right: auto;
+    position: absolute; z-index: 1200; top: 12px; left: 12px; right: auto;
     width: calc(56% - 12px); min-width: 0; margin: 0;
     padding: 7px 10px; gap: 5px; box-sizing: border-box;
   }
