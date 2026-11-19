@@ -310,9 +310,9 @@
   /* Значок ангела (schaengel-angel.svg) для Schängelbar: вместо 🎄 на обзорной карте и вместо номера в городе */
   .xmas-dot-angel, .xmas-pin-angel { display: block; width: 36px; height: 36px; transform: translate(-50%, -50%); filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5)); }
   .xmas-dot { width: 28px; height: 28px; border-radius: 50%; background: #7A1026; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; transform: translate(-50%, -50%); }
-  .xmas-overview-market { width: 260px; height: 36px; display: flex; align-items: center; justify-content: flex-end; gap: 0; white-space: nowrap; font-family: var(--sans); filter: drop-shadow(0 1px 2px rgba(0,0,0,.28)); }
+  .xmas-overview-market { width: 190px; height: 36px; display: flex; align-items: center; justify-content: flex-end; gap: 0; white-space: nowrap; font-family: var(--sans); filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
   .xmas-overview-num { flex: 0 0 auto; min-width: 22px; height: 24px; padding: 0 5px; display: flex; align-items: center; justify-content: center; border-radius: 6px 0 0 6px; background: #7A1026; color: #fff; font-size: 12px; font-weight: 800; border: 1px solid #fff; }
-  .xmas-overview-name { display: block; max-width: 176px; overflow: hidden; text-overflow: ellipsis; padding: 4px 7px; border-radius: 0; background: rgba(246,238,221,.97); border: 1px solid #7A1026; color: #5A4327; font-size: 11px; line-height: 1.15; font-weight: 700; }
+  .xmas-overview-name { display: block; max-width: 106px; overflow: hidden; text-overflow: ellipsis; padding: 4px 7px; border-radius: 0; background: #7A1026; border: 1px solid #fff; color: #fff; font-size: 11px; line-height: 1.15; font-weight: 800; }
   .xmas-overview-tree { width: 28px; height: 28px; flex: 0 0 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #7A1026; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.45); font-size: 15px; line-height: 1; }
   .xmas-overview-tree img { display: block; width: 23px; height: 23px; object-fit: contain; }
   .xmas-pin { background: #7A1026; color: #fff; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-weight: 700; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
@@ -1117,6 +1117,23 @@
   .gps-user-halo::after {
     content: ''; width: 30px; height: 30px; border-radius: 50%;
     background: var(--terracotta); border: 6px solid #fff; box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  }
+  /* Selected/nearest destination: unmistakable marker, visually distinct from the user's GPS dot. */
+  .gps-target-pulse {
+    width: 76px; height: 76px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 205, 0, .22); border: 4px solid rgba(255, 205, 0, .95);
+    box-shadow: 0 0 0 5px rgba(122,16,38,.88), 0 3px 16px rgba(0,0,0,.65);
+    animation: gpsTargetPulse 1.25s ease-out infinite;
+    box-sizing: border-box;
+  }
+  .gps-target-pulse::after {
+    content: ''; width: 24px; height: 24px; border-radius: 50%;
+    background: #7A1026; border: 4px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,.75);
+  }
+  @keyframes gpsTargetPulse {
+    0% { transform: scale(.82); opacity: 1; box-shadow: 0 0 0 3px rgba(122,16,38,.9), 0 3px 16px rgba(0,0,0,.65); }
+    70% { transform: scale(1.12); opacity: .95; box-shadow: 0 0 0 12px rgba(122,16,38,0), 0 3px 16px rgba(0,0,0,.65); }
+    100% { transform: scale(.82); opacity: 1; box-shadow: 0 0 0 3px rgba(122,16,38,0), 0 3px 16px rgba(0,0,0,.65); }
   }
   @keyframes gpsHaloPulse {
     0% { box-shadow: 0 0 0 0 rgba(181,96,46,0.5); }
@@ -4592,6 +4609,27 @@ function xmasBerthList() {
   return xmasTown ? (VIKING_BERTHS[xmasTown] || []).filter(b => b.ll) : [];
 }
 
+function setXmasGpsTargetMarker(latlng) {
+  if (!xmasMapObj || typeof L === 'undefined') return;
+  if (!latlng) {
+    if (xmasMapObj._xmasGpsTargetMarker) xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetMarker);
+    xmasMapObj._xmasGpsTargetMarker = null;
+    return;
+  }
+  const icon = L.divIcon({
+    className: '',
+    html: '<div class="gps-target-pulse" aria-label="Nearest market"></div>',
+    iconSize: [76, 76], iconAnchor: [38, 38]
+  });
+  if (xmasMapObj._xmasGpsTargetMarker) {
+    xmasMapObj._xmasGpsTargetMarker.setLatLng(latlng);
+    xmasMapObj._xmasGpsTargetMarker.setIcon(icon);
+    xmasMapObj._xmasGpsTargetMarker.setZIndexOffset(1800);
+  } else {
+    xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: false }).addTo(xmasMapObj);
+  }
+}
+
 function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
   xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
@@ -4650,6 +4688,7 @@ function xmasStopGps() {
   try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
   xmasGpsMarker = null;
+  setXmasGpsTargetMarker(null);
   xmasSetGpsLabel(xmasG('btn'));
   const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
   const xToast = document.getElementById('xmasNearestToast'); if (xToast) xToast.classList.remove('show');
@@ -4665,13 +4704,15 @@ function xmasSetGpsLabel(text, on) {
 function xmasUpdateGpsPanel() {
   const panel = document.getElementById('xmasGpsPanel');
   if (!panel) return;
-  if (!xmasGpsPos) { panel.innerHTML = ''; return; }
+  if (!xmasGpsPos) { panel.innerHTML = ''; setXmasGpsTargetMarker(null); return; }
   const p = xmasGpsPos;
   const fmt = (ll) => {
     const d = distanceMeters(p.lat, p.lng, ll[0], ll[1]);
     return `<b>${formatDistance(d)} ${bearingCompass(p.lat, p.lng, ll[0], ll[1])}</b> <small>${xmasWalkMin(d)} ${xmasG('min')}</small>`;
   };
   const rows = xmasGpsTargets().map(t => ({ t, d: distanceMeters(p.lat, p.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
+  // Highlight the same nearest market whose distance appears below.
+  setXmasGpsTargetMarker(rows.length ? rows[0].t.ll : null);
   let html = rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
@@ -4814,7 +4855,7 @@ function renderChristmas(townKey) {
       pins: keys.flatMap(k => {
         const tx = XMAS_CITY[k].text[xmasLang] || XMAS_CITY[k].text.en || XMAS_CITY[k].text.de;
         return XMAS_GEO[k].pins.map((ll, i) => {
-          const marketName = (tx.cards && tx.cards[i] && tx.cards[i].title) || T_(XMAS_CITY[k].name);
+          const marketName = T_(XMAS_CITY[k].name);
           const isAngel = XMAS_ANGEL_PIN[k] === i;
           return {
             ll,
@@ -6936,6 +6977,27 @@ function clearSavedSpot() {
   try { localStorage.removeItem(SAVED_SPOT_KEY); } catch (e) {}
 }
 
+function setGpsTargetMarker(mapObj, latlng) {
+  if (!mapObj || typeof L === 'undefined') return;
+  if (!latlng) {
+    if (mapObj._gpsTargetMarker) mapObj.removeLayer(mapObj._gpsTargetMarker);
+    mapObj._gpsTargetMarker = null;
+    return;
+  }
+  const icon = L.divIcon({
+    className: '',
+    html: '<div class="gps-target-pulse" aria-label="Nearest destination"></div>',
+    iconSize: [76, 76], iconAnchor: [38, 38]
+  });
+  if (mapObj._gpsTargetMarker) {
+    mapObj._gpsTargetMarker.setLatLng(latlng);
+    mapObj._gpsTargetMarker.setIcon(icon);
+    mapObj._gpsTargetMarker.setZIndexOffset(1800);
+  } else {
+    mapObj._gpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: false }).addTo(mapObj);
+  }
+}
+
 function updateGpsDistancePanel(lat, lng) {
   const gpsPanel = document.getElementById('gpsPanel');
   const castleRow = document.getElementById('gpsDistancePanel');
@@ -6949,6 +7011,8 @@ function updateGpsDistancePanel(lat, lng) {
   const targetIndex = useSelected ? selectedIndex : findNearestCastleIndex(lat, lng);
   if (targetIndex >= 0) {
     const c = castles[targetIndex];
+    // Highlight the exact castle whose distance is being shown, even on the overview map.
+    setGpsTargetMarker(leafletMap, [c.lat, c.lng]);
     const d = distanceMeters(lat, lng, c.lat, c.lng);
     if (useSelected || d <= GPS_DISTANCE_VISIBLE_M) {
       const valueEl = document.getElementById('gpsDistanceValue');
@@ -6966,6 +7030,7 @@ function updateGpsDistancePanel(lat, lng) {
     }
   } else {
     castleRow.classList.remove('show');
+    setGpsTargetMarker(leafletMap, null);
   }
 
   // --- Общая ориентация на маршруте: всегда видно, пока GPS активен и
@@ -7072,7 +7137,10 @@ function stopGps() {
   if (panel) panel.classList.remove('show');
   const toast = document.getElementById('nearestToast');
   if (toast) toast.classList.remove('show');
-  if (leafletMap) leafletMap._gpsFitDone = false;
+  if (leafletMap) {
+    leafletMap._gpsFitDone = false;
+    setGpsTargetMarker(leafletMap, null);
+  }
 }
 
 function startGps() {
