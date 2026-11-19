@@ -303,8 +303,8 @@
   /* Красная плашка с подписью на главном рождественском фото (звезда, Zentralplatz) */
   .xmas-hero { position: relative; }
   .xmas-pin-count { display: inline-block; margin-left: 5px; min-width: 16px; padding: 0 4px; border-radius: 9px; background: #fff; color: #7A1026; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; }
-  .leaflet-tooltip.xmas-pin-label { font-size: 8px; font-weight: 400; padding: 1px 4px; line-height: 1.2; background: rgba(255,255,255,.85); border: none; box-shadow: none; color: #3a2a1a; }
-  .xmas-gps-label-mode .leaflet-tooltip.xmas-pin-label { display: none !important; }
+  .leaflet-tooltip.xmas-pin-label { font-size: 10px; font-weight: 600; padding: 3px 6px; line-height: 1.25; background: rgba(255,255,255,.94); border: 1px solid rgba(122,16,38,.22); border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,.18); color: #3a2a1a; }
+  .xmas-gps-label-mode .leaflet-tooltip.xmas-pin-label { display: block !important; }
   /* GPS target is identified by its pulse and number, never by a text label. */
   .gps-target-label-mode .leaflet-tooltip.gps-base-label { display: none !important; }
   .xmas-hero-caption {
@@ -4533,11 +4533,14 @@ function xmasDrawMap(opts) {
     }
     resetMarketMapView();
   });
+  xmasMapObj._xmasMarketMarkers = [];
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
+    xmasMapObj._xmasMarketMarkers.push(m);
     if (p.onClick) m.on('click', p.onClick);
     if (p.label) m.bindTooltip(String(p.label).split(' (')[0], { permanent: true, direction: 'bottom', offset: [0, 10], className: 'xmas-pin-label' });
   });
+  xmasMapObj.on('zoomend moveend', syncXmasGpsMarkerOverlap);
   xmasDrawGpsLayers();
   if (xmasGpsPos) {
     const gpsTargets = xmasGpsTargets().map(t => ({ t, d: distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
@@ -4654,6 +4657,7 @@ function setXmasGpsTargetMarker(latlng, label, number) {
     xmasMapObj._xmasGpsTargetMarker = null;
     if (xmasMapObj._xmasGpsTargetLine) xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetLine);
     xmasMapObj._xmasGpsTargetLine = null;
+    syncXmasGpsMarkerOverlap();
     return;
   }
   container.classList.add('xmas-gps-label-mode');
@@ -4678,8 +4682,24 @@ function setXmasGpsTargetMarker(latlng, label, number) {
   } else if (xmasMapObj._xmasGpsTargetLine) {
     xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetLine); xmasMapObj._xmasGpsTargetLine = null;
   }
+  syncXmasGpsMarkerOverlap();
 }
 
+function syncXmasGpsMarkerOverlap() {
+  if (!xmasMapObj) return;
+  const baseMarkers = xmasMapObj._xmasMarketMarkers || [];
+  const targetMarker = xmasMapObj._xmasGpsTargetMarker;
+  if (!targetMarker) {
+    baseMarkers.forEach(marker => marker.setOpacity(1));
+    return;
+  }
+  const targetPoint = xmasMapObj.latLngToContainerPoint(targetMarker.getLatLng());
+  baseMarkers.forEach(marker => {
+    const markerPoint = xmasMapObj.latLngToContainerPoint(marker.getLatLng());
+    // Hide only base pins covered by the 76px GPS pulse; they reappear when the map moves/zooms apart.
+    marker.setOpacity(markerPoint.distanceTo(targetPoint) < 42 ? 0 : 1);
+  });
+}
 function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
   xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
