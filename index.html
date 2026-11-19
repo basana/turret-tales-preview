@@ -4928,6 +4928,7 @@ function xmasUpdateGpsPanel() {
 }
 
 function renderChristmas(townKey) {
+  const focusTownMap = townKey !== undefined && townKey !== null && townKey !== '';
   if (townKey !== undefined) { xmasTown = townKey; navPush(); }
   const el = document.getElementById('view-christmas');
   if (!el) return;
@@ -5021,6 +5022,15 @@ function renderChristmas(townKey) {
       center: g.center, zoom: g.zoom,
       pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
+  }
+  // При выборе города из общей карты/списка всегда показываем карту в начале его раздела,
+  // а не сохраняем прежнюю прокрутку до фотогалереи.
+  if (focusTownMap) {
+    const mapStage = el.querySelector('.xmas-map-stage');
+    if (mapStage) {
+      mapStage.style.scrollMarginTop = '12px';
+      mapStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }
 
