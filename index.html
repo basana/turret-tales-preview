@@ -4863,10 +4863,10 @@ function xmasUpdateGpsPanel() {
   const focusedTarget = xmasMapObj && xmasMapObj._xmasGpsFocusActive ? xmasMapObj._xmasGpsFocusTarget : null;
   const mapTarget = focusedTarget || (rows.length ? rows[0].t : null);
   setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, mapTarget ? (mapTarget.label || '') : '', mapTarget ? (mapTarget.number ?? (mapTarget.index + 1)) : null);
-  let html = rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  let depart = ''; try { depart = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
+  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
-  let depart = ''; try { depart = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
     html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${sp.lat}" data-lng="${sp.lng}"><span>📌 ${sp.label}</span>${fmt([sp.lat, sp.lng])}</div>`;
@@ -4878,7 +4878,7 @@ function xmasUpdateGpsPanel() {
     }
     html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
   }
-  html += `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>`;
+
   panel.innerHTML = html;
   // Клик на строку — центрировать карту на этой точке
   panel.querySelectorAll('.xmas-gps-link').forEach(row => {
@@ -4938,7 +4938,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveLocation')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml()) + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml()) + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
