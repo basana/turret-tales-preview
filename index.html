@@ -6531,41 +6531,43 @@ if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView(
 
 function positionGpsFollowButton() {
   const button = document.getElementById('gpsFollowBtn');
+  const toggle = document.getElementById('gpsToggleBtn');
   const panel = document.getElementById('gpsPanel');
   const mapView = document.querySelector('#view-map .castle-map-stage') || document.getElementById('view-map');
-  if (!button || !panel || !mapView || !button.classList.contains('show')) return;
+  if (!mapView || !toggle || !panel) return;
 
-  // Start in the usual upper-left slot, then move only if a visible panel
-  // actually occupies the same screen area.
+  const mapRect = mapView.getBoundingClientRect();
+  const toggleRect = toggle.getBoundingClientRect();
+  const toggleBottom = toggleRect.bottom - mapRect.top;
+
+  // Keep the nearest-object distance panel a measured distance below GPS,
+  // rather than relying on a fixed top coordinate from another map layout.
+  if (panel.classList.contains('show')) {
+    panel.style.top = Math.max(126, toggleBottom + 18) + 'px';
+  }
+
+  if (!button || !button.classList.contains('show')) return;
+
   button.style.zIndex = '1400';
-  button.style.left = '100px';
   button.style.right = 'auto';
-  button.style.top = '56px';
   button.style.bottom = 'auto';
 
-  if (!panel.classList.contains('show')) return;
-  const p = panel.getBoundingClientRect();
-  const b = button.getBoundingClientRect();
-  const m = mapView.getBoundingClientRect();
-  const overlaps = b.left < p.right && b.right > p.left && b.top < p.bottom && b.bottom > p.top;
-  if (!overlaps) return;
-
-  const belowTop = p.bottom - m.top + 10;
-  if (belowTop + button.offsetHeight <= m.height - 12) {
-    button.style.top = belowTop + 'px';
+  // Prefer the same row as GPS, with a real gap measured from the button edge.
+  const buttonWidth = button.offsetWidth;
+  const rowLeft = toggleRect.right - mapRect.left + 16;
+  if (rowLeft + buttonWidth <= mapRect.width - 12) {
+    button.style.left = rowLeft + 'px';
+    button.style.top = toggleRect.top - mapRect.top + 'px';
     return;
   }
 
-  // If there is not enough room below the panel, use the clear upper-right
-  // corner when it is wide enough; otherwise use the lower-left edge.
-  const freeRight = m.right - p.right;
-  if (freeRight >= button.offsetWidth + 24) {
-    button.style.left = 'auto';
-    button.style.right = '12px';
-    button.style.top = '78px';
-  } else {
-    button.style.left = '12px';
-    button.style.top = Math.max(78, m.height - button.offsetHeight - 16) + 'px';
+  // On narrow map containers, stack Follow below GPS and move the distance
+  // panel down as well so that none of the controls collide.
+  const stackedTop = toggleBottom + 12;
+  button.style.left = '12px';
+  button.style.top = stackedTop + 'px';
+  if (panel.classList.contains('show')) {
+    panel.style.top = Math.max(126, stackedTop + button.offsetHeight + 12) + 'px';
   }
 }
 
@@ -7656,8 +7658,11 @@ if (gpsFollowBtn) {
   const followObserver = new MutationObserver(() => requestAnimationFrame(positionGpsFollowButton));
   followObserver.observe(gpsFollowBtn, { attributes: true, attributeFilter: ['class'] });
   const gpsPanelForFollow = document.getElementById('gpsPanel');
-  if (gpsPanelForFollow && typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => requestAnimationFrame(positionGpsFollowButton)).observe(gpsPanelForFollow);
+  const gpsToggleForFollow = document.getElementById('gpsToggleBtn');
+  const mapStageForGps = document.querySelector('#view-map .castle-map-stage');
+  if (typeof ResizeObserver !== 'undefined') {
+    const gpsLayoutObserver = new ResizeObserver(() => requestAnimationFrame(positionGpsFollowButton));
+    [gpsPanelForFollow, gpsToggleForFollow, mapStageForGps].filter(Boolean).forEach(el => gpsLayoutObserver.observe(el));
   }
   window.addEventListener('resize', () => requestAnimationFrame(positionGpsFollowButton));
 }
