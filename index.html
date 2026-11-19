@@ -653,12 +653,12 @@
   .map-panel {
     position: absolute; z-index: 1000; left: 12px; right: 12px; bottom: calc(34dvh + 16px);
     background: var(--parchment-deep); border: 1.5px solid var(--gold); border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(90, 67, 39, 0.35); padding: 16px 16px 14px;
-    min-height: 150px; box-sizing: border-box;
+    box-shadow: 0 8px 22px rgba(90, 67, 39, 0.3); padding: 11px 12px 10px;
+    min-height: 0; box-sizing: border-box;
     display: none; font-family: var(--sans);
   }
   .map-panel.open { display: block; }
-  .map-panel-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+  .map-panel-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
   .map-panel-title { font-size: 1.1rem; font-weight: 600; color: var(--terracotta); font-family: 'EB Garamond', serif; }
   .map-panel-meta { font-size: 0.8rem; color: var(--ink-soft); }
   .map-panel-close {
@@ -666,10 +666,10 @@
     background: var(--parchment); color: var(--ink); font-size: 1rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center; flex: 0 0 28px;
   }
-  .map-panel-desc { font-size: 0.9rem; line-height: 1.5; color: var(--ink); margin-bottom: 12px; font-family: 'EB Garamond', serif; max-width: 34ch; }
+  .map-panel-desc { font-size: 0.88rem; line-height: 1.24; color: var(--ink); margin: 4px 0 8px; font-family: 'EB Garamond', serif; max-width: none; }
   .map-panel-actions { display: flex; gap: 8px; }
   .map-panel-speak {
-    flex: 1; min-height: 40px; border-radius: 9px; border: none;
+    flex: 1; min-height: 36px; border-radius: 9px; border: none;
     background: var(--terracotta); color: var(--cream-text); font-weight: 600; font-size: 0.85rem; cursor: pointer;
   }
   .map-panel-open-guide {
@@ -1142,6 +1142,31 @@
     0% { transform: scale(.82); opacity: 1; box-shadow: 0 0 0 3px rgba(122,16,38,.9), 0 3px 16px rgba(0,0,0,.65); }
     70% { transform: scale(1.12); opacity: .95; box-shadow: 0 0 0 12px rgba(122,16,38,0), 0 3px 16px rgba(0,0,0,.65); }
     100% { transform: scale(.82); opacity: 1; box-shadow: 0 0 0 3px rgba(122,16,38,0), 0 3px 16px rgba(0,0,0,.65); }
+  }
+  .gps-target-marker-wrap { width: 180px !important; height: 112px !important; overflow: visible !important; }
+  .castle-gps-pulse { position: absolute; left: 52px; top: 0; }
+  .castle-gps-pulse::after { display: none !important; }
+  .gps-target-castle-icon { width: 38px; height: 38px; object-fit: contain; filter: invert(1) brightness(2); }
+  .gps-target-town-dot { width: 22px; height: 22px; border-radius: 50%; background: #8A6A34; border: 3px solid #fff; box-shadow: 0 1px 6px rgba(0,0,0,.55); }
+  .gps-target-name {
+    position: absolute; top: 83px; left: 50%; transform: translateX(-50%);
+    max-width: 176px; padding: 4px 9px; border-radius: 7px;
+    background: rgba(246,238,221,.97); border: 1px solid var(--gold);
+    color: var(--ink); font: 700 12px/1.2 var(--sans); text-align: center;
+    white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.28);
+    pointer-events: none;
+  }
+  .castle-selection-pulse-wrap { width: 92px !important; height: 92px !important; }
+  .castle-selection-pulse {
+    width: 84px; height: 84px; box-sizing: border-box; border-radius: 50%;
+    border: 4px solid rgba(122,16,38,.95); background: rgba(255,205,0,.12);
+    box-shadow: 0 0 0 4px rgba(255,255,255,.88), 0 2px 12px rgba(0,0,0,.42);
+    animation: castleSelectionPulse 1.45s ease-out infinite;
+  }
+  @keyframes castleSelectionPulse {
+    0% { transform: scale(.78); opacity: .95; }
+    70% { transform: scale(1.12); opacity: .45; }
+    100% { transform: scale(.78); opacity: .95; }
   }
   @keyframes gpsHaloPulse {
     0% { box-shadow: 0 0 0 0 rgba(181,96,46,0.5); }
@@ -6518,7 +6543,7 @@ function initMap() {
 
   // Зум-контрол переносим в левый нижний угол — по умолчанию Leaflet рисует
   // его в левом верхнем, где он перекрывался полем поиска.
-  leafletMap = L.map('mapDiv', { scrollWheelZoom: true, zoomControl: false }).setView([50.18, 7.75], 10);
+  leafletMap = L.map('mapDiv', { scrollWheelZoom: true, zoomControl: false, zoomSnap: 0.25, zoomDelta: 0.5 }).setView([50.18, 7.75], 10);
   L.control.zoom({ position: 'bottomleft' }).addTo(leafletMap);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(leafletMap);
 
@@ -6543,6 +6568,7 @@ function initMap() {
     popupAnchor: [0, -17]
   });
 
+  leafletMap._castleMarkers = [];
   castles.forEach((c, i) => {
     if (typeof c.lat !== 'number') return;
     points.push([c.lat, c.lng]);
@@ -6559,6 +6585,7 @@ function initMap() {
       marker = L.marker([markerLat, markerLng], { icon: castleIcon }).addTo(leafletMap);
     }
 
+    leafletMap._castleMarkers[i] = marker;
     marker.on('click', () => {
       selectedIndex = i;
       showMapPanel(i);
@@ -6569,7 +6596,7 @@ function initMap() {
 
   if (points.length) {
     L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
-    leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+    leafletMap.fitBounds(points, { paddingTopLeft: [16, 110], paddingBottomRight: [16, 20] });
     // Reset is the third member of the same right-side control stack.
     const resetBtn = document.createElement('button');
     resetBtn.type = 'button';
@@ -6583,7 +6610,7 @@ function initMap() {
         leafletMap._gpsFocusActive = false; leafletMap._gpsFocusSnapshot = null; leafletMap._gpsFocusTarget = null;
         leafletMap.stop(); markGpsProgrammaticView(); leafletMap.setView(snap.center, snap.zoom, { animate: true });
         if (gpsActive && Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng)) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
-      } else leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+      } else leafletMap.fitBounds(points, { paddingTopLeft: [16, 110], paddingBottomRight: [16, 20] });
     });
     poiBar.appendChild(resetBtn);
   }
@@ -6606,6 +6633,7 @@ function initMap() {
 
   document.getElementById('mapPanelClose').onclick = () => {
     document.getElementById('mapPanel').classList.remove('open');
+    setSelectedCastlePulse(-1);
     selectedIndex = -1;
     if (gpsActive && gpsLastLat !== null) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
   };
@@ -6628,14 +6656,79 @@ function initMap() {
   };
 }
 
+function compactMapPanelText(value, limit = 118) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (text.length <= limit) return text;
+  let cut = text.slice(0, limit + 1);
+  const wordEnd = cut.lastIndexOf(' ');
+  if (wordEnd > limit * 0.65) cut = cut.slice(0, wordEnd);
+  return cut.replace(/[.,;:!?…]+$/, '') + ' … ↗';
+}
+
+function focusMapPointInAvailableArea(latlng, panel) {
+  if (!leafletMap || !latlng) return;
+  const mapEl = document.getElementById('mapDiv');
+  if (!mapEl) return;
+  const mapRect = mapEl.getBoundingClientRect();
+  const centerX = mapRect.left + mapRect.width / 2;
+  let safeTop = 14;
+  const topOverlays = [
+    document.querySelector('.map-search-wrap'),
+    document.getElementById('gpsToggleBtn'),
+    document.getElementById('gpsPanel'),
+    document.querySelector('.map-legend')
+  ];
+  topOverlays.forEach(el => {
+    if (!el || el.hidden || getComputedStyle(el).display === 'none' || getComputedStyle(el).visibility === 'hidden') return;
+    const r = el.getBoundingClientRect();
+    if (r.bottom <= mapRect.top || r.top >= mapRect.bottom) return;
+    if (r.left <= centerX + 36 && r.right >= centerX - 36) {
+      safeTop = Math.max(safeTop, r.bottom - mapRect.top + 14);
+    }
+  });
+  let safeBottom = mapRect.height - 18;
+  if (panel && panel.classList.contains('open')) {
+    const p = panel.getBoundingClientRect();
+    safeBottom = Math.min(safeBottom, p.top - mapRect.top - 18);
+  }
+  if (safeBottom - safeTop < 100) {
+    safeTop = 14;
+    safeBottom = mapRect.height - 18;
+  }
+  const target = { x: mapRect.width / 2, y: safeTop + (safeBottom - safeTop) / 2 };
+  const current = leafletMap.latLngToContainerPoint(latlng);
+  leafletMap.panBy([target.x - current.x, target.y - current.y], { animate: true, duration: 0.32 });
+}
+
+function setSelectedCastlePulse(index) {
+  if (!leafletMap) return;
+  if (leafletMap._selectedCastlePulse) {
+    leafletMap.removeLayer(leafletMap._selectedCastlePulse);
+    leafletMap._selectedCastlePulse = null;
+  }
+  if (!Number.isInteger(index) || index < 0) return;
+  const marker = leafletMap._castleMarkers && leafletMap._castleMarkers[index];
+  const castle = castles[index];
+  if (!marker || !castle) return;
+  const icon = L.divIcon({
+    className: 'castle-selection-pulse-wrap',
+    html: '<div class="castle-selection-pulse"></div>',
+    iconSize: [92, 92],
+    iconAnchor: [46, 46]
+  });
+  leafletMap._selectedCastlePulse = L.marker(marker.getLatLng(), {
+    icon, interactive: false, keyboard: false, zIndexOffset: 1450
+  }).addTo(leafletMap);
+}
+
 function showMapPanel(i) {
   const c = castles[i];
   const panel = document.getElementById('mapPanel');
   if (!panel) return;
 
+  selectedIndex = i;
+  setSelectedCastlePulse(i);
   document.getElementById('mapPanelTitle').textContent = c.name;
-  // Население — не главное; на первом месте дата постройки (для замка) или
-  // дата/факт основания (для города), город/место — вторым, если есть место.
   const builtText = lang === 'ru' ? c.builtRu : (lang === 'de' ? (c.builtDe || c.built) : c.built);
   const isTown = TOWN_IDS.has(c.id);
   const bankLabel = c.bank === 'L' ? (lang === 'ru' ? '⬅ лев.' : lang === 'de' ? '⬅ links' : '⬅ left') :
@@ -6647,7 +6740,8 @@ function showMapPanel(i) {
     : `${builtText} • ${c.town}${bankSuffix}`;
 
   const shortText = lang === 'ru' ? (c.sayRu || c.factsRu) : (lang === 'de' ? (c.sayDe || c.factsDe || c.say || c.facts) : (c.say || c.facts));
-  document.getElementById('mapPanelDesc').textContent = shortText;
+  const compactText = compactMapPanelText(shortText);
+  document.getElementById('mapPanelDesc').textContent = compactText;
 
   const mpWa = document.getElementById('mapPanelWa');
   if (mpWa) {
@@ -6659,20 +6753,9 @@ function showMapPanel(i) {
 
   panel.classList.add('open');
   if (!leafletMap) return;
-
   requestAnimationFrame(() => {
-    const panelTop = panel.getBoundingClientRect().top;
-    const markerPoint = leafletMap.latLngToContainerPoint([c.lat, c.lng]);
-    const mapTop = document.getElementById('mapDiv').getBoundingClientRect().top;
-    const markerScreenY = mapTop + markerPoint.y;
-    const margin = 24;
-
     leafletMap.setView([c.lat, c.lng], leafletMap.getZoom(), { animate: false });
-
-    const neededTop = panelTop - margin;
-    if (markerScreenY > neededTop) {
-      leafletMap.panBy([0, markerScreenY - neededTop], { animate: true, duration: 0.3 });
-    }
+    requestAnimationFrame(() => focusMapPointInAvailableArea([c.lat, c.lng], panel));
   });
 }
 
@@ -7179,21 +7262,37 @@ function clearSavedSpot() {
   try { localStorage.removeItem(SAVED_SPOT_KEY); } catch (e) {}
 }
 
-function setGpsTargetMarker(mapObj, latlng, label, number) {
+function setGpsTargetMarker(mapObj, latlng, label, number, castleIndex) {
   if (!mapObj || typeof L === 'undefined') return;
   if (!latlng) {
     mapObj._gpsFocusActive = false; mapObj._gpsFocusSnapshot = null; mapObj._gpsFocusTarget = null;
     mapObj.getContainer().classList.remove('gps-target-label-mode');
     if (mapObj._gpsTargetMarker) mapObj.removeLayer(mapObj._gpsTargetMarker);
     mapObj._gpsTargetMarker = null;
+    mapObj._gpsTargetIndex = -1;
     if (mapObj._gpsTargetLine) mapObj.removeLayer(mapObj._gpsTargetLine);
     mapObj._gpsTargetLine = null;
     return;
   }
-  if (mapObj._gpsFocusActive && mapObj._gpsFocusTarget) { latlng = mapObj._gpsFocusTarget.latlng; label = mapObj._gpsFocusTarget.label; number = mapObj._gpsFocusTarget.number; }
+  if (mapObj._gpsFocusActive && mapObj._gpsFocusTarget) {
+    latlng = mapObj._gpsFocusTarget.latlng;
+    label = mapObj._gpsFocusTarget.label;
+    number = mapObj._gpsFocusTarget.number;
+    castleIndex = mapObj._gpsFocusTarget.index;
+  }
   mapObj.getContainer().classList.add('gps-target-label-mode');
-  const targetNumber = Number.isFinite(number) ? number : '';
-  const icon = L.divIcon({ className: '', html: `<div class="gps-target-pulse" data-number="${targetNumber}" aria-label="Nearest destination ${targetNumber}"></div>`, iconSize: [76, 76], iconAnchor: [38, 38] });
+  mapObj._gpsTargetIndex = Number.isInteger(castleIndex) ? castleIndex : -1;
+  const target = castles[mapObj._gpsTargetIndex];
+  const safeLabel = String(label || (target && target.name) || 'Nearest place').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const targetVisual = target && TOWN_IDS.has(target.id)
+    ? '<span class="gps-target-town-dot"></span>'
+    : '<img class="gps-target-castle-icon" src="new-vector-castle.png" alt="">';
+  const icon = L.divIcon({
+    className: 'gps-target-marker-wrap',
+    html: `<div class="gps-target-pulse castle-gps-pulse">${targetVisual}</div><div class="gps-target-name">${safeLabel}</div>`,
+    iconSize: [180, 112],
+    iconAnchor: [90, 38]
+  });
   if (mapObj._gpsTargetMarker) {
     mapObj._gpsTargetMarker.setLatLng(latlng);
     mapObj._gpsTargetMarker.setIcon(icon);
@@ -7203,14 +7302,11 @@ function setGpsTargetMarker(mapObj, latlng, label, number) {
     mapObj._gpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: true }).addTo(mapObj);
     mapObj._gpsTargetMarker.on('click', e => {
       if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-      if (!gpsActive) return;
-      if (!mapObj._gpsFocusSnapshot) mapObj._gpsFocusSnapshot = { center: mapObj.getCenter(), zoom: mapObj.getZoom() };
-      mapObj._gpsFocusTarget = { latlng: mapObj._gpsTargetMarker.getLatLng(), label: '', number };
-      gpsFollowMode = false;
-      mapObj._gpsFitDone = true;
-      mapObj._gpsFocusActive = true; mapObj.stop();
-      markGpsProgrammaticView();
-      mapObj.setView(mapObj._gpsTargetMarker.getLatLng(), 17, { animate: true });
+      const targetIndex = mapObj._gpsTargetIndex;
+      if (Number.isInteger(targetIndex) && targetIndex >= 0 && castles[targetIndex]) {
+        selectedIndex = targetIndex;
+        openStation(targetIndex);
+      }
     });
   }
   if (typeof gpsActive !== 'undefined' && gpsActive && Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng)) {
@@ -7237,7 +7333,7 @@ function updateGpsDistancePanel(lat, lng) {
   const nearestMapIndex = findNearestCastleIndex(lat, lng);
   if (nearestMapIndex >= 0) {
     const nearestMapCastle = castles[nearestMapIndex];
-    setGpsTargetMarker(leafletMap, [nearestMapCastle.lat, nearestMapCastle.lng], '', nearestMapIndex + 1);
+    setGpsTargetMarker(leafletMap, [nearestMapCastle.lat, nearestMapCastle.lng], nearestMapCastle.name, nearestMapIndex + 1, nearestMapIndex);
   } else {
     setGpsTargetMarker(leafletMap, null);
   }
