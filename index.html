@@ -136,8 +136,23 @@
   .xmas-list { padding-left: 18px; }
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
-  .xmas-gps-btn { display: block; width: 100%; padding: 12px; margin: 0 0 10px; border-radius: 12px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-weight: 700; font-family: var(--sans); font-size: 15px; cursor: pointer; }
-  .xmas-gps-btn.active { background: #7A1026; color: #F5ECD6; }
+  .xmas-gps-btn {
+    position: absolute; z-index: 1250; top: 78px; left: 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px 7px 10px; border-radius: 20px;
+    border: 1px solid var(--gold); background: rgba(246,238,221,.96);
+    color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
+    box-shadow: 0 4px 14px rgba(90,67,39,.25);
+  }
+  .xmas-gps-btn.active { background: linear-gradient(135deg,var(--terracotta),#8f4a22); color: #fff; border-color: rgba(255,255,255,.75); }
+  .xmas-gps-follow {
+    position: absolute; z-index: 1250; top: 78px; left: 112px; display: none;
+    align-items: center; gap: 6px; min-height: 36px; padding: 7px 12px;
+    border: 1px solid var(--gold); border-radius: 20px; background: rgba(246,238,221,.97);
+    color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
+    box-shadow: 0 4px 14px rgba(90,67,39,.25);
+  }
+  .xmas-gps-follow.show { display: inline-flex; }
   .xmas-gps-panel { font-family: var(--sans); font-size: 14px; margin: 0 0 14px; }
   .xmas-explain { background: #F5ECD6; border-left: 4px solid #7A1026; border-radius: 8px; padding: 10px 12px; margin: 0 0 12px; font-size: 14px; line-height: 1.45; font-family: var(--sans); color: var(--ink); }
   .xmas-gps-row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #c8a878; }
@@ -1243,7 +1258,8 @@
   /* Christmas-market map uses the same in-map search position as the main map */
   .xmas-map-stage { position: relative; width: 100%; }
   /* Keep Leaflet zoom +/- below the market search field */
-  .xmas-map-stage .leaflet-top.leaflet-left { top: 58px; }
+  .xmas-map-stage .leaflet-top.leaflet-left { top: auto; }
+  .xmas-map-stage .leaflet-bottom.leaflet-left { bottom: 10px; left: 10px; }
   .xmas-search {
     position: absolute; z-index: 1200; top: 12px; left: 12px; right: auto;
     width: calc(56% - 12px); min-width: 0; margin: 0;
@@ -4433,14 +4449,15 @@ function xmasDrawMap(opts) {
   const el = document.getElementById('xmasMap');
   if (!el || typeof L === 'undefined') return;
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
-  xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0 });
+  xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0, zoomControl: false });
+  L.control.zoom({ position: 'bottomleft' }).addTo(xmasMapObj);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
   // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
-  if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
+     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
   else if (opts.pins && opts.pins.length > 1) {
     // Все точки города сразу видны, с запасом по краям (подписи и маркеры не обрезаются)
     const pb = L.latLngBounds(opts.pins.map(p => p.ll));
-    xmasMapObj.fitBounds(pb, { padding: [56, 56], maxZoom: opts.zoom, animate: false });
+    xmasMapObj.fitBounds(pb, { padding: [76, 76], maxZoom: opts.zoom, animate: false });
   }
   else xmasMapObj.setView(opts.center, opts.zoom);
   if (xmasPendingFocus) { xmasMapObj.setView(xmasPendingFocus, 17, { animate: false }); xmasPendingFocus = null; }
@@ -4453,7 +4470,7 @@ function xmasDrawMap(opts) {
   xmasMapObj.getContainer().appendChild(xPoiBar);
   document.getElementById('xResetBtn').onclick = () => {
     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
-    else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [56, 56], maxZoom: opts.zoom });
+    else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [76, 76], maxZoom: opts.zoom });
     else xmasMapObj.setView(opts.center, opts.zoom);
   };
   opts.pins.forEach(p => {
@@ -4462,6 +4479,13 @@ function xmasDrawMap(opts) {
     if (p.label) m.bindTooltip(String(p.label).split(' (')[0], { permanent: true, direction: 'bottom', offset: [0, 10], className: 'xmas-pin-label' });
   });
   xmasDrawGpsLayers();
+  const follow = document.createElement('button');
+  follow.type = 'button'; follow.className = 'xmas-gps-follow'; follow.id = 'xmasGpsFollowBtn';
+  follow.textContent = '↻ Follow'; follow.setAttribute('aria-label', 'Show my location and nearest market');
+  xmasMapObj.getContainer().appendChild(follow);
+  follow.addEventListener('click', () => { if (!xmasGpsPos) return; xmasFocusUserAndNearest(); follow.classList.remove('show'); });
+  xmasMapObj.on('dragstart', () => { if (xmasGpsWatch !== null && xmasGpsPos) follow.classList.add('show'); });
+  if (xmasGpsPos) xmasFocusUserAndNearest();
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
 }
 
@@ -4560,6 +4584,15 @@ function xmasDrawGpsLayers() {
   }
 }
 
+function xmasFocusUserAndNearest() {
+  if (!xmasMapObj || !xmasGpsPos) return;
+  const targets = xmasGpsTargets();
+  if (!targets.length) { xmasMapObj.setView([xmasGpsPos.lat, xmasGpsPos.lng], 14); return; }
+  let nearest = targets[0], minD = Infinity;
+  targets.forEach(t => { const d = distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, t.ll[0], t.ll[1]); if (d < minD) { minD = d; nearest = t; } });
+  xmasMapObj.fitBounds([[xmasGpsPos.lat, xmasGpsPos.lng], nearest.ll], { paddingTopLeft: [30, 145], paddingBottomRight: [40, 95], maxZoom: 15, animate: true });
+}
+
 function xmasStartGps() {
   if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
   if (xmasGpsWatch !== null) return;
@@ -4571,6 +4604,7 @@ function xmasStartGps() {
       if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
       else xmasDrawGpsLayers();
       // If POI mode was activated before the first GPS fix, focus it now.
+      if (!xmasMapObj._xmasGpsFitDone && !xmasApoLayer && !xmasWcLayer) { xmasMapObj._xmasGpsFitDone = true; xmasFocusUserAndNearest(); }
       if (!xmasMapObj._poiGpsZoomed && (xmasApoLayer || xmasWcLayer)) {
         if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
         else if (xmasWcLayer) _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
@@ -4697,10 +4731,10 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = xmasExplainHtml() + xmasGpsBtnHtml() + `<div class="xmas-map-stage">${xmasSearchHtml()}<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + (xmasTown ? '' : xmasTownListHtml()) + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
-    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasExplainHtml() + xmasGpsBtnHtml() + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
+    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   } else if (!xmasTown) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
   } else {
