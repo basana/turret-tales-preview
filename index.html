@@ -4509,6 +4509,9 @@ function xmasDrawMap(opts) {
   if (!el || typeof L === 'undefined') return;
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
   xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0, zoomControl: false });
+  // If GPS already has a fix, preserve the map view chosen by the visitor.
+  // GPS may recenter only on its first fix, not every time a city/overview map is rebuilt.
+  xmasMapObj._xmasGpsFitDone = !!xmasGpsPos;
   const targetPane = xmasMapObj.createPane('xmasGpsTargetPane');
   targetPane.style.zIndex = '700';
   targetPane.style.pointerEvents = 'auto';
@@ -4586,7 +4589,8 @@ function xmasDrawMap(opts) {
   xmasMapObj.getContainer().appendChild(follow);
   follow.addEventListener('click', () => { if (!xmasGpsPos) return; xmasFocusUserAndNearest(); follow.classList.remove('show'); });
   xmasMapObj.on('dragstart', () => { if (xmasGpsWatch !== null && xmasGpsPos) follow.classList.add('show'); });
-  if (xmasGpsPos) xmasFocusUserAndNearest();
+  // Do not auto-focus GPS when switching city maps or returning to the Rhine overview.
+  // The visitor's explicit map selection owns the camera; Follow remains available on demand.
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
 }
 
@@ -7870,6 +7874,21 @@ if ('serviceWorker' in navigator) {
   .map-legend-filter .map-legend-dot { width: 18px; height: 18px; flex: 0 0 18px; }
   .map-legend-filter .map-legend-icon { width: 20px; height: 20px; flex: 0 0 20px; }
   .map-legend-filter .map-legend-icon img { width: 12px; height: 12px; }
+
+  /* Keep all app-generated Leaflet place labels horizontal and readable. */
+  .leaflet-tooltip,
+  .gps-target-name,
+  .xmas-gps-target-label {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    word-break: normal !important;
+  }
+  .leaflet-tooltip.xmas-pin-label {
+    width: max-content;
+    max-width: min(180px, 60vw);
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
 
   /* Christmas map: keep search + GPS in one row; save the point below search. */
   .xmas-search { width: auto !important; right: 104px !important; max-width: min(58vw, 420px); }
