@@ -137,7 +137,7 @@
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
    .xmas-gps-btn {
-    position: absolute; z-index: 1250; top: 56px; left: 12px;
+    position: absolute; z-index: 1250; top: 12px; left: auto; right: 12px;
     display: inline-flex; align-items: center; gap: 6px;
     padding: 7px 12px 7px 10px; border-radius: 20px;
     border: 1px solid var(--gold); background: rgba(246,238,221,.96);
@@ -145,10 +145,10 @@
     box-shadow: 0 4px 14px rgba(90,67,39,.25);
   }
   .xmas-gps-btn.active { background: linear-gradient(135deg,var(--terracotta),#8f4a22); color: #fff; border-color: rgba(255,255,255,.75); }
-   .xmas-save-location-btn { position:absolute; z-index:1250; top:56px; left:112px; display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:7px 12px; border:1px solid rgba(255,255,255,.8); border-radius:20px; background:linear-gradient(135deg,var(--terracotta),#8f4a22); color:#fff; font:700 12px var(--sans); cursor:pointer; box-shadow:0 4px 14px rgba(90,67,39,.25); }
+   .xmas-save-location-btn { position:absolute; z-index:1250; top:56px; left:12px; display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:7px 12px; border:1px solid rgba(255,255,255,.8); border-radius:20px; background:linear-gradient(135deg,var(--terracotta),#8f4a22); color:#fff; font:700 12px var(--sans); cursor:pointer; box-shadow:0 4px 14px rgba(90,67,39,.25); }
   .xmas-save-location-btn[hidden] { display:none; }
   .xmas-gps-follow {
-    position: absolute; z-index: 1250; top: 56px; left: 200px; display: none;
+    position: absolute; z-index: 1250; top: 56px; left: auto; right: 12px; display: none;
     align-items: center; gap: 6px; min-height: 36px; padding: 7px 12px;
     border: 1px solid var(--gold); border-radius: 20px; background: rgba(246,238,221,.97);
     color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
@@ -647,11 +647,12 @@
   .stat-table th { text-align: left; color: var(--terracotta); border-bottom: 1px solid var(--gold); padding: 4px; }
   .stat-table td { padding: 4px; border-bottom: 1px solid var(--gold); }
 
-  #view-map { position: relative; height: auto; padding: 0 0 34dvh !important; }
+  #view-map { position: relative; height: auto; padding: 0 0 18px !important; }
+  .castle-map-stage { position: relative; width: 100%; }
   #mapDiv { width: 100%; height: 62dvh; min-height: 380px; border-radius: 12px; border: 1px solid var(--gold); }
 
   .map-panel {
-    position: absolute; z-index: 1000; left: 12px; right: 12px; bottom: calc(34dvh + 16px);
+    position: absolute; z-index: 1000; left: 12px; right: 12px; bottom: 12px;
     background: var(--parchment-deep); border: 1.5px solid var(--gold); border-radius: 14px;
     box-shadow: 0 8px 22px rgba(90, 67, 39, 0.3); padding: 11px 12px 10px;
     min-height: 0; box-sizing: border-box;
@@ -1018,7 +1019,7 @@
   .gps-toggle-btn .lock-star { font-size: 11px; color: var(--terracotta); }
   .gps-toggle-btn.active .lock-star { display: none; }
   .gps-follow-btn {
-    position: absolute; z-index: 1000; top: 56px; left: 200px; display: none;
+    position: absolute; z-index: 1000; top: 56px; left: 100px; display: none;
     align-items: center; gap: 6px; min-height: 38px; padding: 7px 12px;
     border: 1px solid var(--gold); border-radius: 20px; background: rgba(246,238,221,.97);
     color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
@@ -1055,7 +1056,7 @@
     display: flex; align-items: center; justify-content: center; padding: 0;
   }
    .gps-save-spot-btn {
-    position: absolute; top: -70px; left: 100px; min-height: 36px; white-space: nowrap;
+    position: absolute; top: -26px; left: 0; min-height: 36px; white-space: nowrap;
     display: none; align-items: center; gap: 6px; align-self: flex-start;
     background: linear-gradient(135deg, var(--terracotta), #8f4a22); border: 1px solid rgba(255,255,255,0.75); border-radius: 20px;
     padding: 7px 10px; font-family: var(--sans); font-size: 12px; font-weight: 700;
@@ -1295,7 +1296,7 @@
 
   /* MAP NAVI preview: shared compact map-control layout */
   .map-search-wrap:not(.xmas-search) {
-    left: 12px; right: auto; width: calc(56% - 12px);
+    left: 12px; right: 12px; width: auto;
     min-width: 0; padding: 7px 10px; gap: 5px;
   }
   .map-search-ticker {
@@ -1321,12 +1322,17 @@
   .xmas-map-stage .leaflet-top.leaflet-left { top: auto; }
   .xmas-map-stage .leaflet-bottom.leaflet-left { bottom: 10px; left: 10px; }
   .xmas-search {
-    position: absolute; z-index: 1200; top: 12px; left: 12px; right: auto;
-    width: calc(56% - 12px); min-width: 0; margin: 0;
+    position: absolute; z-index: 1200; top: 12px; left: 12px; right: 104px;
+    width: auto; min-width: 0; margin: 0;
     padding: 7px 10px; gap: 5px; box-sizing: border-box;
   }
   .xmas-search .map-search-ticker { left: 30px; right: 28px; font-size: 12px; }
   .xmas-search .map-search-input::placeholder { opacity: 0; }
+  .xmas-map-stage .xmas-gps-label-mode .leaflet-tooltip-pane .xmas-gps-target-label {
+    z-index: 9999 !important; pointer-events: none; font: 800 13px/1.2 var(--sans);
+    color: #fff; background: #7A1026; border: 2px solid #fff; border-radius: 8px;
+    padding: 6px 9px; box-shadow: 0 2px 10px rgba(0,0,0,.55); opacity: 1 !important;
+  }
   @media (max-width: 360px) {
     .map-search-wrap:not(.xmas-search) { width: calc(54% - 12px); }
     .xmas-search { width: calc(54% - 12px); }
@@ -1614,69 +1620,62 @@
 
     <!-- КАРТА -->
     <div class="view" id="view-map">
-      <div id="mapDiv"></div>
-      <div class="map-search-wrap">
-        <span class="map-search-icon">🔎</span>
-        <input type="text" class="map-search-input" id="mapSearchInput" list="mapSearchList" autocomplete="off" autocapitalize="off" enterkeyhint="search">
-        <span class="map-search-ticker" id="mapSearchTicker"></span>
-        <datalist id="mapSearchList"></datalist>
-        <button class="map-search-clear" id="mapSearchClear" style="display:none;">✕</button>
-      </div>
-      <button class="gps-toggle-btn" id="gpsToggleBtn">
-        <span class="lock-star">✦</span><span>📍</span><span id="gpsToggleLabel">GPS</span>
-      </button>
-      <button class="gps-follow-btn" id="gpsFollowBtn" type="button" aria-label="Return to GPS follow">↻ Follow</button>
-      <div class="gps-panel" id="gpsPanel">
-        <div class="gps-panel-row gps-route-row" id="gpsRouteRow">
-          <div class="gps-route-text" id="gpsRouteText"></div>
+      <div class="castle-map-stage">
+        <div id="mapDiv"></div>
+        <div class="map-search-wrap">
+          <span class="map-search-icon">🔎</span>
+          <input type="text" class="map-search-input" id="mapSearchInput" list="mapSearchList" autocomplete="off" autocapitalize="off" enterkeyhint="search">
+          <span class="map-search-ticker" id="mapSearchTicker"></span>
+          <datalist id="mapSearchList"></datalist>
+          <button class="map-search-clear" id="mapSearchClear" style="display:none;">✕</button>
         </div>
-        <div class="gps-panel-row" id="gpsDistancePanel">
-          <div class="gps-distance-value" id="gpsDistanceValue"></div>
-          <div class="gps-distance-name" id="gpsDistanceName"></div>
-        </div>
-        <div class="gps-panel-row gps-spot-row" id="gpsSpotRow">
-          <div style="flex:1; min-width:0;">
-            <div class="gps-distance-value" id="gpsSpotValue"></div>
-            <div class="gps-distance-name" id="gpsSpotName"></div>
-          </div>
-          <button class="gps-spot-clear" id="gpsSpotClear" title="Clear">✕</button>
-        </div>
-        <button class="gps-save-spot-btn" id="gpsSaveSpotBtn">
-          <span>📌</span><span id="gpsSaveSpotLabel">Save my spot</span>
+        <button class="gps-toggle-btn" id="gpsToggleBtn">
+          <span class="lock-star">✦</span><span>📍</span><span id="gpsToggleLabel">GPS</span>
         </button>
-      </div>
-      <div class="nearest-toast" id="nearestToast"></div>
-      <div class="map-legend" id="mapLegend">
-        <div class="map-legend-row">
-          <div class="map-legend-icon"><img src="new-vector-castle.png" alt=""></div>
-          <span id="legendCastleLabel">Castle tour</span>
-        </div>
-        <div class="map-legend-row">
-          <div class="map-legend-dot"></div>
-          <span id="legendTownLabel">Town walk</span>
-        </div>
-        <div class="map-legend-row" id="legendCafeRow" style="display:none;">
-          <div class="map-legend-icon map-legend-icon-cafe">☕</div>
-          <span id="legendCafeLabel">Cafe</span>
-        </div>
-        <div class="map-legend-row" id="legendSouvenirRow" style="display:none;">
-          <div class="map-legend-icon map-legend-icon-souvenir">🎁</div>
-          <span id="legendSouvenirLabel">Souvenirs</span>
-        </div>
-      </div>
-      <div class="map-panel" id="mapPanel">
-        <div class="map-panel-head">
-          <div style="flex:1">
-            <div class="map-panel-title" id="mapPanelTitle"></div>
-            <div class="map-panel-meta" id="mapPanelMeta"></div>
+        <button class="gps-follow-btn" id="gpsFollowBtn" type="button" aria-label="Return to GPS follow">↻ Follow</button>
+        <div class="gps-panel" id="gpsPanel">
+          <div class="gps-panel-row gps-route-row" id="gpsRouteRow"><div class="gps-route-text" id="gpsRouteText"></div></div>
+          <div class="gps-panel-row" id="gpsDistancePanel">
+            <div class="gps-distance-value" id="gpsDistanceValue"></div>
+            <div class="gps-distance-name" id="gpsDistanceName"></div>
           </div>
-          <button class="map-panel-close" id="mapPanelClose">×</button>
+          <div class="gps-panel-row gps-spot-row" id="gpsSpotRow">
+            <div style="flex:1; min-width:0;">
+              <div class="gps-distance-value" id="gpsSpotValue"></div>
+              <div class="gps-distance-name" id="gpsSpotName"></div>
+            </div>
+            <button class="gps-spot-clear" id="gpsSpotClear" title="Clear">✕</button>
+          </div>
+          <button class="gps-save-spot-btn" id="gpsSaveSpotBtn">
+            <span>📌</span><span id="gpsSaveSpotLabel">Save my spot</span>
+          </button>
         </div>
-        <div class="map-panel-desc" id="mapPanelDesc"></div>
-        <div class="map-panel-actions">
-          <button class="map-panel-speak" id="mapPanelSpeak">🔊 Read Aloud</button>
-          <button class="map-panel-open-guide" id="mapPanelOpenGuide">📖 Full info →</button>
-          <button class="btn-wa-share" id="mapPanelWa" style="margin-left:auto">💬</button>
+        <div class="nearest-toast" id="nearestToast"></div>
+        <div class="map-panel" id="mapPanel">
+          <div class="map-panel-head">
+            <div style="flex:1">
+              <div class="map-panel-title" id="mapPanelTitle"></div>
+              <div class="map-panel-meta" id="mapPanelMeta"></div>
+            </div>
+            <button class="map-panel-close" id="mapPanelClose">×</button>
+          </div>
+          <div class="map-panel-desc" id="mapPanelDesc"></div>
+          <div class="map-panel-actions">
+            <button class="map-panel-speak" id="mapPanelSpeak">🔊 Read Aloud</button>
+            <button class="map-panel-open-guide" id="mapPanelOpenGuide">📖 Full info →</button>
+            <button class="btn-wa-share" id="mapPanelWa" style="margin-left:auto">💬</button>
+          </div>
+        </div>
+      </div>
+      <div class="map-legend" id="mapLegend">
+        <div class="map-legend-title" id="mapLegendTitle">EXCURSIONS</div>
+        <div class="map-legend-filters">
+          <button type="button" class="map-legend-filter" data-map-filter="town" aria-pressed="false">
+            <span class="map-legend-dot"></span><span id="mapFilterTownLabel">By town</span>
+          </button>
+          <button type="button" class="map-legend-filter" data-map-filter="castle" aria-pressed="false">
+            <span class="map-legend-icon"><img src="new-vector-castle.png" alt=""></span><span id="mapFilterCastleLabel">At the castle</span>
+          </button>
         </div>
       </div>
     </div>
@@ -4569,7 +4568,7 @@ function xmasDrawMap(opts) {
   xmasDrawGpsLayers();
   if (xmasGpsPos) {
     const gpsTargets = xmasGpsTargets().map(t => ({ t, d: distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
-    if (gpsTargets.length) setXmasGpsTargetMarker(gpsTargets[0].t.ll, '', gpsTargets[0].t.index + 1);
+    if (gpsTargets.length) setXmasGpsTargetMarker(gpsTargets[0].t.ll, gpsTargets[0].t.label, gpsTargets[0].t.index + 1);
   }
   const follow = document.createElement('button');
   follow.type = 'button'; follow.className = 'xmas-gps-follow'; follow.id = 'xmasGpsFollowBtn';
@@ -4668,7 +4667,7 @@ function xmasBerthList() {
 function xmasEnterNearestFocus(latlng, label, number) {
   if (!xmasMapObj || !xmasGpsPos || !latlng) return;
   if (!xmasMapObj._xmasGpsFocusSnapshot) xmasMapObj._xmasGpsFocusSnapshot = { center: xmasMapObj.getCenter(), zoom: xmasMapObj.getZoom() };
-  xmasMapObj._xmasGpsFocusTarget = { ll: [latlng.lat, latlng.lng], label: '', number };
+  xmasMapObj._xmasGpsFocusTarget = { ll: [latlng.lat, latlng.lng], label: label || '', number };
   xmasMapObj._xmasGpsFocusActive = true;
   xmasMapObj.stop();
   xmasMapObj.setView(latlng, 18, { animate: true });
@@ -4687,7 +4686,10 @@ function setXmasGpsTargetMarker(latlng, label, number) {
   }
   container.classList.add('xmas-gps-label-mode');
   const targetNumber = Number.isFinite(number) ? number : '';
+  const safeLabel = String(label || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const icon = L.divIcon({ className: '', html: `<div class="gps-target-pulse" data-number="${targetNumber}" aria-label="Nearest market ${targetNumber}"></div>`, iconSize: [76, 76], iconAnchor: [38, 38] });
+  xmasMapObj._xmasGpsTargetLabel = label || '';
+  xmasMapObj._xmasGpsTargetNumber = number;
   if (xmasMapObj._xmasGpsTargetMarker) {
     xmasMapObj._xmasGpsTargetMarker.setLatLng(latlng);
     xmasMapObj._xmasGpsTargetMarker.setIcon(icon);
@@ -4697,7 +4699,16 @@ function setXmasGpsTargetMarker(latlng, label, number) {
     xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: true }).addTo(xmasMapObj);
     xmasMapObj._xmasGpsTargetMarker.on('click', e => {
       if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-      xmasEnterNearestFocus(xmasMapObj._xmasGpsTargetMarker.getLatLng(), '', number);
+      xmasEnterNearestFocus(
+        xmasMapObj._xmasGpsTargetMarker.getLatLng(),
+        xmasMapObj._xmasGpsTargetLabel || '',
+        xmasMapObj._xmasGpsTargetNumber
+      );
+    });
+  }
+  if (label) {
+    xmasMapObj._xmasGpsTargetMarker.bindTooltip(safeLabel, {
+      permanent: true, direction: 'bottom', offset: [0, 42], className: 'xmas-gps-target-label'
     });
   }
   if (xmasGpsPos) {
@@ -4715,14 +4726,22 @@ function syncXmasGpsMarkerOverlap() {
   const baseMarkers = xmasMapObj._xmasMarketMarkers || [];
   const targetMarker = xmasMapObj._xmasGpsTargetMarker;
   if (!targetMarker) {
-    baseMarkers.forEach(marker => marker.setOpacity(1));
+    baseMarkers.forEach(marker => {
+      marker.setOpacity(1);
+      const tooltip = marker.getTooltip && marker.getTooltip();
+      const tooltipEl = tooltip && tooltip.getElement && tooltip.getElement();
+      if (tooltipEl) tooltipEl.style.display = '';
+    });
     return;
   }
   const targetPoint = xmasMapObj.latLngToContainerPoint(targetMarker.getLatLng());
   baseMarkers.forEach(marker => {
     const markerPoint = xmasMapObj.latLngToContainerPoint(marker.getLatLng());
-    // Hide only base pins covered by the 76px GPS pulse; they reappear when the map moves/zooms apart.
-    marker.setOpacity(markerPoint.distanceTo(targetPoint) < 42 ? 0 : 1);
+    const covered = markerPoint.distanceTo(targetPoint) < 42;
+    marker.setOpacity(covered ? 0 : 1);
+    const tooltip = marker.getTooltip && marker.getTooltip();
+    const tooltipEl = tooltip && tooltip.getElement && tooltip.getElement();
+    if (tooltipEl) tooltipEl.style.display = covered ? 'none' : '';
   });
 }
 function xmasDrawGpsLayers() {
@@ -4752,7 +4771,11 @@ function xmasFocusUserAndNearest() {
 
 function xmasStartGps() {
   if (xmasMapObj) xmasMapObj._xmasGpsFitDone = false;
-  if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
+  if (!navigator.geolocation) {
+    const saveButton = document.getElementById('xmasSaveLocationBtn');
+    if (saveButton) saveButton.hidden = true;
+    xmasSetGpsLabel(xmasG('err')); return;
+  }
   if (xmasGpsWatch !== null) return;
   xmasSetGpsLabel(xmasG('locating'), true);
   xmasGpsWatch = navigator.geolocation.watchPosition(pos => {
@@ -4770,6 +4793,8 @@ function xmasStartGps() {
     }
     xmasUpdateGpsPanel();
   }, () => {
+    const saveButton = document.getElementById('xmasSaveLocationBtn');
+    if (saveButton) saveButton.hidden = true;
     xmasSetGpsLabel(xmasG('err'));
     if (xmasGpsWatch !== null) navigator.geolocation.clearWatch(xmasGpsWatch);
     xmasGpsWatch = null;
@@ -4786,6 +4811,8 @@ function xmasStopGps() {
   setXmasGpsTargetMarker(null);
   if (xmasMapObj) { xmasMapObj._xmasGpsFocusActive = false; xmasMapObj._xmasGpsFocusSnapshot = null; xmasMapObj._xmasGpsFocusTarget = null; }
   xmasSetGpsLabel(xmasG('btn'));
+  const saveButton = document.getElementById('xmasSaveLocationBtn');
+  if (saveButton) saveButton.hidden = true;
   const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
   const xToast = document.getElementById('xmasNearestToast'); if (xToast) xToast.classList.remove('show');
 }
@@ -4800,7 +4827,13 @@ function xmasSetGpsLabel(text, on) {
 function xmasUpdateGpsPanel() {
   const panel = document.getElementById('xmasGpsPanel');
   if (!panel) return;
-  if (!xmasGpsPos) { panel.innerHTML = ''; setXmasGpsTargetMarker(null); return; }
+  if (!xmasGpsPos) {
+    panel.innerHTML = '';
+    const saveButton = document.getElementById('xmasSaveLocationBtn');
+    if (saveButton) saveButton.hidden = true;
+    setXmasGpsTargetMarker(null);
+    return;
+  }
   const p = xmasGpsPos;
   const saveLocationBtn = document.getElementById('xmasSaveLocationBtn');
   if (saveLocationBtn) saveLocationBtn.hidden = !!getSavedSpot();
@@ -4814,7 +4847,7 @@ function xmasUpdateGpsPanel() {
   // Highlight the same nearest market whose distance appears below.
   const focusedTarget = xmasMapObj && xmasMapObj._xmasGpsFocusActive ? xmasMapObj._xmasGpsFocusTarget : null;
   const mapTarget = focusedTarget || (rows.length ? rows[0].t : null);
-  setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, '', mapTarget ? (mapTarget.number ?? (mapTarget.index + 1)) : null);
+  setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, mapTarget ? (mapTarget.label || '') : '', mapTarget ? (mapTarget.number ?? (mapTarget.index + 1)) : null);
   let html = rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
@@ -6136,16 +6169,28 @@ function renderPremiumFeatures(pText, t) {
   pText.innerHTML = t.premiumFeatures.map((f) => `<li>${f}</li>`).join('');
 }
 
+const MAP_EXCURSION_FILTER_LABELS = {
+  ru: { title: 'ЭКСКУРСИИ', town: 'По городу', castle: 'В замке' },
+  de: { title: 'FÜHRUNGEN', town: 'In der Stadt', castle: 'Auf der Burg' },
+  en: { title: 'TOURS', town: 'In town', castle: 'At the castle' },
+  fr: { title: 'VISITES', town: 'En ville', castle: 'Au château' },
+  nl: { title: 'RONDLEIDINGEN', town: 'Door de stad', castle: 'Op het kasteel' },
+  zh: { title: '导览', town: '城市导览', castle: '城堡导览' },
+  he: { title: 'סיורים', town: 'בעיר', castle: 'בטירה' }
+};
+function updateMapLegendLabels() {
+  const labels = MAP_EXCURSION_FILTER_LABELS[lang] || MAP_EXCURSION_FILTER_LABELS.en;
+  const title = document.getElementById('mapLegendTitle');
+  const town = document.getElementById('mapFilterTownLabel');
+  const castle = document.getElementById('mapFilterCastleLabel');
+  if (title) title.textContent = labels.title;
+  if (town) town.textContent = labels.town;
+  if (castle) castle.textContent = labels.castle;
+}
+
 function applyStaticText() {
   const t = UI[lang];
-  const legendCastleEl = document.getElementById('legendCastleLabel');
-  const legendTownEl = document.getElementById('legendTownLabel');
-  if (legendCastleEl) legendCastleEl.textContent = t.legendCastle;
-  if (legendTownEl) legendTownEl.textContent = t.legendTown;
-  const legendCafeEl = document.getElementById('legendCafeLabel');
-  const legendSouvenirEl = document.getElementById('legendSouvenirLabel');
-  if (legendCafeEl) legendCafeEl.textContent = t.legendCafe;
-  if (legendSouvenirEl) legendSouvenirEl.textContent = t.legendSouvenir;
+  updateMapLegendLabels();
 
   const pTitle = document.getElementById('premiumPopupTitle');
   const pText = document.getElementById('premiumPopupText');
@@ -6485,15 +6530,15 @@ if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView(
 function positionGpsFollowButton() {
   const button = document.getElementById('gpsFollowBtn');
   const panel = document.getElementById('gpsPanel');
-  const mapView = document.getElementById('view-map');
+  const mapView = document.querySelector('#view-map .castle-map-stage') || document.getElementById('view-map');
   if (!button || !panel || !mapView || !button.classList.contains('show')) return;
 
   // Start in the usual upper-left slot, then move only if a visible panel
   // actually occupies the same screen area.
   button.style.zIndex = '1400';
-  button.style.left = '112px';
+  button.style.left = '100px';
   button.style.right = 'auto';
-  button.style.top = '78px';
+  button.style.top = '56px';
   button.style.bottom = 'auto';
 
   if (!panel.classList.contains('show')) return;
@@ -6533,6 +6578,62 @@ function markGpsProgrammaticView() {
   if (!leafletMap) return;
   leafletMap._gpsProgrammaticView = true;
   setTimeout(() => { if (leafletMap) leafletMap._gpsProgrammaticView = false; }, 500);
+}
+
+function mapLocationMatchesFilter(castle, filter) {
+  if (!castle || typeof castle.lat !== 'number') return false;
+  if (filter === 'town') return TOWN_IDS.has(castle.id);
+  if (filter === 'castle') return !TOWN_IDS.has(castle.id);
+  return true;
+}
+
+function setMapLocationFilter(filter) {
+  if (!leafletMap) return;
+  const nextFilter = leafletMap._locationFilter === filter ? 'all' : filter;
+  leafletMap._locationFilter = nextFilter;
+
+  castles.forEach((castle, i) => {
+    const marker = leafletMap._castleMarkers && leafletMap._castleMarkers[i];
+    if (!marker) return;
+    const visible = mapLocationMatchesFilter(castle, nextFilter);
+    if (visible && !leafletMap.hasLayer(marker)) marker.addTo(leafletMap);
+    else if (!visible && leafletMap.hasLayer(marker)) leafletMap.removeLayer(marker);
+  });
+
+  if (leafletMap._castleRouteLine) {
+    leafletMap.removeLayer(leafletMap._castleRouteLine);
+    leafletMap._castleRouteLine = null;
+  }
+  const routePoints = castles.filter(c => mapLocationMatchesFilter(c, nextFilter)).map(c => [c.lat, c.lng]);
+  if (routePoints.length > 1) {
+    leafletMap._castleRouteLine = L.polyline(routePoints, {
+      color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6'
+    }).addTo(leafletMap);
+  }
+
+  const focusedIndex = leafletMap._gpsFocusTarget && leafletMap._gpsFocusTarget.index;
+  if (Number.isInteger(focusedIndex) && focusedIndex >= 0 &&
+      !mapLocationMatchesFilter(castles[focusedIndex], nextFilter)) {
+    leafletMap._gpsFocusActive = false;
+    leafletMap._gpsFocusSnapshot = null;
+    leafletMap._gpsFocusTarget = null;
+  }
+  if (selectedIndex >= 0 && !mapLocationMatchesFilter(castles[selectedIndex], nextFilter)) {
+    const panel = document.getElementById('mapPanel');
+    if (panel) panel.classList.remove('open');
+    setSelectedCastlePulse(-1);
+    selectedIndex = -1;
+  }
+
+  document.querySelectorAll('.map-legend-filter').forEach(button => {
+    const active = nextFilter !== 'all' && button.dataset.mapFilter === nextFilter;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  if (gpsActive && Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng)) {
+    updateGpsDistancePanel(gpsLastLat, gpsLastLng);
+  }
 }
 
 function initMap() {
@@ -6595,7 +6696,8 @@ function initMap() {
   });
 
   if (points.length) {
-    L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
+    leafletMap._castleRouteLine = L.polyline(points, { color: '#B5602E', weight: 2, opacity: 0.6, dashArray: '4 6' }).addTo(leafletMap);
+    leafletMap._locationFilter = 'all';
     leafletMap.fitBounds(points, { paddingTopLeft: [16, 110], paddingBottomRight: [16, 20] });
     // Reset is the third member of the same right-side control stack.
     const resetBtn = document.createElement('button');
@@ -6614,6 +6716,10 @@ function initMap() {
     });
     poiBar.appendChild(resetBtn);
   }
+
+  document.querySelectorAll('.map-legend-filter').forEach(button => {
+    button.addEventListener('click', () => setMapLocationFilter(button.dataset.mapFilter));
+  });
 
   renderPois();
 
@@ -7202,8 +7308,11 @@ const gpsToggleLabel = document.getElementById('gpsToggleLabel');
 
 function findNearestCastleIndex(lat, lng) {
   let best = -1, bestDist = Infinity;
+  const activeFilter = leafletMap && leafletMap._locationFilter || 'all';
   castles.forEach((c, i) => {
     if (typeof c.lat !== 'number') return;
+    if (activeFilter === 'town' && !TOWN_IDS.has(c.id)) return;
+    if (activeFilter === 'castle' && TOWN_IDS.has(c.id)) return;
     const d = Math.pow(c.lat - lat, 2) + Math.pow(c.lng - lng, 2);
     if (d < bestDist) { bestDist = d; best = i; }
   });
@@ -7712,6 +7821,55 @@ if ('serviceWorker' in navigator) {
   #fbCard a.fb-btn { flex: 1 1 auto; text-align: center; padding: 10px 12px; border-radius: 22px; border: 1px solid #7A1026; color: #7A1026; background: #fff; text-decoration: none; font-weight: 700; font-size: 14px; }
   #fbCard a.fb-btn.wa { background: #7A1026; color: #fff; }
   #fbCard .fb-close { position: absolute; top: 4px; right: 4px; background: rgba(122,90,42,0.10); border: 0; font-size: 28px; color: #7A5A2A; cursor: pointer; padding: 8px 12px; border-radius: 50%; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+  /* MAP NAVI accessibility: clearer scrollbars and safer finger clearance. */
+  * { scrollbar-width: thin; scrollbar-color: #FFFFFF #7A1026; }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-track { background: #7A1026; border-radius: 10px; }
+  *::-webkit-scrollbar-thumb {
+    background: #FFFFFF; border: 2px solid #7A1026; border-radius: 10px; min-height: 34px;
+  }
+  *:hover::-webkit-scrollbar { width: 14px; height: 14px; }
+  *:hover::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb:active {
+    background: #FFFFFF; border-width: 2px;
+  }
+  .content { padding-inline: var(--pad); padding-inline-end: calc(var(--pad) + 8px); }
+
+  /* Castle map legend is a separate, tappable filter panel below the map. */
+  .map-legend {
+    position: relative; top: auto; right: auto; bottom: auto; left: auto;
+    width: 100%; max-width: none; box-sizing: border-box;
+    margin: 10px 0 0; padding: 10px 12px;
+    background: rgba(246,238,221,.98); border: 1px solid var(--gold);
+    border-radius: 12px; box-shadow: 0 3px 10px rgba(90,67,39,.18);
+    font-family: var(--sans); color: var(--ink);
+  }
+  .map-legend-title {
+    margin: 0 0 8px; text-align: center; font: 800 13px/1.2 var(--sans);
+    letter-spacing: .07em; color: var(--terracotta);
+  }
+  .map-legend-filters { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .map-legend-filter {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-width: 0; min-height: 42px; padding: 7px 8px;
+    border: 1px solid var(--gold); border-radius: 10px;
+    background: rgba(255,255,255,.58); color: var(--ink);
+    font: 700 13px/1.15 var(--sans); cursor: pointer;
+  }
+  .map-legend-filter.active {
+    background: rgba(122,16,38,.10); border-color: var(--terracotta);
+    box-shadow: inset 0 0 0 1px var(--terracotta);
+  }
+  .map-legend-filter:focus-visible { outline: 3px solid #397BC4; outline-offset: 2px; }
+  .map-legend-filter .map-legend-dot { width: 18px; height: 18px; flex: 0 0 18px; }
+  .map-legend-filter .map-legend-icon { width: 20px; height: 20px; flex: 0 0 20px; }
+  .map-legend-filter .map-legend-icon img { width: 12px; height: 12px; }
+
+  /* Christmas map: keep search + GPS in one row; save the point below search. */
+  .xmas-search { width: auto !important; right: 104px !important; }
+  .xmas-gps-btn { top: 12px !important; left: auto !important; right: 12px !important; }
+  .xmas-save-location-btn { top: 56px !important; left: 12px !important; }
+  .xmas-gps-follow { top: 56px !important; left: auto !important; right: 12px !important; }
+
 </style>
 <div id="fbCard" role="dialog" aria-label="Rückmeldung" hidden style="position:fixed">
   <button class="fb-close" id="fbClose" aria-label="Schließen">×</button>
