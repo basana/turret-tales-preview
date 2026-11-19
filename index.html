@@ -4718,7 +4718,8 @@ function xmasUpdateGpsPanel() {
   const fmt = (ll) => {
     const d = distanceMeters(p.lat, p.lng, ll[0], ll[1]);
     const info = xmasTravelInfo(d);
-    return `<b>${formatDistance(d)} ${bearingCompass(p.lat, p.lng, ll[0], ll[1])}</b> <small>${d > 2000 ? '≈ ' : ''}${info.minutes} ${info.label}</small>`;
+    const direction = d > 2000 ? '' : ` ${bearingCompass(p.lat, p.lng, ll[0], ll[1])}`;
+    return `<b>${formatDistance(d)}${direction}</b> <small>${d > 2000 ? '≈ ' : ''}${info.minutes} ${info.label}</small>`;
   };
   const rows = xmasGpsTargets().map(t => ({ t, d: distanceMeters(p.lat, p.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
   // Highlight the same nearest market whose distance appears below.
@@ -6963,6 +6964,11 @@ function distanceMeters(lat1, lng1, lat2, lng2) {
 // дальше этого порога она просто скрыта, а не показывает бессмысленные десятки км.
 const GPS_DISTANCE_VISIBLE_M = 2000;
 const GPS_ARRIVED_M = 60;
+function gpsBoatTimeLabel(distanceM) {
+  const minutes = Math.max(1, Math.round((distanceM / 1000) / 12 * 60));
+  const labels = { de: 'Min. mit dem Schiff', en: 'min by boat', ru: 'мин. на корабле', fr: 'min en bateau', nl: 'min per schip', zh: '分钟乘船', he: 'דק׳ בספינה' };
+  return `≈ ${minutes} ${labels[lang] || labels.en}`;
+}
 
 // Направление (сторона света) от точки 1 к точке 2
 function bearingCompass(lat1, lng1, lat2, lng2) {
@@ -7113,8 +7119,8 @@ function updateGpsDistancePanel(lat, lng) {
       if (toast._lastId !== nc.id) {
         toast._lastId = nc.id;
         const nd = distanceMeters(lat, lng, nc.lat, nc.lng);
-        const walkMin = Math.ceil(nd * 1.3 / 75);
-        toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${walkMin} min 🚶</span>`;
+        const travelText = nd > GPS_DISTANCE_VISIBLE_M ? gpsBoatTimeLabel(nd) : `${Math.ceil(nd * 1.3 / 75)} min 🚶`;
+        toast.innerHTML = `⭐ ${nc.name}<br><span class="toast-dist">≈ ${formatDistance(nd)} · ${travelText}</span>`;
         toast.classList.add('show');
         toast.onclick = () => {
           if (leafletMap) leafletMap.setView([nc.lat, nc.lng], 17);
