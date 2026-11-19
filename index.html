@@ -303,8 +303,7 @@
   /* Красная плашка с подписью на главном рождественском фото (звезда, Zentralplatz) */
   .xmas-hero { position: relative; }
   .xmas-pin-count { display: inline-block; margin-left: 5px; min-width: 16px; padding: 0 4px; border-radius: 9px; background: #fff; color: #7A1026; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; }
-  .leaflet-tooltip.xmas-pin-label { font-size: 10px; font-weight: 600; padding: 3px 6px; line-height: 1.25; background: rgba(255,255,255,.94); border: 1px solid rgba(122,16,38,.22); border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,.18); color: #3a2a1a; }
-  .xmas-gps-label-mode .leaflet-tooltip.xmas-pin-label { display: block !important; }
+  .leaflet-tooltip.xmas-pin-label { font-size: 10px; font-weight: 600; padding: 3px 6px; line-height: 1.2; background: rgba(255,255,255,.94); border: 1px solid rgba(122,16,38,.22); border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,.18); color: #3a2a1a; max-width: 180px; white-space: normal; overflow-wrap: anywhere; text-align: center; }
   /* GPS target is identified by its pulse and number, never by a text label. */
   .gps-target-label-mode .leaflet-tooltip.gps-base-label { display: none !important; }
   .xmas-hero-caption {
@@ -1331,7 +1330,8 @@
   .xmas-map-stage .xmas-gps-label-mode .leaflet-tooltip-pane .xmas-gps-target-label {
     z-index: 9999 !important; pointer-events: none; font: 800 13px/1.2 var(--sans);
     color: #fff; background: #7A1026; border: 2px solid #fff; border-radius: 8px;
-    padding: 6px 9px; box-shadow: 0 2px 10px rgba(0,0,0,.55); opacity: 1 !important;
+    padding: 6px 9px; max-width: 190px; white-space: normal; overflow-wrap: anywhere; text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,.55); opacity: 1 !important;
   }
   @media (max-width: 360px) {
     .map-search-wrap:not(.xmas-search) { width: calc(54% - 12px); }
@@ -4509,6 +4509,9 @@ function xmasDrawMap(opts) {
   if (!el || typeof L === 'undefined') return;
   if (xmasMapObj) { xmasMapObj.remove(); xmasMapObj = null; }
   xmasMapObj = L.map(el, { scrollWheelZoom: false, zoomSnap: 0, zoomControl: false });
+  const targetPane = xmasMapObj.createPane('xmasGpsTargetPane');
+  targetPane.style.zIndex = '700';
+  targetPane.style.pointerEvents = 'auto';
   L.control.zoom({ position: 'bottomleft' }).addTo(xmasMapObj);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
   // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
@@ -4551,11 +4554,18 @@ function xmasDrawMap(opts) {
     if (xmasMapObj && xmasMapObj._xmasGpsFocusActive && xmasMapObj._xmasGpsFocusSnapshot) {
       const snap = xmasMapObj._xmasGpsFocusSnapshot;
       xmasMapObj._xmasGpsFocusActive = false; xmasMapObj._xmasGpsFocusSnapshot = null; xmasMapObj._xmasGpsFocusTarget = null;
+      xmasMapObj._xmasResetToRhine = true;
       xmasMapObj.stop(); xmasMapObj.setView(snap.center, snap.zoom, { animate: true });
       xmasUpdateGpsPanel();
       return;
     }
+    if (xmasMapObj && xmasMapObj._xmasResetToRhine) {
+      xmasMapObj._xmasResetToRhine = false;
+      renderChristmas(null);
+      return;
+    }
     resetMarketMapView();
+    if (xmasTown) xmasMapObj._xmasResetToRhine = true;
   });
   xmasMapObj._xmasMarketMarkers = [];
   opts.pins.forEach(p => {
@@ -4667,6 +4677,7 @@ function xmasBerthList() {
 function xmasEnterNearestFocus(latlng, label, number) {
   if (!xmasMapObj || !xmasGpsPos || !latlng) return;
   if (!xmasMapObj._xmasGpsFocusSnapshot) xmasMapObj._xmasGpsFocusSnapshot = { center: xmasMapObj.getCenter(), zoom: xmasMapObj.getZoom() };
+  xmasMapObj._xmasResetToRhine = false;
   xmasMapObj._xmasGpsFocusTarget = { ll: [latlng.lat, latlng.lng], label: label || '', number };
   xmasMapObj._xmasGpsFocusActive = true;
   xmasMapObj.stop();
@@ -4696,7 +4707,7 @@ function setXmasGpsTargetMarker(latlng, label, number) {
     xmasMapObj._xmasGpsTargetMarker.setZIndexOffset(1800);
     xmasMapObj._xmasGpsTargetMarker.unbindTooltip();
   } else {
-    xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: true }).addTo(xmasMapObj);
+    xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, pane: 'xmasGpsTargetPane', zIndexOffset: 1800, interactive: true }).addTo(xmasMapObj);
     xmasMapObj._xmasGpsTargetMarker.on('click', e => {
       if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
       xmasEnterNearestFocus(
@@ -4836,7 +4847,7 @@ function xmasUpdateGpsPanel() {
   }
   const p = xmasGpsPos;
   const saveLocationBtn = document.getElementById('xmasSaveLocationBtn');
-  if (saveLocationBtn) saveLocationBtn.hidden = !!getSavedSpot();
+  if (saveLocationBtn) saveLocationBtn.hidden = false;
   const fmt = (ll) => {
     const d = distanceMeters(p.lat, p.lng, ll[0], ll[1]);
     const info = xmasTravelInfo(d);
@@ -4862,8 +4873,6 @@ function xmasUpdateGpsPanel() {
       html += `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
     }
     html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
-  } else {
-    html += `<button class="xmas-gps-save" id="xmasShipSave">${xmasG('saveShip')}</button>`;
   }
   html += `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>`;
   panel.innerHTML = html;
@@ -4874,13 +4883,6 @@ function xmasUpdateGpsPanel() {
       const lng = parseFloat(row.dataset.lng);
       if (xmasMapObj && !isNaN(lat)) xmasMapObj.setView([lat, lng], 17, { animate: true });
     });
-  });
-  const save = document.getElementById('xmasShipSave');
-  if (save) save.addEventListener('click', () => {
-    const label = window.prompt(xmasG('shipPrompt'), xmasG('shipDefault'));
-    if (label === null) return;
-    setSavedSpot({ lat: p.lat, lng: p.lng, label: (label || xmasG('shipDefault')).trim() });
-    xmasDrawGpsLayers(); xmasUpdateGpsPanel();
   });
   const clr = document.getElementById('xmasShipClear');
   if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
@@ -7865,7 +7867,7 @@ if ('serviceWorker' in navigator) {
   .map-legend-filter .map-legend-icon img { width: 12px; height: 12px; }
 
   /* Christmas map: keep search + GPS in one row; save the point below search. */
-  .xmas-search { width: auto !important; right: 104px !important; }
+  .xmas-search { width: auto !important; right: 104px !important; max-width: min(58vw, 420px); }
   .xmas-gps-btn { top: 12px !important; left: auto !important; right: 12px !important; }
   .xmas-save-location-btn { top: 56px !important; left: 12px !important; }
   .xmas-gps-follow { top: 56px !important; left: auto !important; right: 12px !important; }
