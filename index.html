@@ -305,6 +305,9 @@
   .xmas-hero { position: relative; }
   .xmas-pin-count { display: inline-block; margin-left: 5px; min-width: 16px; padding: 0 4px; border-radius: 9px; background: #fff; color: #7A1026; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; }
   .leaflet-tooltip.xmas-pin-label { font-size: 8px; font-weight: 400; padding: 1px 4px; line-height: 1.2; background: rgba(255,255,255,.85); border: none; box-shadow: none; color: #3a2a1a; }
+  .xmas-gps-label-mode .leaflet-tooltip.xmas-pin-label { display: none !important; }
+  .leaflet-tooltip.xmas-gps-target-label, .leaflet-tooltip.gps-target-name-label { background: #7A1026; border: 1px solid #fff; border-radius: 6px; color: #fff; font: 700 12px/1.2 system-ui,sans-serif; padding: 5px 8px; box-shadow: 0 2px 7px rgba(0,0,0,.35); }
+  .gps-target-label-mode .leaflet-tooltip.gps-base-label { display: none !important; }
   .xmas-hero-caption {
     position: absolute; right: 0; top: 86%; background: #7A1026; color: #fff;
     font-family: var(--sans); font-size: 13px; font-weight: 400; line-height: 1.2;
@@ -4517,13 +4520,26 @@ function xmasDrawMap(opts) {
     xmasMapObj.invalidateSize(true);
   };
   const resetBtn = xmasMapObj.getContainer().querySelector('#xResetBtn');
-  if (resetBtn) resetBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); resetMarketMapView(); });
+  if (resetBtn) resetBtn.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    if (xmasMapObj && xmasMapObj._xmasGpsFocusActive && xmasMapObj._xmasGpsFocusSnapshot) {
+      const snap = xmasMapObj._xmasGpsFocusSnapshot;
+      xmasMapObj._xmasGpsFocusActive = false; xmasMapObj._xmasGpsFocusSnapshot = null;
+      xmasMapObj.stop(); xmasMapObj.setView(snap.center, snap.zoom, { animate: true });
+      return;
+    }
+    resetMarketMapView();
+  });
   opts.pins.forEach(p => {
     const m = L.marker(p.ll, { icon: L.divIcon({ className: '', html: p.html, iconSize: null, iconAnchor: p.anchor || [14, 14] }) }).addTo(xmasMapObj);
     if (p.onClick) m.on('click', p.onClick);
     if (p.label) m.bindTooltip(String(p.label).split(' (')[0], { permanent: true, direction: 'bottom', offset: [0, 10], className: 'xmas-pin-label' });
   });
   xmasDrawGpsLayers();
+  if (xmasGpsPos) {
+    const gpsTargets = xmasGpsTargets().map(t => ({ t, d: distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
+    if (gpsTargets.length) setXmasGpsTargetMarker(gpsTargets[0].t.ll, gpsTargets[0].t.label);
+  }
   const follow = document.createElement('button');
   follow.type = 'button'; follow.className = 'xmas-gps-follow'; follow.id = 'xmasGpsFollowBtn';
   follow.textContent = '↻ Follow'; follow.setAttribute('aria-label', 'Show my location and nearest market');
@@ -4603,40 +4619,53 @@ function xmasGpsBtnHtml() {
   return `<button class="xmas-gps-btn${xmasGpsWatch !== null ? ' active' : ''}" id="xmasGpsBtn">📍 ${xmasG('btn')}${lock}</button>`;
 }
 function xmasGpsTargets() {
-  if (!xmasTown) return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k]).flatMap(k => {
+  // Every marker gets its own market/place name, not a repeated city heading.
+  return XMAS_ORDER.filter(k => XMAS_CITY[k] && XMAS_GEO[k] && (!xmasTown || k === xmasTown)).flatMap(k => {
     const c = XMAS_CITY[k];
     const tx = c.text[xmasLang] || c.text.en || c.text.de;
     const cityName = c.name[xmasLang] || c.name.de;
-    return XMAS_GEO[k].pins.map((ll, i) => ({ label: `${(tx.cards[i] && tx.cards[i].title) || tx.title} · ${cityName}`, ll }));
+    return XMAS_GEO[k].pins.map((ll, i) => ({
+      label: (tx.cards && tx.cards[i] && tx.cards[i].title) || cityName,
+      city: cityName, townKey: k, index: i, ll
+    }));
   });
-  const c = XMAS_CITY[xmasTown];
-  const tx = c.text[xmasLang] || c.text.en || c.text.de;
-  return XMAS_GEO[xmasTown].pins.map((ll, i) => ({ label: (tx.cards[i] && tx.cards[i].title) || tx.title, ll }));
 }
 function xmasBerthList() {
   return xmasTown ? (VIKING_BERTHS[xmasTown] || []).filter(b => b.ll) : [];
 }
 
-function setXmasGpsTargetMarker(latlng) {
+function xmasEnterNearestFocus(latlng) {
+  if (!xmasMapObj || !xmasGpsPos || !latlng) return;
+  if (!xmasMapObj._xmasGpsFocusSnapshot) xmasMapObj._xmasGpsFocusSnapshot = { center: xmasMapObj.getCenter(), zoom: xmasMapObj.getZoom() };
+  xmasMapObj._xmasGpsFocusActive = true;
+  xmasMapObj.stop();
+  xmasMapObj.setView(latlng, 18, { animate: true });
+}
+function setXmasGpsTargetMarker(latlng, label) {
   if (!xmasMapObj || typeof L === 'undefined') return;
+  const container = xmasMapObj.getContainer();
   if (!latlng) {
+    container.classList.remove('xmas-gps-label-mode');
     if (xmasMapObj._xmasGpsTargetMarker) xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetMarker);
     xmasMapObj._xmasGpsTargetMarker = null;
     if (xmasMapObj._xmasGpsTargetLine) xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetLine);
     xmasMapObj._xmasGpsTargetLine = null;
     return;
   }
-  const icon = L.divIcon({
-    className: '',
-    html: '<div class="gps-target-pulse" aria-label="Nearest market"></div>',
-    iconSize: [76, 76], iconAnchor: [38, 38]
-  });
+  container.classList.add('xmas-gps-label-mode');
+  const icon = L.divIcon({ className: '', html: '<div class="gps-target-pulse" aria-label="Nearest market"></div>', iconSize: [76, 76], iconAnchor: [38, 38] });
   if (xmasMapObj._xmasGpsTargetMarker) {
     xmasMapObj._xmasGpsTargetMarker.setLatLng(latlng);
     xmasMapObj._xmasGpsTargetMarker.setIcon(icon);
     xmasMapObj._xmasGpsTargetMarker.setZIndexOffset(1800);
+    if (label) xmasMapObj._xmasGpsTargetMarker.setTooltipContent(label);
   } else {
-    xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: false }).addTo(xmasMapObj);
+    xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: true }).addTo(xmasMapObj);
+    xmasMapObj._xmasGpsTargetMarker.bindTooltip(label || 'Nearest market', { permanent: true, direction: 'top', offset: [0, -34], className: 'xmas-gps-target-label' });
+    xmasMapObj._xmasGpsTargetMarker.on('click', e => {
+      if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+      xmasEnterNearestFocus(xmasMapObj._xmasGpsTargetMarker.getLatLng());
+    });
   }
   if (xmasGpsPos) {
     const from = [xmasGpsPos.lat, xmasGpsPos.lng];
@@ -4706,6 +4735,7 @@ function xmasStopGps() {
   if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
   xmasGpsMarker = null;
   setXmasGpsTargetMarker(null);
+  if (xmasMapObj) { xmasMapObj._xmasGpsFocusActive = false; xmasMapObj._xmasGpsFocusSnapshot = null; }
   xmasSetGpsLabel(xmasG('btn'));
   const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
   const xToast = document.getElementById('xmasNearestToast'); if (xToast) xToast.classList.remove('show');
@@ -4733,7 +4763,7 @@ function xmasUpdateGpsPanel() {
   };
   const rows = xmasGpsTargets().map(t => ({ t, d: distanceMeters(p.lat, p.lng, t.ll[0], t.ll[1]) })).sort((a, b) => a.d - b.d);
   // Highlight the same nearest market whose distance appears below.
-  setXmasGpsTargetMarker(rows.length ? rows[0].t.ll : null);
+  setXmasGpsTargetMarker(rows.length ? rows[0].t.ll : null, rows.length ? rows[0].t.label : null);
   let html = rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
@@ -4888,8 +4918,8 @@ function renderChristmas(townKey) {
           const isAngel = XMAS_ANGEL_PIN[k] === i;
           return {
             ll,
-            html: `<div class="xmas-overview-market"><span class="xmas-overview-num">${i + 1}</span><span class="xmas-overview-name" title="${marketName}">${marketName}</span><span class="xmas-overview-tree">${isAngel ? '<img src="schaengel-angel.svg" alt="">' : '🎄'}</span></div>`,
-            anchor: [176, 18],
+            html: `<div class="xmas-overview-market"><span class="xmas-overview-num">${i + 1}</span><span class="xmas-overview-tree">${isAngel ? '<img src="schaengel-angel.svg" alt="">' : '🎄'}</span></div>`,
+            anchor: [60, 18],
             onClick: () => renderChristmas(k)
           };
         });
@@ -6468,7 +6498,7 @@ function initMap() {
       showMapPanel(i);
       if (gpsActive && gpsLastLat !== null) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
     });
-    marker.bindTooltip(c.name);
+    marker.bindTooltip(c.name, { className: 'gps-base-label' });
   });
 
   if (points.length) {
@@ -6481,7 +6511,13 @@ function initMap() {
     resetBtn.innerHTML = '⤢';
     resetBtn.title = 'Full map / Gesamte Karte';
     resetBtn.setAttribute('aria-label', 'Show full map');
-    resetBtn.addEventListener('click', () => leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] }));
+    resetBtn.addEventListener('click', () => {
+      if (leafletMap._gpsFocusActive && leafletMap._gpsFocusSnapshot) {
+        const snap = leafletMap._gpsFocusSnapshot;
+        leafletMap._gpsFocusActive = false; leafletMap._gpsFocusSnapshot = null;
+        leafletMap.stop(); leafletMap.setView(snap.center, snap.zoom, { animate: true });
+      } else leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
+    });
     poiBar.appendChild(resetBtn);
   }
 
@@ -7011,26 +7047,33 @@ function clearSavedSpot() {
   try { localStorage.removeItem(SAVED_SPOT_KEY); } catch (e) {}
 }
 
-function setGpsTargetMarker(mapObj, latlng) {
+function setGpsTargetMarker(mapObj, latlng, label) {
   if (!mapObj || typeof L === 'undefined') return;
   if (!latlng) {
+    mapObj.getContainer().classList.remove('gps-target-label-mode');
     if (mapObj._gpsTargetMarker) mapObj.removeLayer(mapObj._gpsTargetMarker);
     mapObj._gpsTargetMarker = null;
     if (mapObj._gpsTargetLine) mapObj.removeLayer(mapObj._gpsTargetLine);
     mapObj._gpsTargetLine = null;
     return;
   }
-  const icon = L.divIcon({
-    className: '',
-    html: '<div class="gps-target-pulse" aria-label="Nearest destination"></div>',
-    iconSize: [76, 76], iconAnchor: [38, 38]
-  });
+  mapObj.getContainer().classList.add('gps-target-label-mode');
+  const icon = L.divIcon({ className: '', html: '<div class="gps-target-pulse" aria-label="Nearest destination"></div>', iconSize: [76, 76], iconAnchor: [38, 38] });
   if (mapObj._gpsTargetMarker) {
     mapObj._gpsTargetMarker.setLatLng(latlng);
     mapObj._gpsTargetMarker.setIcon(icon);
     mapObj._gpsTargetMarker.setZIndexOffset(1800);
+    if (label) mapObj._gpsTargetMarker.setTooltipContent(label);
   } else {
-    mapObj._gpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: false }).addTo(mapObj);
+    mapObj._gpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: true }).addTo(mapObj);
+    mapObj._gpsTargetMarker.bindTooltip(label || 'Nearest destination', { permanent: true, direction: 'top', offset: [0, -34], className: 'gps-target-name-label' });
+    mapObj._gpsTargetMarker.on('click', e => {
+      if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+      if (!gpsActive) return;
+      if (!mapObj._gpsFocusSnapshot) mapObj._gpsFocusSnapshot = { center: mapObj.getCenter(), zoom: mapObj.getZoom() };
+      mapObj._gpsFocusActive = true; mapObj.stop();
+      mapObj.setView(mapObj._gpsTargetMarker.getLatLng(), 17, { animate: true });
+    });
   }
   if (typeof gpsActive !== 'undefined' && gpsActive && Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng)) {
     const from = [gpsLastLat, gpsLastLng];
@@ -7055,7 +7098,7 @@ function updateGpsDistancePanel(lat, lng) {
   if (targetIndex >= 0) {
     const c = castles[targetIndex];
     // Highlight the exact castle whose distance is being shown, even on the overview map.
-    setGpsTargetMarker(leafletMap, [c.lat, c.lng]);
+    setGpsTargetMarker(leafletMap, [c.lat, c.lng], c.name);
     const d = distanceMeters(lat, lng, c.lat, c.lng);
     if (useSelected || d <= GPS_DISTANCE_VISIBLE_M) {
       const valueEl = document.getElementById('gpsDistanceValue');
