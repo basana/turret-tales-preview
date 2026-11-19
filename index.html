@@ -4416,7 +4416,7 @@ const XMAS_ANGEL_PIN = { koblenz: 0 };
 const XMAS_MAIN_PIN = { lahnstein: 0 };
 let xmasMapObj = null;
 let xmasPendingFocus = null;
-const XMAS_SEARCH_PH = { de: 'Markt oder Stadt suchen …', en: 'Search a market or town …', fr: 'Chercher un marché ou une ville …', nl: 'Zoek een markt of stad …', ru: 'Поиск рынка или города …' };
+const XMAS_SEARCH_PH = { de: 'Markt oder Stadt suchen …', en: 'Search a market or town …', fr: 'Chercher un marché ou une ville …', nl: 'Zoek een markt of stad …', ru: 'Поиск рынка или города …', zh: '搜索市集或城镇…', he: 'חיפוש שוק או עיר…' };
 // Alle Suchbegriffe: Städte und einzelne Märkte (Titel der Karten)
 function xmasSearchEntries() {
   const out = [];
@@ -5209,6 +5209,7 @@ function wineMapTools(map, items) {
 
   // Поиск: точное имя из подсказок или Enter по части названия → карта и страница к карточке
   const input = bar.querySelector('#wmSearch');
+  input.placeholder = (UI[lang] || UI.en).mapSearchPlaceholder || 'Search';
   const pick = it => { map.setView(it.ll, 16); if (it.go) it.go(); };
   input.addEventListener('input', () => { const it = items.find(i => i.name === input.value); if (it) pick(it); });
   input.addEventListener('keydown', e => {
@@ -5242,9 +5243,9 @@ function wineMapTools(map, items) {
     if (!lastUser) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
     const near = items.map(it => ({ it, d: dist(lastUser, it.ll) })).sort((a, b) => a.d - b.d)[0];
     let html = '';
-    if (near) html += `<div data-go="${items.indexOf(near.it)}" style="${CARD};cursor:pointer"><div style="font-weight:700;font-size:15px">≈ ${fmtD(near.d)}</div><div>zu ${near.it.name}</div></div>`;
+    if (near) html += `<div data-go="${items.indexOf(near.it)}" style="${CARD};cursor:pointer"><div style="font-weight:700;font-size:15px">≈ ${fmtD(near.d)}</div><div>${(UI[lang] || UI.en).gpsDistanceTo(near.it.name)}</div></div>`;
     const s = getSpot();
-    if (s) html += `<div style="${CARD}"><div style="font-weight:700;font-size:15px">≈ ${fmtD(dist(lastUser, [s.lat, s.lng]))}</div><div>zu ${s.label || 'Mein Punkt'} <button type="button" data-clear="1" style="border:none;background:rgba(90,67,39,.12);border-radius:50%;width:20px;height:20px;cursor:pointer;margin-left:4px">✕</button></div></div>`;
+    if (s) html += `<div style="${CARD}"><div style="font-weight:700;font-size:15px">≈ ${fmtD(dist(lastUser, [s.lat, s.lng]))}</div><div>${(UI[lang] || UI.en).gpsSpotTo(s.label || (UI[lang] || UI.en).gpsSaveSpotDefault)} <button type="button" data-clear="1" style="border:none;background:rgba(90,67,39,.12);border-radius:50%;width:20px;height:20px;cursor:pointer;margin-left:4px">✕</button></div></div>`;
     html += `<button type="button" data-save="1" style="${CARD};position:absolute;top:-66px;left:100px;min-height:36px;white-space:nowrap;padding:7px 10px;font-weight:700;cursor:pointer;text-align:left">📌 ${UI[lang].gpsSaveSpot}</button>`;
     panel.innerHTML = html;
     panel.style.display = 'flex';
@@ -5253,7 +5254,7 @@ function wineMapTools(map, items) {
     const t = e.target.closest && e.target.closest('[data-go],[data-save],[data-clear]');
     if (!t) return;
     if (t.dataset.go !== undefined) pick(items[+t.dataset.go]);
-    else if (t.dataset.save) { if (lastUser) { setSpot({ lat: lastUser[0], lng: lastUser[1], label: UI[lang].gpsSaveSpotDefault }); drawSpot(); renderPanel(); } }
+    else if (t.dataset.save) { if (lastUser) { setSpot({ lat: lastUser[0], lng: lastUser[1], label: (UI[lang] || UI.en).gpsSaveSpotDefault }); drawSpot(); renderPanel(); } }
     else if (t.dataset.clear) { setSpot(null); drawSpot(); renderPanel(); }
   });
 
@@ -5271,7 +5272,7 @@ function wineMapTools(map, items) {
     userLayer = null; fitted = false; lastUser = null; setOn(false); renderPanel();
   };
   const start = () => {
-    if (!navigator.geolocation) { alert('GPS nicht verfügbar'); return; }
+    if (!navigator.geolocation) { alert((UI[lang] || UI.en).gpsError); return; }
     setOn(true);
     watchId = navigator.geolocation.watchPosition(pos => {
       const user = [pos.coords.latitude, pos.coords.longitude];
@@ -5295,15 +5296,21 @@ function wineMapTools(map, items) {
         map.panTo(user);
       }
       renderPanel();
-    }, () => { alert('GPS nicht verfügbar'); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
+    }, () => { alert((UI[lang] || UI.en).gpsError); stop(); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 });
   };
   gps.addEventListener('click', () => (watchId === null ? start() : stop()));
   setOn(false);
   drawSpot();
+  map._wineRefreshLanguage = () => {
+    input.placeholder = (UI[lang] || UI.en).mapSearchPlaceholder || 'Search';
+    if (lastUser) renderPanel();
+    setOn(watchId !== null);
+  };
 }
 function wineMoreLink(w) {
   const slug = /Kröber/.test(w.name) ? 'kroeber' : /Richter/.test(w.name) ? 'richter' : null;
-  return slug ? ` <a class="winery-more" href="weingut-${slug}.html">Mehr →</a>` : '';
+  const more = ({ de: 'Mehr', en: 'More', fr: 'Plus', nl: 'Meer', ru: 'Подробнее', zh: '更多', he: 'עוד' })[xmasLang] || 'More';
+  return slug ? ` <a class="winery-more" href="weingut-${slug}.html">${more} →</a>` : '';
 }
 function renderWine() {
   const el = document.getElementById('view-wine');
@@ -5346,6 +5353,29 @@ function renderWine() {
   });
   wineMapTools(xmasWineMapObj, WINEMAKERS.map((w, i) => ({ name: w.name, ll: w.ll, go: () => { const c = document.querySelectorAll('#view-wine .wine-list > .route-card')[i]; if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } })).filter(x => x.ll));
 }
+function refreshWineLanguage() {
+  const el = document.getElementById('view-wine');
+  if (!el) return;
+  const wui = WINE_UI[xmasLang] || WINE_UI.en;
+  const title = el.querySelector('h2.castle-name');
+  const intro = el.querySelector('.xmas-intro');
+  if (title) title.textContent = wui.title;
+  if (intro) intro.textContent = wui.intro;
+  const cards = el.querySelectorAll('.wine-list > .route-card');
+  WINEMAKERS.forEach((w, i) => {
+    const card = cards[i];
+    if (!card) return;
+    if (!w.name) {
+      const placeholder = card.querySelector('.xmas-ph');
+      if (placeholder) placeholder.textContent = wui.ph;
+      return;
+    }
+    const description = card.querySelector('.food-mia-text p:not(.xmas-meta)');
+    if (description) description.innerHTML = ((w.text && (w.text[xmasLang] || w.text.en)) || '') + wineMoreLink(w);
+  });
+  if (xmasWineMapObj && typeof xmasWineMapObj._wineRefreshLanguage === 'function') xmasWineMapObj._wineRefreshLanguage();
+}
+
 function switchView(viewName) {
   const prevView = currentView;
   currentView = viewName;
@@ -5849,7 +5879,7 @@ function renderQuickLinksText() {
   xmasWhereUpdate();
   xmasSyncLangFromApp();
   xmasSpeechRender();
-  setLbl('qlChristmasLabel', lang === 'ru' ? 'Рождественские рынки' : 'Christmas markets');
+  setLbl('qlChristmasLabel', ({ de: 'Weihnachtsmärkte', en: 'Christmas markets', fr: 'Marchés de Noël', nl: 'Kerstmarkten', ru: 'Рождественские рынки', zh: '圣诞集市', he: 'שווקי חג המולד' })[lang] || 'Christmas markets');
   xmasHeroCaption();
   applyXmasHome();
   setLbl('qlToursLabel', t.qlTours);
@@ -5910,7 +5940,7 @@ const qlLocationsBtn = document.getElementById('qlLocations');
 if (qlLocationsBtn) qlLocationsBtn.addEventListener('click', () => switchView('castles'));
 function xmasSyncLangFromApp() {
   if (typeof xmasLang === 'undefined') return;
-  const next = ['de', 'fr', 'nl', 'en', 'ru'].includes(lang) ? lang : 'en';
+  const next = SUPPORTED_LANGS.includes(lang) ? lang : 'en';
   if (next === xmasLang) return;
   xmasLang = next;
   try { localStorage.setItem('xmasLang', xmasLang); } catch (e) {}
@@ -5918,14 +5948,22 @@ function xmasSyncLangFromApp() {
   if (v && v.classList.contains('active')) renderChristmas();
 }
 function xmasWhereUpdate() {
-  const t = document.getElementById('xmasWhereTitle');
-  if (!t) return;
-  const ru = lang === 'ru';
-  t.textContent = ru ? 'Где здесь рынки?' : 'Where are the markets?';
-  document.getElementById('xmasWhereText').textContent = ru
-    ? 'Карта рождественских рынков Среднего Рейна: города, рынки и причалы Viking. Включите GPS, и увидите расстояние до рынка и до корабля.'
-    : 'Map of the Christmas markets on the Middle Rhine: towns, markets and Viking piers. Turn on GPS to see the distance to a market and to your ship.';
-  document.getElementById('xmasWhereBtn').textContent = ru ? 'Открыть карту рынков →' : 'Open the market map →';
+  const copy = {
+    de: ['Wo sind die Märkte?', 'Karte der Weihnachtsmärkte am Mittelrhein: Städte, Märkte und Anlegestellen. Aktivieren Sie GPS, um die Entfernung zum Markt und zu Ihrem Schiff zu sehen.', 'Marktkarte öffnen →'],
+    en: ['Where are the markets?', 'Map of the Christmas markets on the Middle Rhine: towns, markets and piers. Turn on GPS to see the distance to a market and to your ship.', 'Open the market map →'],
+    fr: ['Où sont les marchés ?', 'Carte des marchés de Noël du Rhin moyen : villes, marchés et débarcadères. Activez le GPS pour voir la distance jusqu’au marché et à votre bateau.', 'Ouvrir la carte des marchés →'],
+    nl: ['Waar zijn de markten?', 'Kaart van de kerstmarkten aan de Midden-Rijn: steden, markten en aanlegplaatsen. Schakel GPS in om de afstand tot een markt en uw schip te zien.', 'Open de marktkaart →'],
+    ru: ['Где здесь рынки?', 'Карта рождественских рынков Среднего Рейна: города, рынки и причалы. Включите GPS, чтобы увидеть расстояние до рынка и корабля.', 'Открыть карту рынков →'],
+    zh: ['集市在哪里？', '中莱茵河圣诞集市地图：城镇、集市和游船码头。开启 GPS，即可查看到集市和游船的距离。', '打开集市地图 →'],
+    he: ['איפה נמצאים השווקים?', 'מפת שווקי חג המולד בריין התיכון: ערים, שווקים ומעגנים. הפעילו GPS כדי לראות את המרחק לשוק ולספינה שלכם.', 'פתיחת מפת השווקים ←']
+  };
+  const t = copy[lang] || copy.en;
+  const title = document.getElementById('xmasWhereTitle');
+  const text = document.getElementById('xmasWhereText');
+  const button = document.getElementById('xmasWhereBtn');
+  if (title) title.textContent = t[0];
+  if (text) text.textContent = t[1];
+  if (button) button.textContent = t[2];
 }
 const xmasWhereBtnEl = document.getElementById('xmasWhereBtn');
 if (xmasWhereBtnEl) xmasWhereBtnEl.addEventListener('click', () => { xmasTown = null; switchView('christmas'); });
@@ -6721,7 +6759,7 @@ renderMapSearchOptions();
   const ticker = document.getElementById('mapSearchTicker');
   if (!input || !ticker) return;
   const t = UI[lang] || UI.en;
-  const items = t.mapSearchTicker || [];
+  let items = t.mapSearchTicker || [];
   if (!items.length) return;
   let idx = 0, timer = null;
   function show() {
@@ -6738,6 +6776,12 @@ renderMapSearchOptions();
     clearInterval(timer); timer = null;
     ticker.style.display = 'none';
   }
+  window.refreshMapSearchTicker = () => {
+    items = (UI[lang] || UI.en).mapSearchTicker || [];
+    idx = 0;
+    if (!input.value && document.activeElement !== input && items.length) { ticker.style.display = ''; show(); }
+    else ticker.style.display = 'none';
+  };
   input.addEventListener('focus', stop);
   input.addEventListener('blur', () => { if (!input.value) start(); });
   input.addEventListener('input', () => {
@@ -6758,22 +6802,81 @@ if (ruTempDisabled) {
   document.querySelectorAll('[data-lang="ru"]').forEach(b => { b.style.display = 'none'; });
 }
 
+function refreshChristmasViewForLanguage() {
+  const oldMap = xmasMapObj;
+  const mapState = oldMap ? {
+    center: oldMap.getCenter(), zoom: oldMap.getZoom(),
+    gpsFocusActive: !!oldMap._xmasGpsFocusActive,
+    gpsFocusSnapshot: oldMap._xmasGpsFocusSnapshot || null,
+    gpsFocusTarget: oldMap._xmasGpsFocusTarget || null,
+    gpsFitDone: !!oldMap._xmasGpsFitDone,
+    poiGpsZoomed: !!oldMap._poiGpsZoomed,
+    poiFocusActive: !!oldMap._poiFocusActive
+  } : null;
+  const hadApo = !!xmasApoLayer, hadWc = !!xmasWcLayer;
+  const scrollBox = document.querySelector('.content');
+  const scrollTop = scrollBox ? scrollBox.scrollTop : 0;
+  renderChristmas();
+  if (xmasMapObj && (hadApo || hadWc)) {
+    xmasApoLayer = null; xmasWcLayer = null;
+    if (hadApo) {
+      toggleXmasPoiLayer('apotheke');
+      xmasMapObj.getContainer().querySelector('.poi-toggle-btn.apotheke')?.classList.add('active');
+    }
+    if (hadWc) {
+      toggleXmasPoiLayer('wc');
+      xmasMapObj.getContainer().querySelector('.poi-toggle-btn.wc')?.classList.add('active');
+    }
+  }
+  if (mapState && xmasMapObj) {
+    xmasMapObj.setView(mapState.center, mapState.zoom, { animate: false });
+    xmasMapObj._xmasGpsFocusActive = mapState.gpsFocusActive;
+    xmasMapObj._xmasGpsFocusSnapshot = mapState.gpsFocusSnapshot;
+    xmasMapObj._xmasGpsFocusTarget = mapState.gpsFocusTarget;
+    xmasMapObj._xmasGpsFitDone = mapState.gpsFitDone;
+    xmasMapObj._poiGpsZoomed = mapState.poiGpsZoomed;
+    xmasMapObj._poiFocusActive = mapState.poiFocusActive;
+    if (mapState.gpsFocusActive && mapState.gpsFocusTarget) {
+      setXmasGpsTargetMarker(mapState.gpsFocusTarget.ll, '', mapState.gpsFocusTarget.number);
+    }
+  }
+  if (scrollBox) scrollBox.scrollTop = scrollTop;
+}
+
 function setLang(newLang) {
   if (ruTempDisabled && newLang === 'ru') return;
   lang = newLang;
-  // Язык шапки — один и тот же для всех экранов (в том числе для рождественской карты и вкладки Food & Drinks)
-  if (['de', 'fr', 'nl', 'en', 'ru', 'zh', 'he'].includes(newLang)) xmasLang = newLang;
+  if (SUPPORTED_LANGS.includes(newLang)) xmasLang = newLang;
   document.documentElement.dir = (newLang === 'he') ? 'rtl' : 'ltr';
   try { localStorage.setItem('rhineGuideLang', lang); } catch (e) {}
   document.querySelectorAll('.pill-btn[data-lang]').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
   document.querySelectorAll('.splash-lang-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
+
+  // Обновляем данные разделов и общие подписи, затем перерисовываем именно открытый экран.
   renderGuide();
   renderCastlesList();
   renderLegendsList();
   renderRouteList();
   renderInfo();
+  applyStaticText();
+  if (window.refreshMapSearchTicker) window.refreshMapSearchTicker();
+
+  if (currentView === 'christmas') refreshChristmasViewForLanguage();
+  else if (currentView === 'food') renderFood();
+  else if (currentView === 'wine') refreshWineLanguage();
+  else if (currentView === 'links') renderLinks();
+  else if (currentView === 'tours') renderTours();
+  else if (currentView === 'map') {
+    const mapPanel = document.getElementById('mapPanel');
+    if (mapPanel && mapPanel.classList.contains('open') && selectedIndex >= 0) showMapPanel(selectedIndex);
+    if (gpsActive && Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng)) updateGpsDistancePanel(gpsLastLat, gpsLastLng);
+  }
+
   if (typeof applyXmasHome === 'function') applyXmasHome();
-  if (document.getElementById('helpBubble').classList.contains('show')) renderHelpBubbleText(document.getElementById('helpBubble').dataset.mode);
+  const helpBubble = document.getElementById('helpBubble');
+  if (helpBubble && helpBubble.classList.contains('show')) renderHelpBubbleText(helpBubble.dataset.mode);
+  const foodPromo = document.getElementById('foodPromo');
+  if (foodPromo && !foodPromo.hidden && typeof renderFoodPromoText === 'function') renderFoodPromoText();
 }
 
 document.querySelectorAll('.pill-btn[data-lang]').forEach(btn => {
