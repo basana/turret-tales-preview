@@ -172,8 +172,9 @@
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
   .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
   .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
-  .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .xmas-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
   .xmas-chip { border: 1px solid #7A1026; background: transparent; color: #7A1026; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+  .xmas-choose-market { margin-left: auto; padding: 4px 8px; color: #7A1026; font: italic 15px 'EB Garamond', serif; white-space: nowrap; }
   .xmas-chip.active { background: #7A1026; color: #fff; }
   .xmas-photo { min-height: 140px; border: 1.5px dashed #c8a878; border-radius: 10px; margin: 8px 0; background: rgba(245,236,214,0.6); }
   .xmas-card { margin-bottom: 14px; }
@@ -4621,6 +4622,8 @@ function setXmasGpsTargetMarker(latlng) {
   if (!latlng) {
     if (xmasMapObj._xmasGpsTargetMarker) xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetMarker);
     xmasMapObj._xmasGpsTargetMarker = null;
+    if (xmasMapObj._xmasGpsTargetLine) xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetLine);
+    xmasMapObj._xmasGpsTargetLine = null;
     return;
   }
   const icon = L.divIcon({
@@ -4634,6 +4637,13 @@ function setXmasGpsTargetMarker(latlng) {
     xmasMapObj._xmasGpsTargetMarker.setZIndexOffset(1800);
   } else {
     xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: false }).addTo(xmasMapObj);
+  }
+  if (xmasGpsPos) {
+    const from = [xmasGpsPos.lat, xmasGpsPos.lng];
+    if (xmasMapObj._xmasGpsTargetLine) xmasMapObj._xmasGpsTargetLine.setLatLngs([from, latlng]);
+    else xmasMapObj._xmasGpsTargetLine = L.polyline([from, latlng], { color: '#7A1026', weight: 4, opacity: 0.9, dashArray: '2 9', lineCap: 'round', interactive: false }).addTo(xmasMapObj);
+  } else if (xmasMapObj._xmasGpsTargetLine) {
+    xmasMapObj.removeLayer(xmasMapObj._xmasGpsTargetLine); xmasMapObj._xmasGpsTargetLine = null;
   }
 }
 
@@ -4807,13 +4817,13 @@ function renderChristmas(townKey) {
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
   const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
   const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
-    `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
+    `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('') + (!xmasTown ? `<span class="xmas-choose-market">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</span>` : '');
   const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveLocation')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml()) + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
   } else if (!xmasTown) {
-    body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + mapHtml;
+    body = mapHtml;
   } else {
     const c = XMAS_CITY[xmasTown];
     const TX = T_(c.text);
@@ -7006,6 +7016,8 @@ function setGpsTargetMarker(mapObj, latlng) {
   if (!latlng) {
     if (mapObj._gpsTargetMarker) mapObj.removeLayer(mapObj._gpsTargetMarker);
     mapObj._gpsTargetMarker = null;
+    if (mapObj._gpsTargetLine) mapObj.removeLayer(mapObj._gpsTargetLine);
+    mapObj._gpsTargetLine = null;
     return;
   }
   const icon = L.divIcon({
@@ -7019,6 +7031,13 @@ function setGpsTargetMarker(mapObj, latlng) {
     mapObj._gpsTargetMarker.setZIndexOffset(1800);
   } else {
     mapObj._gpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: false }).addTo(mapObj);
+  }
+  if (typeof gpsActive !== 'undefined' && gpsActive && Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng)) {
+    const from = [gpsLastLat, gpsLastLng];
+    if (mapObj._gpsTargetLine) mapObj._gpsTargetLine.setLatLngs([from, latlng]);
+    else mapObj._gpsTargetLine = L.polyline([from, latlng], { color: '#7A1026', weight: 4, opacity: 0.9, dashArray: '2 9', lineCap: 'round', interactive: false }).addTo(mapObj);
+  } else if (mapObj._gpsTargetLine) {
+    mapObj.removeLayer(mapObj._gpsTargetLine); mapObj._gpsTargetLine = null;
   }
 }
 
