@@ -225,12 +225,14 @@
   .xmas-where-btn { display: block; width: 100%; padding: 11px; border: none; border-radius: 10px; background: #7A1026; color: #F5ECD6; font-weight: 700; font-size: 15px; cursor: pointer; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .xmas-map-big { height: 62vh; min-height: 480px; }
-  .xmas-town-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+  .xmas-town-list { display: grid; gap: 10px; margin: 0 0 14px; }
+  .xmas-town-list .route-card { margin: 0; }
+  .xmas-market-town-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .xmas-town-card { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 68px; padding: 6px; border: 1px solid #c8a878; border-radius: 10px; background: #fff; color: #7A1026; text-align: left; cursor: pointer; font-family: var(--sans); }
   .xmas-town-card img { display: block; width: 56px; height: 56px; min-width: 56px; object-fit: cover; border-radius: 7px; }
   .xmas-town-card .castle-name { min-width: 0; margin: 0; font-size: 15px; line-height: 1.15; overflow-wrap: anywhere; }
   @media (max-width: 360px) {
-    .xmas-town-list { gap: 6px; }
+    .xmas-market-town-list { gap: 6px; }
     .xmas-town-card { gap: 6px; min-height: 60px; padding: 5px; }
     .xmas-town-card img { width: 48px; height: 48px; min-width: 48px; }
     .xmas-town-card .castle-name { font-size: 13px; }
@@ -4556,7 +4558,7 @@ function xmasExplainHtml() {
 const XMAS_TOWN_THUMB_KEY = { koblenz: 'koblenz-hoerter', lahnstein: 'lahnstein-markt', boppard: 'boppard-markt', oberwesel: 'oberwesel-markt', bacharach: 'bacharach-markt', ruedesheim: 'ruedesheim-markt' };
 function xmasTownListHtml() {
   const T = (o) => o[xmasLang] || o.de;
-  return '<div class="xmas-town-list">' + XMAS_ORDER.map(k => {
+  return '<div class="xmas-town-list xmas-market-town-list">' + XMAS_ORDER.map(k => {
     const photoKey = XMAS_TOWN_THUMB_KEY[k];
     const thumbSrc = (XMAS_PHOTOS[photoKey] || [])[0];
     const photo = thumbSrc ? `<img src="${thumbSrc}" alt="" loading="lazy" onerror="this.remove()">` : '';
