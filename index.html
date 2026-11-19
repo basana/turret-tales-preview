@@ -4637,10 +4637,10 @@ function xmasBerthList() {
   return xmasTown ? (VIKING_BERTHS[xmasTown] || []).filter(b => b.ll) : [];
 }
 
-function xmasEnterNearestFocus(latlng, label) {
+function xmasEnterNearestFocus(latlng, label, number) {
   if (!xmasMapObj || !xmasGpsPos || !latlng) return;
   if (!xmasMapObj._xmasGpsFocusSnapshot) xmasMapObj._xmasGpsFocusSnapshot = { center: xmasMapObj.getCenter(), zoom: xmasMapObj.getZoom() };
-  xmasMapObj._xmasGpsFocusTarget = { ll: [latlng.lat, latlng.lng], label: label || 'Nearest market' };
+  xmasMapObj._xmasGpsFocusTarget = { ll: [latlng.lat, latlng.lng], label: '', number };
   xmasMapObj._xmasGpsFocusActive = true;
   xmasMapObj.stop();
   xmasMapObj.setView(latlng, 18, { animate: true });
@@ -4668,7 +4668,7 @@ function setXmasGpsTargetMarker(latlng, label, number) {
     xmasMapObj._xmasGpsTargetMarker = L.marker(latlng, { icon, zIndexOffset: 1800, interactive: true }).addTo(xmasMapObj);
     xmasMapObj._xmasGpsTargetMarker.on('click', e => {
       if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-      xmasEnterNearestFocus(xmasMapObj._xmasGpsTargetMarker.getLatLng(), '');
+      xmasEnterNearestFocus(xmasMapObj._xmasGpsTargetMarker.getLatLng(), '', number);
     });
   }
   if (xmasGpsPos) {
@@ -4769,7 +4769,7 @@ function xmasUpdateGpsPanel() {
   // Highlight the same nearest market whose distance appears below.
   const focusedTarget = xmasMapObj && xmasMapObj._xmasGpsFocusActive ? xmasMapObj._xmasGpsFocusTarget : null;
   const mapTarget = focusedTarget || (rows.length ? rows[0].t : null);
-  setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, '', mapTarget ? mapTarget.index + 1 : null);
+  setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, '', mapTarget ? (mapTarget.number ?? (mapTarget.index + 1)) : null);
   let html = rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
