@@ -2717,7 +2717,7 @@ const UI = {
     gpsError: 'Could not get your location. Check location permissions.',
     gpsDistanceTo: (name) => `to ${name}`,
     gpsArrived: 'You are here',
-    gpsSaveSpot: 'Save',
+    gpsSaveSpot: 'Save return point',
     gpsSaveSpotPrompt: 'Label this spot (e.g. "Ship", "Bus"):',
     gpsSaveSpotDefault: 'My spot',
     gpsSpotTo: (name) => `${name} —`,
@@ -2768,7 +2768,7 @@ const UI = {
     gpsError: 'Не удалось определить местоположение. Проверьте разрешения геолокации.',
     gpsDistanceTo: (name) => `до «${name}»`,
     gpsArrived: 'Вы на месте',
-    gpsSaveSpot: 'Сохранить',
+    gpsSaveSpot: 'Сохранить точку возвращения',
     gpsSaveSpotPrompt: 'Название места (например, «Корабль», «Автобус»):',
     gpsSaveSpotDefault: 'Моё место',
     gpsSpotTo: (name) => `${name} —`,
@@ -2819,7 +2819,7 @@ const UI = {
     gpsError: 'Ihr Standort konnte nicht ermittelt werden. Bitte prüfen Sie die Standortfreigabe.',
     gpsDistanceTo: (name) => `bis ${name}`,
     gpsArrived: 'Sie sind hier',
-    gpsSaveSpot: 'Speichern',
+    gpsSaveSpot: 'Rückkehrpunkt speichern',
     gpsSaveSpotPrompt: 'Name für diesen Ort (z. B. „Schiff“, „Bus“):',
     gpsSaveSpotDefault: 'Mein Ort',
     gpsSpotTo: (name) => `${name} —`,
@@ -2870,7 +2870,7 @@ const UI = {
     gpsError: 'Impossible de déterminer votre position. Vérifiez l\'autorisation de localisation.',
     gpsDistanceTo: (name) => `jusqu’à ${name}`,
     gpsArrived: 'Vous êtes ici',
-    gpsSaveSpot: 'Enregistrer',
+    gpsSaveSpot: 'Enregistrer le point de retour',
     gpsSaveSpotPrompt: 'Nom de ce lieu (ex. « Bateau », « Bus ») :',
     gpsSaveSpotDefault: 'Mon lieu',
     gpsSpotTo: (name) => `${name} —`,
@@ -2921,7 +2921,7 @@ const UI = {
     gpsError: 'Uw locatie kon niet worden bepaald. Controleer de locatietoestemming.',
     gpsDistanceTo: (name) => `naar ${name}`,
     gpsArrived: 'U bent hier',
-    gpsSaveSpot: 'Opslaan',
+    gpsSaveSpot: 'Terugkeerpunt opslaan',
     gpsSaveSpotPrompt: 'Naam voor deze plek (bv. "Schip", "Bus"):',
     gpsSaveSpotDefault: 'Mijn plek',
     gpsSpotTo: (name) => `${name} —`,
@@ -2972,7 +2972,7 @@ const UI = {
     gpsError: '无法获取您的位置，请检查位置权限设置。',
     gpsDistanceTo: (name) => `距 ${name}`,
     gpsArrived: '您已到达',
-    gpsSaveSpot: '保存',
+    gpsSaveSpot: '保存返回地点',
     gpsSaveSpotPrompt: '为此位置命名（例如“船”“巴士”）：',
     gpsSaveSpotDefault: '我的位置',
     gpsSpotTo: (name) => `${name} —`,
@@ -3023,7 +3023,7 @@ const UI = {
     gpsError: 'לא ניתן לאתר את מיקומכם. בדקו את הרשאות המיקום.',
     gpsDistanceTo: (name) => `עד ${name}`,
     gpsArrived: 'הגעתם',
-    gpsSaveSpot: 'שמירה',
+    gpsSaveSpot: 'שמירת נקודת חזרה',
     gpsSaveSpotPrompt: 'תנו שם למיקום זה (למשל "אונייה", "אוטובוס"):',
     gpsSaveSpotDefault: 'המיקום שלי',
     gpsSpotTo: (name) => `${name} —`,
@@ -4612,13 +4612,13 @@ function xmasCompanyStyle(co) {
 const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer', ll: [50.35975, 7.60466] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
-  de: {backAt:'Sie sind wieder bei {name}', btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Mein Schiff ist hier', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
-  fr: {backAt:'Vous êtes de retour à {name}', btn:'GPS', locating:'Localisation…', err:'GPS indisponible', ship:'Votre bateau / point de rendez-vous', saveShip:'📌 Mon bateau est ici', saveLocation:'📌 Enregistrer', clearShip:'Supprimer le bateau', min:'min à pied', shipMin:'min en bateau', departLabel:'Heure de départ', enough:'Le temps suffit, environ {n} min de marge', notEnough:'Attention : environ {n} min de retard', popupTitle:'GPS : distances jusqu’aux marchés', popupItems:['Distance entre votre position et chaque marché','Distance jusqu’à votre bateau ou au point de rendez-vous','Si le temps suffit avant le départ'], shipPrompt:'Nom de ce point', shipDefault:'Bateau', berth:'Accostage Viking'},
-  nl: {backAt:'U bent terug bij {name}', btn:'GPS', locating:'Locatie wordt bepaald…', err:'GPS niet beschikbaar', ship:'Uw schip / ontmoetingspunt', saveShip:'📌 Mijn schip ligt hier', saveLocation:'📌 Opslaan', clearShip:'Schip verwijderen', min:'min lopen', shipMin:'min varen', departLabel:'Vertrektijd', enough:'Tijd genoeg, ca. {n} min. marge', notEnough:'Let op: ca. {n} min. te laat', popupTitle:'GPS: afstanden tot de markten', popupItems:['Afstand van uw locatie tot elke markt','Afstand tot uw schip of ontmoetingspunt','Of de tijd tot vertrek genoeg is'], shipPrompt:'Naam van dit punt', shipDefault:'Schip', berth:'Viking-aanlegplaats'},
-  en: {backAt:'You’re back at {name}', btn:'GPS', locating:'Locating…', err:'GPS not available', ship:'Your ship / meeting point', saveShip:'📌 My ship is here', saveLocation:'📌 Save', clearShip:'Remove ship', min:'min walk', shipMin:'min by boat', departLabel:'Departure time', enough:'Enough time, about {n} min to spare', notEnough:'Warning: about {n} min too late', popupTitle:'GPS: distances to the markets', popupItems:['Distance from your position to each market','Distance to your ship or meeting point','Whether there is enough time before departure'], shipPrompt:'Name for this point', shipDefault:'Ship', berth:'Viking berth'},
-  ru: {backAt:'Вы вернулись к точке «{name}»', btn:'GPS', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Мой корабль здесь', saveLocation:'📌 Сохранить', clearShip:'Убрать корабль', min:'мин пешком', shipMin:'мин. на корабле', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'},
-  zh: {backAt:'您已返回 {name}', btn:'GPS', locating:'正在定位…', err:'GPS 不可用', ship:'您的船 / 集合地点', saveShip:'📌 我的船在这里', saveLocation:'📌 保存', clearShip:'移除船只', min:'分钟步行', shipMin:'分钟乘船', departLabel:'出发时间', enough:'时间充裕，还有约 {n} 分钟余量', notEnough:'注意：大约会迟到 {n} 分钟', popupTitle:'GPS：到各市集的距离', popupItems:['您所在位置到每个市集的距离','到您船只或集合地点的距离','出发前时间是否充足'], shipPrompt:'为该地点命名', shipDefault:'船', berth:'Viking 码头'},
-  he: {backAt:'חזרתם אל {name}', btn:'GPS', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 הספינה שלי כאן', saveLocation:'📌 שמירה', clearShip:'הסרת הספינה', min:'דק׳ הליכה', shipMin:'דק׳ בספינה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
+  de: {backAt:'Sie sind wieder bei {name}', btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Rückkehrpunkt speichern', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
+  fr: {backAt:'Vous êtes de retour à {name}', btn:'GPS', locating:'Localisation…', err:'GPS indisponible', ship:'Votre bateau / point de rendez-vous', saveShip:'📌 Enregistrer le point de retour', saveLocation:'📌 Enregistrer', clearShip:'Supprimer le bateau', min:'min à pied', shipMin:'min en bateau', departLabel:'Heure de départ', enough:'Le temps suffit, environ {n} min de marge', notEnough:'Attention : environ {n} min de retard', popupTitle:'GPS : distances jusqu’aux marchés', popupItems:['Distance entre votre position et chaque marché','Distance jusqu’à votre bateau ou au point de rendez-vous','Si le temps suffit avant le départ'], shipPrompt:'Nom de ce point', shipDefault:'Bateau', berth:'Accostage Viking'},
+  nl: {backAt:'U bent terug bij {name}', btn:'GPS', locating:'Locatie wordt bepaald…', err:'GPS niet beschikbaar', ship:'Uw schip / ontmoetingspunt', saveShip:'📌 Terugkeerpunt opslaan', saveLocation:'📌 Opslaan', clearShip:'Schip verwijderen', min:'min lopen', shipMin:'min varen', departLabel:'Vertrektijd', enough:'Tijd genoeg, ca. {n} min. marge', notEnough:'Let op: ca. {n} min. te laat', popupTitle:'GPS: afstanden tot de markten', popupItems:['Afstand van uw locatie tot elke markt','Afstand tot uw schip of ontmoetingspunt','Of de tijd tot vertrek genoeg is'], shipPrompt:'Naam van dit punt', shipDefault:'Schip', berth:'Viking-aanlegplaats'},
+  en: {backAt:'You’re back at {name}', btn:'GPS', locating:'Locating…', err:'GPS not available', ship:'Your ship / meeting point', saveShip:'📌 Save return point', saveLocation:'📌 Save', clearShip:'Remove ship', min:'min walk', shipMin:'min by boat', departLabel:'Departure time', enough:'Enough time, about {n} min to spare', notEnough:'Warning: about {n} min too late', popupTitle:'GPS: distances to the markets', popupItems:['Distance from your position to each market','Distance to your ship or meeting point','Whether there is enough time before departure'], shipPrompt:'Name for this point', shipDefault:'Ship', berth:'Viking berth'},
+  ru: {backAt:'Вы вернулись к точке «{name}»', btn:'GPS', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Сохранить точку возвращения', saveLocation:'📌 Сохранить', clearShip:'Убрать корабль', min:'мин пешком', shipMin:'мин. на корабле', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'},
+  zh: {backAt:'您已返回 {name}', btn:'GPS', locating:'正在定位…', err:'GPS 不可用', ship:'您的船 / 集合地点', saveShip:'📌 保存返回地点', saveLocation:'📌 保存', clearShip:'移除船只', min:'分钟步行', shipMin:'分钟乘船', departLabel:'出发时间', enough:'时间充裕，还有约 {n} 分钟余量', notEnough:'注意：大约会迟到 {n} 分钟', popupTitle:'GPS：到各市集的距离', popupItems:['您所在位置到每个市集的距离','到您船只或集合地点的距离','出发前时间是否充足'], shipPrompt:'为该地点命名', shipDefault:'船', berth:'Viking 码头'},
+  he: {backAt:'חזרתם אל {name}', btn:'GPS', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 שמירת נקודת חזרה', saveLocation:'📌 שמירה', clearShip:'הסרת הספינה', min:'דק׳ הליכה', shipMin:'דק׳ בספינה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
 const XMAS_EXPLAIN = {
