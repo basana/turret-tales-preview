@@ -6232,11 +6232,51 @@ function updateHomeMapTeaserLabel() {
 const homeMapTeaserEl = document.getElementById('homeMapTeaser');
 if (homeMapTeaserEl) homeMapTeaserEl.addEventListener('click', () => switchView('map'));
 
+function positionGpsFollowButton() {
+  const button = document.getElementById('gpsFollowBtn');
+  const panel = document.getElementById('gpsPanel');
+  const mapView = document.getElementById('view-map');
+  if (!button || !panel || !mapView || !button.classList.contains('show')) return;
+
+  // Start in the usual upper-left slot, then move only if a visible panel
+  // actually occupies the same screen area.
+  button.style.zIndex = '1400';
+  button.style.left = '112px';
+  button.style.right = 'auto';
+  button.style.top = '78px';
+  button.style.bottom = 'auto';
+
+  if (!panel.classList.contains('show')) return;
+  const p = panel.getBoundingClientRect();
+  const b = button.getBoundingClientRect();
+  const m = mapView.getBoundingClientRect();
+  const overlaps = b.left < p.right && b.right > p.left && b.top < p.bottom && b.bottom > p.top;
+  if (!overlaps) return;
+
+  const belowTop = p.bottom - m.top + 10;
+  if (belowTop + button.offsetHeight <= m.height - 12) {
+    button.style.top = belowTop + 'px';
+    return;
+  }
+
+  // If there is not enough room below the panel, use the clear upper-right
+  // corner when it is wide enough; otherwise use the lower-left edge.
+  const freeRight = m.right - p.right;
+  if (freeRight >= button.offsetWidth + 24) {
+    button.style.left = 'auto';
+    button.style.right = '12px';
+    button.style.top = '78px';
+  } else {
+    button.style.left = '12px';
+    button.style.top = Math.max(78, m.height - button.offsetHeight - 16) + 'px';
+  }
+}
+
 function leaveGpsFollowMode() {
   if (!gpsActive || !gpsFollowMode || (leafletMap && leafletMap._gpsProgrammaticView)) return;
   gpsFollowMode = false;
   const button = document.getElementById('gpsFollowBtn');
-  if (button) button.classList.add('show');
+  if (button) { button.classList.add('show'); requestAnimationFrame(positionGpsFollowButton); }
 }
 
 function markGpsProgrammaticView() {
@@ -7048,6 +7088,15 @@ function toggleGps() {
 }
 
 const gpsFollowBtn = document.getElementById('gpsFollowBtn');
+if (gpsFollowBtn) {
+  const followObserver = new MutationObserver(() => requestAnimationFrame(positionGpsFollowButton));
+  followObserver.observe(gpsFollowBtn, { attributes: true, attributeFilter: ['class'] });
+  const gpsPanelForFollow = document.getElementById('gpsPanel');
+  if (gpsPanelForFollow && typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => requestAnimationFrame(positionGpsFollowButton)).observe(gpsPanelForFollow);
+  }
+  window.addEventListener('resize', () => requestAnimationFrame(positionGpsFollowButton));
+}
 if (gpsFollowBtn) {
   gpsFollowBtn.addEventListener('click', () => {
     if (!gpsActive || gpsLastLat === null || !leafletMap) return;
