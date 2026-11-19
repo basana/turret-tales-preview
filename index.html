@@ -6515,7 +6515,7 @@ function initMap() {
       if (leafletMap._gpsFocusActive && leafletMap._gpsFocusSnapshot) {
         const snap = leafletMap._gpsFocusSnapshot;
         leafletMap._gpsFocusActive = false; leafletMap._gpsFocusSnapshot = null;
-        leafletMap.stop(); leafletMap.setView(snap.center, snap.zoom, { animate: true });
+        leafletMap.stop(); markGpsProgrammaticView(); leafletMap.setView(snap.center, snap.zoom, { animate: true });
       } else leafletMap.fitBounds(points, { paddingTopLeft: [24, 130], paddingBottomRight: [24, 24] });
     });
     poiBar.appendChild(resetBtn);
@@ -7071,7 +7071,10 @@ function setGpsTargetMarker(mapObj, latlng, label) {
       if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
       if (!gpsActive) return;
       if (!mapObj._gpsFocusSnapshot) mapObj._gpsFocusSnapshot = { center: mapObj.getCenter(), zoom: mapObj.getZoom() };
+      gpsFollowMode = false;
+      mapObj._gpsFitDone = true;
       mapObj._gpsFocusActive = true; mapObj.stop();
+      markGpsProgrammaticView();
       mapObj.setView(mapObj._gpsTargetMarker.getLatLng(), 17, { animate: true });
     });
   }
@@ -7095,10 +7098,16 @@ function updateGpsDistancePanel(lat, lng) {
   // --- Ближайший/выбранный замок ---
   const useSelected = selectedIndex >= 0 && typeof castles[selectedIndex]?.lat === 'number';
   const targetIndex = useSelected ? selectedIndex : findNearestCastleIndex(lat, lng);
+  // The pulsing map target is ALWAYS the nearest castle, even if a different castle is selected in the guide.
+  const nearestMapIndex = findNearestCastleIndex(lat, lng);
+  if (nearestMapIndex >= 0) {
+    const nearestMapCastle = castles[nearestMapIndex];
+    setGpsTargetMarker(leafletMap, [nearestMapCastle.lat, nearestMapCastle.lng], nearestMapCastle.name);
+  } else {
+    setGpsTargetMarker(leafletMap, null);
+  }
   if (targetIndex >= 0) {
     const c = castles[targetIndex];
-    // Highlight the exact castle whose distance is being shown, even on the overview map.
-    setGpsTargetMarker(leafletMap, [c.lat, c.lng], c.name);
     const d = distanceMeters(lat, lng, c.lat, c.lng);
     if (useSelected || d <= GPS_DISTANCE_VISIBLE_M) {
       const valueEl = document.getElementById('gpsDistanceValue');
