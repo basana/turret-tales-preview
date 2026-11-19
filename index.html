@@ -4469,7 +4469,7 @@ function xmasDrawMap(opts) {
   xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
   document.getElementById('xResetBtn').onclick = () => {
-    if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { padding: [60, 40], maxZoom: 13 });
+    if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
     else if (opts.pins && opts.pins.length > 1) xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [76, 76], maxZoom: opts.zoom });
     else xmasMapObj.setView(opts.center, opts.zoom);
   };
@@ -4594,6 +4594,7 @@ function xmasFocusUserAndNearest() {
 }
 
 function xmasStartGps() {
+  if (xmasMapObj) xmasMapObj._xmasGpsFitDone = false;
   if (!navigator.geolocation) { xmasSetGpsLabel(xmasG('err')); return; }
   if (xmasGpsWatch !== null) return;
   xmasSetGpsLabel(xmasG('locating'), true);
