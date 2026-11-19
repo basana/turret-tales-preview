@@ -136,8 +136,8 @@
   .xmas-list { padding-left: 18px; }
   .xmas-list li { margin-bottom: 8px; }
   .xmas-small { font-size: 14px; opacity: 0.8; }
-  .xmas-gps-btn {
-    position: absolute; z-index: 1250; top: 78px; left: 12px;
+   .xmas-gps-btn {
+    position: absolute; z-index: 1250; top: 56px; left: 12px;
     display: inline-flex; align-items: center; gap: 6px;
     padding: 7px 12px 7px 10px; border-radius: 20px;
     border: 1px solid var(--gold); background: rgba(246,238,221,.96);
@@ -145,10 +145,10 @@
     box-shadow: 0 4px 14px rgba(90,67,39,.25);
   }
   .xmas-gps-btn.active { background: linear-gradient(135deg,var(--terracotta),#8f4a22); color: #fff; border-color: rgba(255,255,255,.75); }
-  .xmas-save-location-btn { position:absolute; z-index:1250; top:122px; left:12px; display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:7px 12px; border:1px solid rgba(255,255,255,.8); border-radius:20px; background:linear-gradient(135deg,var(--terracotta),#8f4a22); color:#fff; font:700 12px var(--sans); cursor:pointer; box-shadow:0 4px 14px rgba(90,67,39,.25); }
+   .xmas-save-location-btn { position:absolute; z-index:1250; top:56px; left:112px; display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:7px 12px; border:1px solid rgba(255,255,255,.8); border-radius:20px; background:linear-gradient(135deg,var(--terracotta),#8f4a22); color:#fff; font:700 12px var(--sans); cursor:pointer; box-shadow:0 4px 14px rgba(90,67,39,.25); }
   .xmas-save-location-btn[hidden] { display:none; }
   .xmas-gps-follow {
-    position: absolute; z-index: 1250; top: 78px; left: 112px; display: none;
+    position: absolute; z-index: 1250; top: 56px; left: 200px; display: none;
     align-items: center; gap: 6px; min-height: 36px; padding: 7px 12px;
     border: 1px solid var(--gold); border-radius: 20px; background: rgba(246,238,221,.97);
     color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
@@ -1008,7 +1008,7 @@
 
   /* === GPS-КНОПКА НА КАРТЕ (ПРЕМИУМ) === */
   .gps-toggle-btn {
-    position: absolute; z-index: 1000; top: 78px; left: 12px;
+    position: absolute; z-index: 1000; top: 56px; left: 12px;
     display: flex; align-items: center; gap: 6px;
     background: rgba(246, 238, 221, 0.95); border: 1px solid var(--gold); border-radius: 20px;
     padding: 7px 12px 7px 10px; font-family: var(--sans); font-size: 12px; font-weight: 700;
@@ -1018,7 +1018,7 @@
   .gps-toggle-btn .lock-star { font-size: 11px; color: var(--terracotta); }
   .gps-toggle-btn.active .lock-star { display: none; }
   .gps-follow-btn {
-    position: absolute; z-index: 1000; top: 78px; left: 112px; display: none;
+    position: absolute; z-index: 1000; top: 56px; left: 200px; display: none;
     align-items: center; gap: 6px; min-height: 38px; padding: 7px 12px;
     border: 1px solid var(--gold); border-radius: 20px; background: rgba(246,238,221,.97);
     color: var(--ink); font: 700 12px var(--sans); cursor: pointer;
@@ -1054,10 +1054,11 @@
     background: rgba(255,255,255,0.6); color: var(--ink-soft); font-size: 12px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; padding: 0;
   }
-  .gps-save-spot-btn {
+   .gps-save-spot-btn {
+    position: absolute; top: -70px; left: 100px; min-height: 36px; white-space: nowrap;
     display: none; align-items: center; gap: 6px; align-self: flex-start;
     background: linear-gradient(135deg, var(--terracotta), #8f4a22); border: 1px solid rgba(255,255,255,0.75); border-radius: 20px;
-    padding: 7px 13px 7px 10px; font-family: var(--sans); font-size: 12px; font-weight: 700;
+    padding: 7px 10px; font-family: var(--sans); font-size: 12px; font-weight: 700;
     color: #fff; cursor: pointer; box-shadow: 0 4px 14px rgba(90,67,39,0.25);
   }
   .gps-save-spot-btn.show { display: flex; }
@@ -2690,7 +2691,7 @@ const UI = {
     gpsError: 'Could not get your location. Check location permissions.',
     gpsDistanceTo: (name) => `to ${name}`,
     gpsArrived: 'You are here',
-    gpsSaveSpot: 'Save my spot',
+    gpsSaveSpot: 'Save',
     gpsSaveSpotPrompt: 'Label this spot (e.g. "Ship", "Bus"):',
     gpsSaveSpotDefault: 'My spot',
     gpsSpotTo: (name) => `${name} —`,
@@ -2741,7 +2742,7 @@ const UI = {
     gpsError: 'Не удалось определить местоположение. Проверьте разрешения геолокации.',
     gpsDistanceTo: (name) => `до «${name}»`,
     gpsArrived: 'Вы на месте',
-    gpsSaveSpot: 'Запомнить место',
+    gpsSaveSpot: 'Сохранить',
     gpsSaveSpotPrompt: 'Название места (например, «Корабль», «Автобус»):',
     gpsSaveSpotDefault: 'Моё место',
     gpsSpotTo: (name) => `${name} —`,
@@ -2792,7 +2793,7 @@ const UI = {
     gpsError: 'Ihr Standort konnte nicht ermittelt werden. Bitte prüfen Sie die Standortfreigabe.',
     gpsDistanceTo: (name) => `bis ${name}`,
     gpsArrived: 'Sie sind hier',
-    gpsSaveSpot: 'Meinen Ort merken',
+    gpsSaveSpot: 'Speichern',
     gpsSaveSpotPrompt: 'Name für diesen Ort (z. B. „Schiff“, „Bus“):',
     gpsSaveSpotDefault: 'Mein Ort',
     gpsSpotTo: (name) => `${name} —`,
@@ -2843,7 +2844,7 @@ const UI = {
     gpsError: 'Impossible de déterminer votre position. Vérifiez l\'autorisation de localisation.',
     gpsDistanceTo: (name) => `jusqu’à ${name}`,
     gpsArrived: 'Vous êtes ici',
-    gpsSaveSpot: 'Mémoriser ce lieu',
+    gpsSaveSpot: 'Enregistrer',
     gpsSaveSpotPrompt: 'Nom de ce lieu (ex. « Bateau », « Bus ») :',
     gpsSaveSpotDefault: 'Mon lieu',
     gpsSpotTo: (name) => `${name} —`,
@@ -2894,7 +2895,7 @@ const UI = {
     gpsError: 'Uw locatie kon niet worden bepaald. Controleer de locatietoestemming.',
     gpsDistanceTo: (name) => `naar ${name}`,
     gpsArrived: 'U bent hier',
-    gpsSaveSpot: 'Mijn plek opslaan',
+    gpsSaveSpot: 'Opslaan',
     gpsSaveSpotPrompt: 'Naam voor deze plek (bv. "Schip", "Bus"):',
     gpsSaveSpotDefault: 'Mijn plek',
     gpsSpotTo: (name) => `${name} —`,
@@ -2945,7 +2946,7 @@ const UI = {
     gpsError: '无法获取您的位置，请检查位置权限设置。',
     gpsDistanceTo: (name) => `距 ${name}`,
     gpsArrived: '您已到达',
-    gpsSaveSpot: '保存我的位置',
+    gpsSaveSpot: '保存',
     gpsSaveSpotPrompt: '为此位置命名（例如“船”“巴士”）：',
     gpsSaveSpotDefault: '我的位置',
     gpsSpotTo: (name) => `${name} —`,
@@ -2996,7 +2997,7 @@ const UI = {
     gpsError: 'לא ניתן לאתר את מיקומכם. בדקו את הרשאות המיקום.',
     gpsDistanceTo: (name) => `עד ${name}`,
     gpsArrived: 'הגעתם',
-    gpsSaveSpot: 'שמירת המיקום שלי',
+    gpsSaveSpot: 'שמירה',
     gpsSaveSpotPrompt: 'תנו שם למיקום זה (למשל "אונייה", "אוטובוס"):',
     gpsSaveSpotDefault: 'המיקום שלי',
     gpsSpotTo: (name) => `${name} —`,
@@ -4568,13 +4569,13 @@ function xmasCompanyStyle(co) {
 const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer', ll: [50.35975, 7.60466] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
-  de: {btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Mein Schiff ist hier', saveLocation:'📌 Standort merken', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
-  fr: {btn:'GPS', locating:'Localisation…', err:'GPS indisponible', ship:'Votre bateau / point de rendez-vous', saveShip:'📌 Mon bateau est ici', saveLocation:'📌 Mémoriser ma position', clearShip:'Supprimer le bateau', min:'min à pied', shipMin:'min en bateau', departLabel:'Heure de départ', enough:'Le temps suffit, environ {n} min de marge', notEnough:'Attention : environ {n} min de retard', popupTitle:'GPS : distances jusqu’aux marchés', popupItems:['Distance entre votre position et chaque marché','Distance jusqu’à votre bateau ou au point de rendez-vous','Si le temps suffit avant le départ'], shipPrompt:'Nom de ce point', shipDefault:'Bateau', berth:'Accostage Viking'},
-  nl: {btn:'GPS', locating:'Locatie wordt bepaald…', err:'GPS niet beschikbaar', ship:'Uw schip / ontmoetingspunt', saveShip:'📌 Mijn schip ligt hier', saveLocation:'📌 Locatie onthouden', clearShip:'Schip verwijderen', min:'min lopen', shipMin:'min varen', departLabel:'Vertrektijd', enough:'Tijd genoeg, ca. {n} min. marge', notEnough:'Let op: ca. {n} min. te laat', popupTitle:'GPS: afstanden tot de markten', popupItems:['Afstand van uw locatie tot elke markt','Afstand tot uw schip of ontmoetingspunt','Of de tijd tot vertrek genoeg is'], shipPrompt:'Naam van dit punt', shipDefault:'Schip', berth:'Viking-aanlegplaats'},
-  en: {btn:'GPS', locating:'Locating…', err:'GPS not available', ship:'Your ship / meeting point', saveShip:'📌 My ship is here', saveLocation:'📌 Remember location', clearShip:'Remove ship', min:'min walk', shipMin:'min by boat', departLabel:'Departure time', enough:'Enough time, about {n} min to spare', notEnough:'Warning: about {n} min too late', popupTitle:'GPS: distances to the markets', popupItems:['Distance from your position to each market','Distance to your ship or meeting point','Whether there is enough time before departure'], shipPrompt:'Name for this point', shipDefault:'Ship', berth:'Viking berth'},
-  ru: {btn:'GPS', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Мой корабль здесь', saveLocation:'📌 Запомнить местоположение', clearShip:'Убрать корабль', min:'мин пешком', shipMin:'мин. на корабле', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'},
-  zh: {btn:'GPS', locating:'正在定位…', err:'GPS 不可用', ship:'您的船 / 集合地点', saveShip:'📌 我的船在这里', saveLocation:'📌 记住此位置', clearShip:'移除船只', min:'分钟步行', shipMin:'分钟乘船', departLabel:'出发时间', enough:'时间充裕，还有约 {n} 分钟余量', notEnough:'注意：大约会迟到 {n} 分钟', popupTitle:'GPS：到各市集的距离', popupItems:['您所在位置到每个市集的距离','到您船只或集合地点的距离','出发前时间是否充足'], shipPrompt:'为该地点命名', shipDefault:'船', berth:'Viking 码头'},
-  he: {btn:'GPS', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 הספינה שלי כאן', saveLocation:'📌 שמירת המיקום', clearShip:'הסרת הספינה', min:'דק׳ הליכה', shipMin:'דק׳ בספינה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
+  de: {btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Mein Schiff ist hier', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
+  fr: {btn:'GPS', locating:'Localisation…', err:'GPS indisponible', ship:'Votre bateau / point de rendez-vous', saveShip:'📌 Mon bateau est ici', saveLocation:'📌 Enregistrer', clearShip:'Supprimer le bateau', min:'min à pied', shipMin:'min en bateau', departLabel:'Heure de départ', enough:'Le temps suffit, environ {n} min de marge', notEnough:'Attention : environ {n} min de retard', popupTitle:'GPS : distances jusqu’aux marchés', popupItems:['Distance entre votre position et chaque marché','Distance jusqu’à votre bateau ou au point de rendez-vous','Si le temps suffit avant le départ'], shipPrompt:'Nom de ce point', shipDefault:'Bateau', berth:'Accostage Viking'},
+  nl: {btn:'GPS', locating:'Locatie wordt bepaald…', err:'GPS niet beschikbaar', ship:'Uw schip / ontmoetingspunt', saveShip:'📌 Mijn schip ligt hier', saveLocation:'📌 Opslaan', clearShip:'Schip verwijderen', min:'min lopen', shipMin:'min varen', departLabel:'Vertrektijd', enough:'Tijd genoeg, ca. {n} min. marge', notEnough:'Let op: ca. {n} min. te laat', popupTitle:'GPS: afstanden tot de markten', popupItems:['Afstand van uw locatie tot elke markt','Afstand tot uw schip of ontmoetingspunt','Of de tijd tot vertrek genoeg is'], shipPrompt:'Naam van dit punt', shipDefault:'Schip', berth:'Viking-aanlegplaats'},
+  en: {btn:'GPS', locating:'Locating…', err:'GPS not available', ship:'Your ship / meeting point', saveShip:'📌 My ship is here', saveLocation:'📌 Save', clearShip:'Remove ship', min:'min walk', shipMin:'min by boat', departLabel:'Departure time', enough:'Enough time, about {n} min to spare', notEnough:'Warning: about {n} min too late', popupTitle:'GPS: distances to the markets', popupItems:['Distance from your position to each market','Distance to your ship or meeting point','Whether there is enough time before departure'], shipPrompt:'Name for this point', shipDefault:'Ship', berth:'Viking berth'},
+  ru: {btn:'GPS', locating:'Определяем местоположение…', err:'GPS недоступен', ship:'Ваш корабль / место встречи', saveShip:'📌 Мой корабль здесь', saveLocation:'📌 Сохранить', clearShip:'Убрать корабль', min:'мин пешком', shipMin:'мин. на корабле', departLabel:'Время отхода', enough:'Времени хватает, запас около {n} мин', notEnough:'Не успеваете примерно на {n} мин', popupTitle:'GPS: расстояния до рынков', popupItems:['Расстояние от вашего места до каждого рынка','Расстояние до вашего корабля или места встречи','Хватит ли времени до отхода'], shipPrompt:'Название этой точки', shipDefault:'Корабль', berth:'Причал Viking'},
+  zh: {btn:'GPS', locating:'正在定位…', err:'GPS 不可用', ship:'您的船 / 集合地点', saveShip:'📌 我的船在这里', saveLocation:'📌 保存', clearShip:'移除船只', min:'分钟步行', shipMin:'分钟乘船', departLabel:'出发时间', enough:'时间充裕，还有约 {n} 分钟余量', notEnough:'注意：大约会迟到 {n} 分钟', popupTitle:'GPS：到各市集的距离', popupItems:['您所在位置到每个市集的距离','到您船只或集合地点的距离','出发前时间是否充足'], shipPrompt:'为该地点命名', shipDefault:'船', berth:'Viking 码头'},
+  he: {btn:'GPS', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 הספינה שלי כאן', saveLocation:'📌 שמירה', clearShip:'הסרת הספינה', min:'דק׳ הליכה', shipMin:'דק׳ בספינה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
 const XMAS_EXPLAIN = {
@@ -5180,7 +5181,7 @@ function wineMapTools(map, items) {
     '<datalist id="wmNames">' + items.map(it => '<option value="' + it.name.replace(/"/g, '&quot;') + '"></option>').join('') + '</datalist>';
   const gps = document.createElement('button');
   gps.type = 'button';
-  gps.style.cssText = 'position:absolute;z-index:1000;top:78px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
+  gps.style.cssText = 'position:absolute;z-index:1000;top:56px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(246,238,221,0.95);border:1px solid #C9A05C;border-radius:20px;padding:7px 12px;font:700 12px sans-serif;color:#5A4327;cursor:pointer;box-shadow:0 4px 14px rgba(90,67,39,0.25)';
   const panel = document.createElement('div');
   panel.style.cssText = 'position:absolute;z-index:1000;top:122px;left:12px;display:none;flex-direction:column;gap:7px;max-width:230px;box-sizing:border-box';
   [bar, gps, panel].forEach(el => { box.appendChild(el); L.DomEvent.disableClickPropagation(el); L.DomEvent.disableScrollPropagation(el); });
@@ -5224,7 +5225,7 @@ function wineMapTools(map, items) {
     if (near) html += `<div data-go="${items.indexOf(near.it)}" style="${CARD};cursor:pointer"><div style="font-weight:700;font-size:15px">≈ ${fmtD(near.d)}</div><div>zu ${near.it.name}</div></div>`;
     const s = getSpot();
     if (s) html += `<div style="${CARD}"><div style="font-weight:700;font-size:15px">≈ ${fmtD(dist(lastUser, [s.lat, s.lng]))}</div><div>zu ${s.label || 'Mein Punkt'} <button type="button" data-clear="1" style="border:none;background:rgba(90,67,39,.12);border-radius:50%;width:20px;height:20px;cursor:pointer;margin-left:4px">✕</button></div></div>`;
-    html += `<button type="button" data-save="1" style="${CARD};font-weight:700;cursor:pointer;text-align:left">📌 Meinen Punkt speichern</button>`;
+    html += `<button type="button" data-save="1" style="${CARD};position:absolute;top:-66px;left:100px;min-height:36px;white-space:nowrap;padding:7px 10px;font-weight:700;cursor:pointer;text-align:left">📌 ${UI[lang].gpsSaveSpot}</button>`;
     panel.innerHTML = html;
     panel.style.display = 'flex';
   };
@@ -5232,7 +5233,7 @@ function wineMapTools(map, items) {
     const t = e.target.closest && e.target.closest('[data-go],[data-save],[data-clear]');
     if (!t) return;
     if (t.dataset.go !== undefined) pick(items[+t.dataset.go]);
-    else if (t.dataset.save) { if (lastUser) { setSpot({ lat: lastUser[0], lng: lastUser[1], label: 'Mein Punkt' }); drawSpot(); renderPanel(); } }
+    else if (t.dataset.save) { if (lastUser) { setSpot({ lat: lastUser[0], lng: lastUser[1], label: UI[lang].gpsSaveSpotDefault }); drawSpot(); renderPanel(); } }
     else if (t.dataset.clear) { setSpot(null); drawSpot(); renderPanel(); }
   });
 
@@ -6085,6 +6086,8 @@ function applyStaticText() {
 
   const gpsLabelEl = document.getElementById('gpsToggleLabel');
   if (gpsLabelEl && !gpsActive) gpsLabelEl.textContent = t.gpsToggle;
+  const gpsSaveLabelEl = document.getElementById('gpsSaveSpotLabel');
+  if (gpsSaveLabelEl) gpsSaveLabelEl.textContent = t.gpsSaveSpot;
 
   const sEyebrow = document.getElementById('splashEyebrow');
   const sTitle = document.getElementById('splashTitle');
