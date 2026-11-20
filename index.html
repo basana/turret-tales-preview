@@ -1018,10 +1018,17 @@
   }
   .map-search-icon { font-size: 13px; flex: 0 0 auto; opacity: 0.75; }
   /* Поиск рынков на рождественской карте — обычный блок в потоке, не перекрывает кнопки */
-  .xmas-search { position: static; margin: 0 0 12px; z-index: auto; }
+  .xmas-search { position: relative; margin: 0 0 12px; z-index: 1100; }
+  .xmas-search .map-search-input { font-size:16px; min-height:44px; }
+  .xmas-search-results { position:absolute; top:calc(100% + 5px); left:0; right:0; z-index:2500; max-height:min(48vh,340px); overflow-y:auto; border:1px solid var(--gold); border-radius:12px; background:#fffaf0; box-shadow:0 8px 24px rgba(40,25,10,.28); }
+  .xmas-search-results[hidden] { display:none; }
+  .xmas-search-result { display:block; width:100%; min-height:46px; padding:11px 14px; border:0; border-bottom:1px solid rgba(150,120,75,.22); background:transparent; color:var(--ink); text-align:left; font:600 15px/1.25 var(--sans); }
+  .xmas-search-result:last-child { border-bottom:0; }
+  .xmas-search-result:active { background:#ead9bb; }
+  .xmas-search-empty { padding:12px 14px; color:var(--ink-soft); font:14px var(--sans); }
   .map-search-input {
     flex: 1; min-width: 0; border: none; background: transparent; outline: none;
-    font-family: var(--sans); font-size: 13px; color: var(--ink);
+    font-family: var(--sans); font-size: 16px; color: var(--ink); min-height:44px;
   }
   .map-search-input::placeholder { color: var(--ink-soft); opacity: 0; }
   .map-search-ticker {
@@ -4588,7 +4595,7 @@ function xmasSearchEntries() {
 }
 function xmasSearchHtml() {
   const opts = xmasSearchEntries().map(e => `<option value="${e.label.replace(/"/g, '&quot;')}">`).join('');
-  return `<div class="map-search-wrap xmas-search"><span class="map-search-icon">🔎</span><input type="text" class="map-search-input" id="xmasSearch" list="xmasSearchList" autocomplete="off" autocapitalize="off" placeholder="${XMAS_SEARCH_PH[xmasLang] || XMAS_SEARCH_PH.en}"><span class="map-search-ticker" id="xmasSearchTicker"></span><datalist id="xmasSearchList">${opts}</datalist></div>`;
+  return `<div class="map-search-wrap xmas-search"><span class="map-search-icon">🔎</span><input type="search" class="map-search-input" id="xmasSearch" autocomplete="off" autocapitalize="off" enterkeyhint="search" placeholder="${XMAS_SEARCH_PH[xmasLang] || XMAS_SEARCH_PH.en}"><span class="map-search-ticker" id="xmasSearchTicker"></span><div class="xmas-search-results" id="xmasSearchResults" hidden></div></div>`;
 }
 function initXmasSearchTicker() {
   const input = document.getElementById('xmasSearch');
@@ -4622,17 +4629,62 @@ function initXmasSearchTicker() {
   });
   start();
 }
-function xmasSearchPick(val) {
-  const v = (val || '').trim().toLowerCase();
-  if (!v) return false;
-  const e = xmasSearchEntries().find(x => x.label.toLowerCase() === v);
-  if (!e) return false;
-  if (xmasTown !== e.key) { xmasPendingFocus = e.ll; xmasOpen(e.key); }
-  else if (xmasMapObj) xmasMapObj.setView(e.ll, 17, { animate: true });
+function xmasNormalizeSearch(value) {
+  return (value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+}
+function xmasSearchMatches(value) {
+  const q=xmasNormalizeSearch(value);
+  if(q.length<3)return [];
+  const seen=new Set();
+  return xmasSearchEntries().map(e=>({...e,n:xmasNormalizeSearch(e.label)}))
+    .filter(e=>e.n.includes(q))
+    .sort((a,b)=>(a.n.startsWith(q)?0:1)-(b.n.startsWith(q)?0:1))
+    .filter(e=>{const id=e.key+'|'+e.label;if(seen.has(id))return false;seen.add(id);return true;})
+    .slice(0,7);
+}
+function xmasSearchHideResults() {
+  const box=document.getElementById('xmasSearchResults');
+  if(box){box.hidden=true;box.innerHTML='';box._matches=null;}
+}
+function xmasSearchChoose(entry) {
+  if(!entry)return false;
+  const input=document.getElementById('xmasSearch');
+  if(input){input.value='';input.blur();}
+  xmasSearchHideResults();
+  if(xmasTown!==entry.key){xmasPendingFocus=entry.ll;xmasOpen(entry.key);}
+  else if(xmasMapObj)xmasMapObj.setView(entry.ll,17,{animate:true});
   return true;
 }
-document.addEventListener('change', e => { if (e.target && e.target.id === 'xmasSearch' && xmasSearchPick(e.target.value)) e.target.value = ''; });
-document.addEventListener('input', e => { if (e.target && e.target.id === 'xmasSearch' && xmasSearchPick(e.target.value)) e.target.value = ''; });
+function xmasSearchPick(val) {
+  const matches=xmasSearchMatches(val);
+  if(!matches.length)return false;
+  const q=xmasNormalizeSearch(val);
+  return xmasSearchChoose(matches.find(e=>e.n===q)||matches[0]);
+}
+document.addEventListener('input',e=>{
+ if(!e.target||e.target.id!=='xmasSearch')return;
+ const box=document.getElementById('xmasSearchResults');
+ if(!box)return;
+ const q=e.target.value;
+ const matches=xmasSearchMatches(q);
+ if(xmasNormalizeSearch(q).length<3){xmasSearchHideResults();return;}
+ if(!matches.length){box.innerHTML='<div class="xmas-search-empty">No matching place. Try another name.</div>';box.hidden=false;return;}
+ box._matches=matches;
+ box.innerHTML=matches.map((m,i)=>'<button type="button" class="xmas-search-result" data-search-index="'+i+'">'+m.label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</button>').join('');
+ box.hidden=false;
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('#xmasSearchResults .xmas-search-result');
+ if(b){e.preventDefault();const box=document.getElementById('xmasSearchResults');xmasSearchChoose(box&&box._matches?box._matches[Number(b.dataset.searchIndex)]:null);return;}
+ if(!e.target.closest('.xmas-search'))xmasSearchHideResults();
+});
+document.addEventListener('keydown',e=>{
+ if(e.target&&e.target.id==='xmasSearch'&&e.key==='Enter'){
+  const box=document.getElementById('xmasSearchResults');
+  if(box&&box._matches&&box._matches.length){e.preventDefault();xmasSearchChoose(box._matches[0]);}
+ }
+ if(e.target&&e.target.id==='xmasSearch'&&e.key==='Escape')xmasSearchHideResults();
+});
 
 function xmasDrawMap(opts) {
   const el = document.getElementById('xmasMap');
