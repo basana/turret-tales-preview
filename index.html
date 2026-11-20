@@ -207,7 +207,7 @@
   .xmas-cell-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
   .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
-  .xmas-hero img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+  .xmas-hero img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
   .xmas-hero { pointer-events: auto; }
   .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
@@ -233,7 +233,7 @@
   button:active, a:active, .btn:focus-visible, button:focus-visible { box-shadow: 0 0 0 3px #C0202A !important; outline: none; }
   .xmas-ph { grid-column: 1 / -1; padding: 28px 12px; text-align: center; border: 1px dashed #7A1026; border-radius: 8px; color: #7A1026; font-size: 13px; }
   .xmas-hero-pic { position: relative; display: block; }
-  .xmas-hero-strip { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; pointer-events: auto; cursor: pointer; }
+  .xmas-hero-strip { position: absolute; left: auto; right: 0; bottom: 0; width: 48%; height: 12%; z-index: 1; pointer-events: auto; cursor: pointer; }
   .xmas-hero-label { pointer-events: auto; }
   .xmas-hero-label { display: block; padding: 14px 12px 16px; font-family: 'EB Garamond', serif; font-size: 28px; font-weight: 700; letter-spacing: 0.02em; text-align: center; }
   .xmas-banner { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; display: block; margin: 0 0 12px; }
@@ -333,7 +333,7 @@
   /* GPS target is identified by its pulse and number, never by a text label. */
   .gps-target-label-mode .leaflet-tooltip.gps-base-label { display: none !important; }
   .xmas-hero-caption {
-    position: absolute; right: 0; top: 86%; background: #7A1026; color: #fff;
+    position: absolute; right: 0; top: auto; bottom: 12%; z-index: 2; background: #7A1026; color: #fff;
     font-family: var(--sans); font-size: 13px; font-weight: 400; line-height: 1.2;
     padding: 4px 9px; border-radius: 6px 0 0 0; text-align: right; max-width: 85%;
   }
@@ -1631,7 +1631,7 @@
         <div class="guide-note-photo" id="guideNotePhoto"><img src="guide-photo.webp" alt="Anatoly Basin"></div>
         <p class="guide-note-text" id="guideNoteText"></p>
       </div>
-      <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="xmas-hero-frame.webp" alt=""><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
+      <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="Rahmen%20KO%20kurz.webp" alt="Christmas market Koblenz framed illustration"><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>
