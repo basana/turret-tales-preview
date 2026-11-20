@@ -1344,6 +1344,41 @@
     .poi-toggle-btn { width: 62px; height: 62px; font-size: 31px; }
   }
 </style>
+<style>
+/* MAP NAVI floating navigation prototype */
+.xmas-floating-nav{position:absolute;z-index:1450;left:10px;right:10px;bottom:10px;pointer-events:none;font-family:var(--sans)}
+.xmas-floating-shortcuts{display:grid;grid-template-columns:1fr 1fr;gap:9px;pointer-events:auto}
+.xmas-floating-shortcut{min-width:0;min-height:58px;display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid #fff;border-radius:16px;background:rgba(250,245,232,.98);color:#542d28;box-shadow:0 4px 16px #23181255;text-align:left;cursor:pointer}
+.xfs-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:50%;background:#7A1026;color:#fff;font-size:18px}
+.xmas-floating-shortcut strong{display:block;font-size:14px;line-height:1.1}.xmas-floating-shortcut small{display:block;margin-top:3px;color:#735e50;font-size:11px;line-height:1.15}
+.xmas-floating-sheet{position:absolute;left:0;right:0;bottom:0;height:48%;max-height:calc(100% - 92px);display:flex;flex-direction:column;overflow:hidden;pointer-events:auto;border:1px solid #fff;border-radius:19px;background:rgba(250,245,232,.99);box-shadow:0 5px 24px #19110c66;transform:translateY(calc(100% + 18px));opacity:0;visibility:hidden;transition:transform .28s ease,opacity .22s ease,height .25s ease}
+.xmas-floating-nav.open .xmas-floating-sheet{transform:translateY(0);opacity:1;visibility:visible}.xmas-floating-nav.open .xmas-floating-shortcuts{visibility:hidden}
+.xmas-floating-nav.expanded .xmas-floating-sheet{height:78%;max-height:calc(100% - 76px)}
+.xmas-floating-handle{width:100%;min-height:28px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:pan-x;flex:0 0 auto}
+.xmas-floating-grip{width:38px;height:4px;border-radius:99px;background:#9b8875}
+.xmas-floating-head{display:flex;align-items:center;gap:6px;padding:0 12px 8px;flex:0 0 auto}
+.xmas-floating-tab{border:1px solid #bda889;border-radius:999px;background:#fffaf0;color:#684b3a;padding:7px 12px;font:700 12px var(--sans);cursor:pointer}
+.xmas-floating-tab.active{background:#7A1026;border-color:#7A1026;color:#fff}
+.xmas-floating-close{margin-left:auto;width:30px;height:30px;border:0;border-radius:50%;background:#eadfca;color:#563b31;font-size:20px;cursor:pointer}
+.xmas-floating-content{overflow:auto;overscroll-behavior:contain;padding:0 12px 14px;min-height:0;flex:1 1 auto}
+.xmas-floating-content .xmas-save-location-btn{position:static;display:inline-flex;margin:2px 0 9px;min-height:40px;font-size:13px}.xmas-floating-content .xmas-save-location-btn[hidden]{display:none}
+.xmas-floating-content .xmas-gps-panel{margin:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 1px 9px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.xmas-floating-content .xmas-gps-panel>*{scroll-snap-align:start}
+.xmas-floating-content .xmas-gps-row{flex:0 0 225px;min-height:68px;align-items:center;padding:10px 11px;margin:0;border:1px solid #d3c2a6;border-radius:12px;background:#fffdf7;box-sizing:border-box}
+.xmas-floating-content .xmas-gps-row>span{font-size:13px;line-height:1.25;font-weight:700}.xmas-floating-content .xmas-gps-row b{display:block;color:#7A1026;font-size:15px;white-space:nowrap}.xmas-floating-content .xmas-gps-row small{display:block;margin:2px 0 0;font-size:11px;white-space:nowrap}
+.xmas-floating-content .xmas-gps-depart,.xmas-floating-content .xmas-gps-time{flex:0 0 100%}
+.xmas-floating-content .xmas-gps-ship{border-color:#9c6a75;background:#fff7f6}
+.xmas-floating-content .xmas-town-list{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 8px;margin:8px 0 0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.xmas-floating-content .xmas-town-card{flex:0 0 190px;scroll-snap-align:start;min-height:62px}.xmas-floating-content .xmas-town-card img{width:48px;height:48px;min-width:48px}
+.xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-panel{flex-direction:column;overflow:visible}
+.xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%}
+.xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-depart,.xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-time{flex:0 0 auto}
+.xmas-floating-empty{padding:12px;border-radius:12px;background:#f1e7d4;color:#654d3c;font-size:13px;line-height:1.4;margin:4px 0 10px}
+.xmas-floating-hint{padding:0 12px 7px;color:#7A1026;font-size:11px;font-weight:700;text-align:center}
+.xmas-floating-nav.hint-bounce .xmas-floating-sheet{animation:xmasSheetNudge 1.35s ease-in-out 1}
+@keyframes xmasSheetNudge{0%,100%{transform:translateY(0)}35%{transform:translateY(-13px)}65%{transform:translateY(0)}}
+@media(max-width:380px){.xmas-floating-shortcut{padding:8px;gap:7px;min-height:54px}.xmas-floating-shortcut strong{font-size:13px}.xmas-floating-shortcut small{font-size:10px}.xmas-floating-content .xmas-gps-row{flex-basis:205px}}
+</style>
 </head>
 <body>
 
@@ -4651,6 +4686,56 @@ function xmasTownListHtml() {
     return `<button type="button" class="xmas-town-card" data-xc="${k}" aria-label="${T(XMAS_CITY[k].name)}">${photo}<span class="castle-name">${T(XMAS_CITY[k].name)}</span></button>`;
   }).join('') + '</div>';
 }
+
+function xmasFloatingText(k){
+ const d={
+ de:{ship:'Mein Schiff',explore:'Entdecken',shipSub:'Liegeplatz & Rückkehr',exploreSub:'Märkte & Entfernungen',swipe:'Nach oben ziehen für mehr',gps:'GPS aktivieren, um Entfernungen zu sehen.',noShip:'Noch kein Schiff gespeichert. Aktiviere GPS und speichere den aktuellen Liegeplatz.',show:'Gespeicherten Liegeplatz zeigen'},
+ en:{ship:'My Ship',explore:'Explore',shipSub:'Berth & return point',exploreSub:'Markets & distances',swipe:'Swipe up to explore',gps:'Enable GPS to see distances.',noShip:'No ship saved yet. Turn on GPS and save the current berth.',show:'Show saved berth'},
+ fr:{ship:'Mon bateau',explore:'Explorer',shipSub:'Amarrage & retour',exploreSub:'Marchés & distances',swipe:'Glissez vers le haut',gps:'Activez le GPS pour voir les distances.',noShip:'Aucun bateau enregistré. Activez le GPS et enregistrez le quai actuel.',show:'Voir le quai enregistré'},
+ nl:{ship:'Mijn schip',explore:'Ontdekken',shipSub:'Ligplaats & terugkeer',exploreSub:'Markten & afstanden',swipe:'Veeg omhoog om te ontdekken',gps:'Schakel GPS in om afstanden te zien.',noShip:'Nog geen schip opgeslagen. Schakel GPS in en sla de huidige ligplaats op.',show:'Opgeslagen ligplaats tonen'},
+ ru:{ship:'Мой корабль',explore:'Обзор',shipSub:'Причал и точка возврата',exploreSub:'Рынки и расстояния',swipe:'Потяните вверх, чтобы открыть',gps:'Включите GPS, чтобы увидеть расстояния.',noShip:'Корабль ещё не сохранён. Включите GPS и сохраните текущий причал.',show:'Показать сохранённый причал'},
+ zh:{ship:'我的船',explore:'探索',shipSub:'停靠点与返回位置',exploreSub:'集市与距离',swipe:'向上滑动查看更多',gps:'开启 GPS 以查看距离。',noShip:'尚未保存船只位置。开启 GPS 并保存当前位置。',show:'显示已保存的位置'},
+ he:{ship:'הספינה שלי',explore:'לגלות',shipSub:'מיקום עגינה וחזרה',exploreSub:'שווקים ומרחקים',swipe:'החליקו למעלה לעוד',gps:'הפעילו GPS כדי לראות מרחקים.',noShip:'לא נשמרה ספינה. הפעילו GPS ושמרו את מקום העגינה.',show:'הצגת מקום העגינה'}
+ };return(d[xmasLang]||d.en)[k];
+}
+function xmasFloatingEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function updateXmasFloatingNavContent(){
+ const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;
+ const cat=nav.dataset.category||'explore',p=nav.querySelector('.xmas-floating-content'),gp=p.querySelector('#xmasGpsPanel'),save=p.querySelector('#xmasSaveLocationBtn'),towns=p.querySelector('.xmas-town-list'),empty=nav.querySelector('.xmas-floating-empty'),saved=getSavedSpot();
+ nav.querySelectorAll('.xmas-floating-tab').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
+ if(gp){gp.querySelectorAll('.xmas-gps-row').forEach(r=>{const ship=r.classList.contains('xmas-gps-ship');r.hidden=cat==='ship'?!ship:ship;});gp.querySelectorAll('.xmas-gps-depart,.xmas-gps-time,.xmas-gps-clear').forEach(e=>e.hidden=cat!=='ship');}
+ if(save)save.hidden=cat!=='ship'||!xmasGpsPos;
+ if(towns)towns.hidden=cat!=='explore';
+ if(empty){if(cat==='ship'){empty.hidden=!!(xmasGpsPos||saved);empty.textContent=xmasFloatingText('noShip');}else{const has=!!(gp&&gp.querySelector('.xmas-gps-row:not(.xmas-gps-ship)'));empty.hidden=has;empty.textContent=xmasFloatingText('gps');}}
+ const staticSaved=nav.querySelector('.xmas-floating-static-saved');
+ if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved||!!xmasGpsPos;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">📌 '+xmasFloatingEsc(saved.label)+' · '+xmasFloatingText('show')+'</button>';staticSaved.querySelector('button').onclick=()=>{if(xmasMapObj)xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});};}}
+ const sub=nav.querySelector('[data-shortcut-sub="ship"]');if(sub)sub.textContent=saved?saved.label:xmasFloatingText('shipSub');
+}
+function xmasFloatingOpen(cat){
+ const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;
+ nav.dataset.category=cat;nav.classList.add('open');nav.classList.remove('expanded');
+ nav.querySelectorAll('.xmas-floating-shortcut').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
+ updateXmasFloatingNavContent();
+ let seen=false;try{seen=localStorage.getItem('xmasFloatingHintV1')==='1';}catch(e){}
+ if(!seen){nav.classList.add('hint-bounce');const hint=nav.querySelector('.xmas-floating-hint');hint.hidden=false;setTimeout(()=>{nav.classList.remove('hint-bounce');hint.hidden=true;try{localStorage.setItem('xmasFloatingHintV1','1');}catch(e){}},1450);}
+ if(cat==='explore'){const list=nav.querySelector('.xmas-town-list');let done=false;try{done=localStorage.getItem('xmasFloatingCarouselHintV1')==='1';}catch(e){}if(list&&!done){setTimeout(()=>{list.scrollBy({left:22,behavior:'smooth'});setTimeout(()=>list.scrollBy({left:-22,behavior:'smooth'}),450);try{localStorage.setItem('xmasFloatingCarouselHintV1','1');}catch(e){}},550);}}
+}
+function initXmasFloatingNav(){
+ if(xmasTown||xmasListOnly)return;
+ const stage=document.querySelector('#view-christmas .xmas-map-stage');if(!stage||stage.querySelector('.xmas-floating-nav'))return;
+ const gp=document.getElementById('xmasGpsPanel'),towns=document.querySelector('#view-christmas .xmas-town-list'),save=document.getElementById('xmasSaveLocationBtn');if(!gp)return;
+ const nav=document.createElement('div');nav.className='xmas-floating-nav';nav.dataset.category='explore';
+ nav.innerHTML='<div class="xmas-floating-shortcuts"><button type="button" class="xmas-floating-shortcut" data-category="ship"><span class="xfs-icon">⚓</span><span><strong>My Ship</strong><small data-shortcut-sub="ship"></small></span></button><button type="button" class="xmas-floating-shortcut" data-category="explore"><span class="xfs-icon">⌖</span><span><strong>'+xmasFloatingText('explore')+'</strong><small>'+xmasFloatingText('exploreSub')+'</small></span></button></div><section class="xmas-floating-sheet" aria-label="Map navigation panel"><button type="button" class="xmas-floating-handle" aria-label="Drag panel up or down"><span class="xmas-floating-grip"></span></button><div class="xmas-floating-head"><button type="button" class="xmas-floating-tab" data-category="ship">'+xmasFloatingText('ship')+'</button><button type="button" class="xmas-floating-tab active" data-category="explore">'+xmasFloatingText('explore')+'</button><button type="button" class="xmas-floating-close" aria-label="Close panel">×</button></div><div class="xmas-floating-hint" hidden>'+xmasFloatingText('swipe')+'</div><div class="xmas-floating-content"><div class="xmas-floating-empty"></div><div class="xmas-floating-static-saved" hidden></div></div></section>';
+ stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');content.appendChild(gp);if(save)content.insertBefore(save,gp);if(towns)content.appendChild(towns);
+ if(towns)towns.addEventListener('click',e=>{const card=e.target.closest('.xmas-town-card');if(!card)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const g=XMAS_GEO[card.dataset.xc];if(!xmasMapObj||!g)return;xmasMapObj.stop();if(g.pins.length>1)xmasMapObj.fitBounds(L.latLngBounds(g.pins),{padding:[75,90],maxZoom:15,animate:true});else xmasMapObj.setView(g.center,Math.min(16,g.zoom||15),{animate:true});},true);
+ nav.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>xmasFloatingOpen(b.dataset.category)));
+ nav.querySelector('.xmas-floating-close').addEventListener('click',()=>nav.classList.remove('open','expanded'));
+ const h=nav.querySelector('.xmas-floating-handle');let y=null;
+ h.addEventListener('pointerdown',e=>{y=e.clientY;h.setPointerCapture(e.pointerId);});
+ h.addEventListener('pointerup',e=>{if(y===null)return;const dy=e.clientY-y;y=null;if(dy<-35)nav.classList.add('expanded');else if(dy>35){if(nav.classList.contains('expanded'))nav.classList.remove('expanded');else nav.classList.remove('open');}else if(nav.classList.contains('expanded'))nav.classList.remove('expanded');else nav.classList.add('expanded');});
+ updateXmasFloatingNavContent();
+}
+
 let xmasGpsWatch = null, xmasGpsPos = null, xmasGpsMarker = null, xmasSpotMarker = null, xmasSpotCircle = null, xmasBerthMarkers = [];
 
 function xmasG(k) { return (XG[xmasLang] || XG.de)[k]; }
@@ -4852,6 +4937,7 @@ function xmasUpdateGpsPanel() {
     const saveButton = document.getElementById('xmasSaveLocationBtn');
     if (saveButton) saveButton.hidden = true;
     setXmasGpsTargetMarker(null);
+    if (typeof updateXmasFloatingNavContent === 'function') updateXmasFloatingNavContent();
     return;
   }
   const p = xmasGpsPos;
@@ -4932,6 +5018,7 @@ function xmasUpdateGpsPanel() {
     xToast.classList.remove('show');
     xToast._lastLabel = null;
   }
+  if (typeof updateXmasFloatingNavContent === 'function') updateXmasFloatingNavContent();
 }
 
 function renderChristmas(townKey) {
@@ -5030,6 +5117,7 @@ function renderChristmas(townKey) {
       pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
     });
   }
+  initXmasFloatingNav();
   // При выборе города из общей карты/списка всегда показываем карту в начале его раздела,
   // а не сохраняем прежнюю прокрутку до фотогалереи.
   if (focusTownMap) {
