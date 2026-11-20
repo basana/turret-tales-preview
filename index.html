@@ -251,7 +251,7 @@
   .xmas-where p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink); }
   .xmas-where-btn { display: block; width: 100%; padding: 11px; border: none; border-radius: 10px; background: #7A1026; color: #F5ECD6; font-weight: 700; font-size: 15px; cursor: pointer; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .xmas-map-big { height: 70vh; min-height: 520px; }
+  .xmas-map-big { height: clamp(300px, 58dvh, 560px); min-height: 0; }
   .xmas-town-list { display: grid; gap: 10px; margin: 0 0 14px; }
   .xmas-town-list .route-card { margin: 0; }
   .xmas-market-town-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -318,9 +318,9 @@
   .tab.tab-xmas.active, .tab.tab-xmas-light.active { background: #7A1026 !important; color: #fff !important; font-weight: 700; }
   .xmas-top-actions{display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:nowrap;margin:0 0 10px}.xmas-top-actions .xmas-back{margin:0;flex:0 0 auto;text-align:center;white-space:nowrap}.xmas-top-actions .xmas-overview-top{background:#7A1026;color:#fff;border-color:#7A1026;max-width:min(220px,52%);white-space:normal;line-height:1.15}
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
-  .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  .xmas-map { width: 100%; height: clamp(300px, 58dvh, 560px); min-height: 0; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   /* MAP NAVI: every market map uses the same full-size viewport as the main map. */
-  .xmas-map.xmas-map-big { height: 70vh; min-height: 520px; }
+  .xmas-map.xmas-map-big { height: clamp(300px, 58dvh, 560px); min-height: 0; }
   .wine-emblem { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #7A1026; background: #fff; flex: none; display: flex; align-items: center; justify-content: center; }
   .wine-emblem-letter { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #7A1026; }
   .wine-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -1074,6 +1074,13 @@
   .xmas-map-stage #xmasNearestToast { left:12px; right:12px; bottom:calc(78px + env(safe-area-inset-bottom, 0px)); z-index:1501; }
   .xmas-map-stage.xmas-sheet-open #xmasNearestToast { bottom:calc(54% + 12px); }
   .xmas-map-stage.xmas-sheet-expanded #xmasNearestToast { bottom:calc(96% + 12px); }
+  .xmas-map-stage .poi-info-toast { left:12px; right:12px; bottom:calc(78px + env(safe-area-inset-bottom, 0px)); z-index:1502; }
+  .xmas-map-stage.xmas-sheet-open .poi-info-toast { bottom:calc(54% + 12px); }
+  .xmas-map-stage.xmas-sheet-expanded .poi-info-toast { bottom:calc(96% + 12px); }
+  .xmas-return-countdown-screen { position:fixed; z-index:3000; top:calc(env(safe-area-inset-top, 0px) + 112px); right:14px; min-width:112px; padding:10px 15px; border:2px solid #fff; border-radius:14px; background:rgba(141,33,24,.97); color:#fff; text-align:center; font:900 25px/1.05 var(--sans); box-shadow:0 0 0 2px #b33a2b,0 5px 18px rgba(0,0,0,.35); pointer-events:none; animation:xmasReturnPulse 1.35s ease-in-out infinite; }
+  .xmas-return-countdown-screen[hidden] { display:none; }
+  .xmas-return-countdown-screen small { display:block; margin-top:5px; font:800 9px/1.2 var(--sans); letter-spacing:.1em; }
+  .xmas-market-open-btn { display:inline-block; margin:8px 0 0 8px; padding:7px 12px; border:1px solid #fff; border-radius:18px; background:#fff; color:#7A1026; font:800 12px var(--sans); cursor:pointer; white-space:nowrap; }
   .gps-panel {
     position: absolute; z-index: 1000; top: 126px; left: 12px; display: none;
     flex-direction: column; align-items: flex-start; gap: 7px; max-width: 210px;
@@ -2338,7 +2345,7 @@ function _showPoiToast(mapObj, poi, emoji) {
   toast.classList.add('show');
   toast.onclick = () => { _focusPoiOnMap(mapObj, poi); };
   clearTimeout(toast._hideTimer);
-  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+  if (mapObj !== xmasMapObj) toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
 // ── POI Emergency mode: block popups, show "need help?" after 30s ──
 let _poiEmergencyMode = false;
@@ -2448,17 +2455,30 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
     _showPoiToast(mapObj, nearest, emoji);
   }
 }
+function clearMainPoiMode() {
+  if (leafletMap) {
+    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; }
+    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; }
+    leafletMap._poiGpsZoomed = false; leafletMap._poiFocusActive = false;
+    _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap);
+  }
+  document.querySelectorAll('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc').forEach(b=>b.classList.remove('active'));
+  _stopPoiEmergency();
+}
 function togglePoiLayer(type) {
   if (!leafletMap) return;
+  const already = type === 'apotheke' ? !!apothekenLayer : !!toilettenLayer;
+  clearMainPoiMode();
+  if (already) return;
   if (type === 'apotheke') {
-    if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!toilettenLayer) { leafletMap._poiFocusActive = false; _stopPoiEmergency(); } return; }
     apothekenLayer = _buildPoiLayer(leafletMap, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(leafletMap, POI_APOTHEKEN, '💊');
   } else {
-    if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; _hidePoiToasts(leafletMap); _hideGpsHint(leafletMap); leafletMap._poiGpsZoomed = false; if (!apothekenLayer) { leafletMap._poiFocusActive = false; _stopPoiEmergency(); } return; }
     toilettenLayer = _buildPoiLayer(leafletMap, POI_TOILETTEN, '🚻', 'poi-wc');
     _zoomToNearestPoi(leafletMap, POI_TOILETTEN, '🚻');
   }
+  const activeBtn = leafletMap.getContainer().querySelector(type === 'apotheke' ? '.poi-toggle-btn.apotheke' : '.poi-toggle-btn.wc');
+  if (activeBtn) activeBtn.classList.add('active');
   _startPoiEmergency();
   const nt = document.getElementById('nearestToast'); if (nt) nt.classList.remove('show');
 }
@@ -2466,29 +2486,25 @@ function _hidePoiToasts(mapObj) {
   const t = mapObj.getContainer().querySelector('.poi-info-toast');
   if (t) t.classList.remove('show');
 }
+function clearXmasPoiMode() {
+  if (xmasMapObj) {
+    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; }
+    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; }
+    xmasMapObj._poiGpsZoomed = false; xmasMapObj._poiFocusActive = false;
+    _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj);
+  }
+  document.querySelectorAll('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc').forEach(b=>b.classList.remove('active'));
+  _stopPoiEmergency();
+}
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   const key = type === 'apotheke' ? 'apotheke' : 'wc';
   const btn = xmasMapObj.getContainer().querySelector('.poi-toggle-btn.' + key);
-  if (type === 'apotheke') {
-    if (xmasApoLayer) {
-      xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null;
-      if (btn) btn.classList.remove('active');
-      _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false;
-      if (!xmasWcLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); }
-      return;
-    }
-    xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
-  } else {
-    if (xmasWcLayer) {
-      xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null;
-      if (btn) btn.classList.remove('active');
-      _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false;
-      if (!xmasApoLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); }
-      return;
-    }
-    xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
-  }
+  const already = type === 'apotheke' ? !!xmasApoLayer : !!xmasWcLayer;
+  clearXmasPoiMode();
+  if (already) return;
+  if (type === 'apotheke') xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
+  else xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
   if (btn) btn.classList.add('active');
   _zoomToNearestPoi(xmasMapObj, type === 'apotheke' ? POI_APOTHEKEN : POI_TOILETTEN, type === 'apotheke' ? '💊' : '🚻');
   _startPoiEmergency();
@@ -4665,9 +4681,13 @@ function xmasDrawMap(opts) {
     }
     xmasMapObj.invalidateSize(true);
   };
+  xmasMapObj.getContainer().addEventListener('pointerdown', e => {
+    if (e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc')) return;
+    if (xmasApoLayer || xmasWcLayer) clearXmasPoiMode();
+  }, true);
   const resetBtn = xmasMapObj.getContainer().querySelector('#xResetBtn');
   if (resetBtn) resetBtn.addEventListener('click', e => {
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault(); e.stopPropagation(); clearXmasPoiMode();
     if (xmasMapObj && xmasMapObj._xmasGpsFocusActive && xmasMapObj._xmasGpsFocusSnapshot) {
       const snap = xmasMapObj._xmasGpsFocusSnapshot;
       xmasMapObj._xmasGpsFocusActive = false; xmasMapObj._xmasGpsFocusSnapshot = null; xmasMapObj._xmasGpsFocusTarget = null;
@@ -4764,6 +4784,32 @@ function xmasTownListHtml() {
   }).join('') + '</div>';
 }
 
+let xmasPendingMarketKey = null;
+document.addEventListener('pointerdown',e=>{
+ const keep=e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc');
+ if(keep)return;
+ if(apothekenLayer||toilettenLayer)clearMainPoiMode();
+ if(xmasApoLayer||xmasWcLayer)clearXmasPoiMode();
+},true);
+function xmasSelectMarket(k){
+ const g=XMAS_GEO[k],city=XMAS_CITY[k];if(!g||!city||!xmasMapObj)return;
+ clearXmasPoiMode();
+ if(xmasPendingMarketKey===k){xmasPendingMarketKey=null;const t=document.getElementById('xmasNearestToast');if(t){t.classList.remove('show');delete t.dataset.marketKey;}renderChristmas(k);return;}
+ xmasPendingMarketKey=k;xmasMapObj.stop();
+ if(g.pins&&g.pins.length>1)xmasMapObj.fitBounds(L.latLngBounds(g.pins),{paddingTopLeft:[55,105],paddingBottomRight:[55,150],maxZoom:16,animate:true});
+ else xmasMapObj.setView(g.center,Math.min(17,(g.zoom||15)+1),{animate:true});
+ const toast=document.getElementById('xmasNearestToast');
+ if(toast){
+  const name=(city.name&&(city.name[xmasLang]||city.name.en||city.name.de))||k;
+  let detail='';
+  if(xmasGpsPos){const d=distanceMeters(xmasGpsPos.lat,xmasGpsPos.lng,g.center[0],g.center[1]);const tr=xmasTravelInfo(d);detail=`<br><span class="toast-dist">≈ ${formatDistance(d)} · ${tr.minutes} ${tr.label}${d>2000?'':' 🚶'}</span>`;}
+  const openLabel=({de:'Markt öffnen',en:'Open market',fr:'Ouvrir le marché',nl:'Markt openen',ru:'Открыть рынок',zh:'打开市集',he:'פתיחת השוק'}[xmasLang]||'Open market');
+  toast.dataset.marketKey=k;toast._dismissed=false;
+  toast.innerHTML=`🎄 <strong>${name}</strong>${detail}<button type="button" class="xmas-market-open-btn">${openLabel}</button>`;
+  toast.classList.add('show');
+  toast.querySelector('button').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();xmasPendingMarketKey=null;delete toast.dataset.marketKey;toast.classList.remove('show');renderChristmas(k);});
+ }
+}
 function xmasFloatingText(k){
  const d={
  de:{ship:'Mein Schiff',explore:'Entdecken',shipSub:'Liegeplatz & Rückkehr',exploreSub:'Märkte & Entfernungen',swipe:'Nach oben ziehen für mehr',gps:'GPS aktivieren, um Entfernungen zu sehen.',noShip:'Noch kein Schiff gespeichert. Aktiviere GPS und speichere den aktuellen Liegeplatz.',show:'Gespeicherten Liegeplatz zeigen',backShip:'Zurück zum Schiff · antippen'},
@@ -4839,6 +4885,7 @@ function xmasFloatingOpen(cat){
  const content=nav.querySelector('.xmas-floating-content');if(content)content.scrollTop=0;
  const townList=nav.querySelector('.xmas-town-list');if(townList)townList.scrollTop=0;
  const back=document.querySelector('.xmas-back-to-map');if(back)back.hidden=true;
+ clearXmasPoiMode();
  nav.style.setProperty('--sheet-height','54%');nav.style.setProperty('--sheet-side','7px');nav.dataset.category=cat;nav.classList.add('open');nav.classList.remove('expanded','is-dragging');const stage=nav.closest('.xmas-map-stage');if(stage){stage.classList.add('xmas-sheet-open');stage.classList.remove('xmas-sheet-expanded');}
  nav.querySelectorAll('.xmas-floating-shortcut').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
  updateXmasFloatingNavContent();
@@ -4854,7 +4901,7 @@ function initXmasFloatingNav(){
  const nav=document.createElement('div');nav.className='xmas-floating-nav';nav.dataset.category='explore';
  nav.innerHTML='<div class="xmas-floating-shortcuts"><button type="button" class="xmas-floating-shortcut" data-category="ship"><span class="xfs-icon">⚓</span><span><strong data-shortcut-title="ship">'+xmasFloatingText('ship')+'</strong><small data-shortcut-sub="ship"></small></span></button><button type="button" class="xmas-floating-shortcut" data-category="explore"><span class="xfs-icon">⌖</span><span><strong>'+xmasFloatingText('explore')+'</strong><small>'+xmasFloatingText('exploreSub')+'</small></span></button></div><section class="xmas-floating-sheet" aria-label="Map navigation panel"><button type="button" class="xmas-floating-handle" aria-label="Drag panel up or down"><span class="xmas-floating-grip"></span></button><div class="xmas-floating-head"><button type="button" class="xmas-floating-tab" data-category="ship">'+xmasFloatingText('ship')+'</button><button type="button" class="xmas-floating-tab active" data-category="explore">'+xmasFloatingText('explore')+'</button><button type="button" class="xmas-floating-close" aria-label="Close panel">×</button></div><div class="xmas-floating-hint" hidden>'+xmasFloatingText('swipe')+'</div><div class="xmas-floating-content"><div class="xmas-floating-empty"></div><div class="xmas-floating-static-saved" hidden></div></div></section>';
  stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');content.appendChild(gp);if(save)content.insertBefore(save,gp);if(towns)content.appendChild(towns);
- if(towns)towns.addEventListener('click',e=>{const card=e.target.closest('.xmas-town-card');if(!card)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const g=XMAS_GEO[card.dataset.xc];if(!xmasMapObj||!g)return;xmasMapObj.stop();xmasFloatingCollapse();if(g.pins.length>1)xmasMapObj.fitBounds(L.latLngBounds(g.pins),{padding:[75,90],maxZoom:15,animate:true});else xmasMapObj.setView(g.center,Math.min(16,g.zoom||15),{animate:true});setTimeout(()=>{if(xmasMapObj)xmasMapObj.invalidateSize();},300);},true);
+ if(towns)towns.addEventListener('click',e=>{const card=e.target.closest('.xmas-town-card');if(!card)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();xmasSelectMarket(card.dataset.xc);},true);
  nav.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>xmasFloatingOpen(b.dataset.category)));
  nav.querySelector('.xmas-floating-close').addEventListener('click',xmasFloatingCollapse);
  const h=nav.querySelector('.xmas-floating-handle');let drag=null;
@@ -4887,19 +4934,20 @@ const XMAS_RETURN_TEXT = {
 function xmasReturnSignature(depart,sp){return [depart,Number(sp.lat).toFixed(3),Number(sp.lng).toFixed(3)].join('|');}
 function xmasUpdateReturnWarning(margin,depart,sp){
  const badge=document.getElementById('xmasReturnCountdown');
+ let screenBadge=document.getElementById('xmasReturnCountdownScreen');
+ if(!screenBadge){screenBadge=document.createElement('div');screenBadge.id='xmasReturnCountdownScreen';screenBadge.className='xmas-return-countdown-screen';screenBadge.hidden=true;document.body.appendChild(screenBadge);}
  const sig=sp&&depart?xmasReturnSignature(depart,sp):'';
  let acknowledged=false;
  try{acknowledged=!!sig&&localStorage.getItem(XMAS_RETURN_ACK_KEY)===sig;}catch(e){}
  if(!sig||margin===null||margin>30||acknowledged){
   if(badge)badge.hidden=true;
+  if(screenBadge)screenBadge.hidden=true;
   const modal=document.getElementById('xmasReturnWarningModal');if(modal)modal.hidden=true;
   return;
  }
- if(badge){
-  const t=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
-  badge.hidden=false;
-  badge.innerHTML=margin<0?`${Math.abs(margin)}<small>${t.lateLabel}</small>`:`${margin}<small>${t.leftLabel}</small>`;
- }
+ const countdownText=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
+ if(badge){badge.hidden=false;badge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
+ if(screenBadge){screenBadge.hidden=currentView!=='guide';screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
  let modal=document.getElementById('xmasReturnWarningModal');
  if(margin>15||currentView!=='christmas'){if(modal)modal.hidden=true;return;}
  if(!modal){
@@ -5215,7 +5263,7 @@ function xmasUpdateGpsPanel() {
   if (xmasMapObj && !xmasMapObj._xmasNearestToastInteractionBound) {
     const dismissNearestToast = () => {
       const t = document.getElementById('xmasNearestToast');
-      if (t) { t.classList.remove('show'); t._dismissed = true; clearTimeout(t._hideTimer); }
+      if (t && !t.dataset.marketKey) { t.classList.remove('show'); t._dismissed = true; clearTimeout(t._hideTimer); }
     };
     xmasMapObj.on('dragstart zoomstart', dismissNearestToast);
     const mapContainer = xmasMapObj.getContainer();
@@ -5226,7 +5274,7 @@ function xmasUpdateGpsPanel() {
     window.addEventListener('scroll', dismissNearestToast, { passive: true });
     xmasMapObj._xmasNearestToastInteractionBound = true;
   }
-  if (xToast && rows.length > 0) {
+  if (xToast && rows.length > 0 && !xToast.dataset.marketKey) {
     const nr = rows[0];
     const newLabel = nr.t.label;
     if (xToast._lastLabel !== newLabel) {
@@ -5243,7 +5291,7 @@ function xmasUpdateGpsPanel() {
       if (xToast._dismissed) xToast.classList.remove('show');
       else { clearTimeout(xToast._hideTimer); }
     }
-  } else if (xToast) {
+  } else if (xToast && !xToast.dataset.marketKey) {
     xToast.classList.remove('show');
     xToast._lastLabel = null;
   }
@@ -5253,7 +5301,7 @@ function xmasUpdateGpsPanel() {
 // Keep the return-time digits counting down even when the visitor is standing still.
 if (!window._xmasReturnWarningClock) {
   window._xmasReturnWarningClock = setInterval(() => {
-    if (currentView === 'christmas' && xmasGpsPos && getSavedSpot()) xmasUpdateGpsPanel();
+    if (xmasGpsPos && getSavedSpot()) xmasUpdateGpsPanel();
   }, 30000);
 }
 
@@ -5350,7 +5398,7 @@ function renderChristmas(townKey) {
             ll,
             html: `<div class="xmas-overview-market"><span class="xmas-overview-num">${i + 1}</span><span class="xmas-overview-tree">${isAngel ? '<img src="schaengel-angel.svg" alt="">' : '🎄'}</span></div>`,
             anchor: [60, 18],
-            onClick: () => renderChristmas(k)
+            onClick: () => xmasSelectMarket(k)
           };
         });
       })
