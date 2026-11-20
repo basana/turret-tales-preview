@@ -192,6 +192,7 @@
   .xmas-gps-save { border: 1px solid rgba(255,255,255,.75); background: linear-gradient(135deg,var(--terracotta),#8f4a22); color: #fff; font-weight: 700; }
   .xmas-gps-clear { border: 1px solid #8eafd0; background: #e7f0f9; color: #285b88; }
   .xmas-gps-depart { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .xmas-gps-depart input { font: 16px/1.2 var(--sans) !important; min-height: 44px; width: 116px; box-sizing: border-box; touch-action: manipulation; -webkit-text-size-adjust: 100%; }
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
   .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
   .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
@@ -5275,7 +5276,7 @@ function xmasUpdateGpsPanel() {
   } else {
     xmasUpdateReturnWarning(null, '', null);
   }
-  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="text" id="xmasDepart" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="text" id="xmasDepart" class="xmas-departure-time" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}" style="font-size:16px;min-height:44px;max-width:116px;touch-action:manipulation"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
@@ -5298,29 +5299,37 @@ function xmasUpdateGpsPanel() {
   if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
   const dep = document.getElementById('xmasDepart');
   if (dep) {
-    const applyDeparture = () => {
-      const value=dep.value.trim();
-      if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(value))return;
-      try { localStorage.setItem(XMAS_DEPART_KEY,value); } catch(e) {}
-      const spNow=getSavedSpot();
-      if(spNow&&xmasGpsPos){
-        const [hh,mm]=value.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
-        const dNow=distanceMeters(xmasGpsPos.lat,xmasGpsPos.lng,spNow.lat,spNow.lng);
-        const marginNow=Math.round((depTime-new Date())/60000-xmasTravelInfo(dNow).minutes);
-        xmasUpdateReturnWarning(marginNow,value,spNow);
-        const notice=document.getElementById('xmasDepartNotice');
-        if(notice){notice.className='xmas-gps-time '+(marginNow>=0?'ok':'late');notice.textContent=(marginNow>=0?xmasG('enough'):xmasG('notEnough')).replace('{n}',Math.abs(marginNow));}
-      }
+    const parseDeparture = raw => {
+      const digits = String(raw || '').replace(/\D/g, '').slice(0, 4);
+      if (digits.length !== 4) return null;
+      const hh = Number(digits.slice(0, 2)), mm = Number(digits.slice(2, 4));
+      if (hh > 23 || mm > 59) return null;
+      return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
     };
-    dep.addEventListener('input',()=>{
-      // iPhone numeric keypad: enter four digits (e.g. 1430); the colon is inserted automatically.
-      const digits=dep.value.replace(/\\D/g,'').slice(0,4);
-      const formatted=digits.length>2?digits.slice(0,2)+':'+digits.slice(2):digits;
-      if(dep.value!==formatted)dep.value=formatted;
-      if(/^([01]\\d|2[0-3]):[0-5]\\d$/.test(formatted))applyDeparture();
+    const applyDeparture = () => {
+      const value = parseDeparture(dep.value);
+      if (!value) return false;
+      dep.value = value;
+      try { localStorage.setItem(XMAS_DEPART_KEY, value); } catch (e) {}
+      const spNow = getSavedSpot();
+      if (spNow && xmasGpsPos) {
+        const [hh, mm] = value.split(':').map(Number);
+        const depTime = new Date(); depTime.setHours(hh, mm, 0, 0);
+        const dNow = distanceMeters(xmasGpsPos.lat, xmasGpsPos.lng, spNow.lat, spNow.lng);
+        const marginNow = Math.round((depTime - new Date()) / 60000 - xmasTravelInfo(dNow).minutes);
+        xmasUpdateReturnWarning(marginNow, value, spNow);
+        const notice = document.getElementById('xmasDepartNotice');
+        if (notice) { notice.className = 'xmas-gps-time ' + (marginNow >= 0 ? 'ok' : 'late'); notice.textContent = (marginNow >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(marginNow)); }
+      }
+      return true;
+    };
+    dep.addEventListener('input', () => {
+      // Keep the user's digits untouched while typing; format and save only a complete valid HHMM.
+      const digits = dep.value.replace(/\D/g, '').slice(0, 4);
+      if (digits.length === 4) applyDeparture();
     });
-    dep.addEventListener('change',applyDeparture);
-    dep.addEventListener('blur',applyDeparture);
+    dep.addEventListener('change', applyDeparture);
+    dep.addEventListener('blur', applyDeparture);
   }
 
   // Nearest market toast — persistent until the visitor interacts with the map or drawer.
