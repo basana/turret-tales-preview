@@ -176,6 +176,18 @@
   .xmas-gps-time { margin: 8px 0 12px; padding: 11px 13px; border-radius: 10px; font-size: 15px; font-weight: 800; line-height: 1.35; border: 1px solid transparent; }
   .xmas-gps-time.ok { background: #e6f1e4; border-color: #9bbd91; color: #285b25; }
   .xmas-gps-time.late { background: #f6e0dc; border: 2px solid #b33a2b; color: #8d2118; box-shadow: 0 2px 8px rgba(141,33,24,.14); }
+  .xmas-return-countdown{position:absolute;z-index:1550;left:50%;top:50%;transform:translate(-50%,-50%);min-width:168px;padding:15px 22px;border:3px solid #fff;border-radius:18px;background:rgba(141,33,24,.96);color:#fff;text-align:center;font:900 clamp(23px,6vw,34px)/1.05 var(--sans);letter-spacing:.02em;text-shadow:0 2px 3px rgba(0,0,0,.35);box-shadow:0 0 0 3px #b33a2b,0 8px 28px rgba(0,0,0,.4);pointer-events:none;animation:xmasReturnPulse 1.35s ease-in-out infinite}
+  .xmas-return-countdown[hidden]{display:none}
+  .xmas-return-countdown small{display:block;margin-top:6px;font:800 11px/1.2 var(--sans);letter-spacing:.13em;text-transform:uppercase}
+  @keyframes xmasReturnPulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 3px #b33a2b,0 8px 28px rgba(0,0,0,.4)}50%{transform:translate(-50%,-50%) scale(1.07);box-shadow:0 0 0 9px rgba(179,58,43,.28),0 10px 34px rgba(0,0,0,.48)}}
+  .xmas-return-warning{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(28,15,12,.72);font-family:var(--sans)}
+  .xmas-return-warning[hidden]{display:none}
+  .xmas-return-warning-card{width:min(92vw,390px);padding:22px 20px 18px;border:3px solid #b33a2b;border-radius:18px;background:#fff1ed;color:#681b14;text-align:center;box-shadow:0 14px 44px rgba(0,0,0,.5)}
+  .xmas-return-warning-kicker{font-size:13px;font-weight:900;letter-spacing:.2em;color:#a21f17}
+  .xmas-return-warning h2{margin:8px 0 7px;font-size:clamp(25px,7vw,32px);line-height:1.05;color:#7e1710}
+  .xmas-return-warning-time{margin:10px 0;font-size:clamp(29px,8vw,40px);font-weight:950;line-height:1}
+  .xmas-return-warning p{margin:8px 0 17px;font-size:15px;line-height:1.4}
+  .xmas-return-warning button{min-height:48px;width:100%;border:0;border-radius:24px;background:#8d2118;color:#fff;font:800 15px var(--sans);cursor:pointer}
   .xmas-gps-save, .xmas-gps-clear { margin: 8px 0; padding: 8px 12px; border-radius: 999px; cursor: pointer; font-family: var(--sans); }
   .xmas-gps-save { border: 1px solid rgba(255,255,255,.75); background: linear-gradient(135deg,var(--terracotta),#8f4a22); color: #fff; font-weight: 700; }
   .xmas-gps-clear { border: 1px solid #8eafd0; background: #e7f0f9; color: #285b88; }
@@ -4727,11 +4739,11 @@ const XMAS_EXPLAIN = {
   he: '<b><u>הקישו</u></b> על המספרים במפה, והעמוד <b><u>יעבור</u></b> לשוק המתאים. כפתור "GPS" מציג את המרחק לכל שוק ולרציף Viking. כפתור "הספינה שלי כאן" זוכר את מיקום הספינה שלכם, ואז מוצג גם אם יש מספיק זמן לפני היציאה.'
 };
 const XMAS_EXPLAIN_OVERVIEW = {
-  de: '<b><u>Tippen Sie</u></b> auf einen Ortsnamen auf der Karte oder in der Liste darunter, dann <b><u>springen</u></b> Sie zur Marktseite des Ortes. Mit „GPS“ sehen Sie, wie weit jeder Ort entfernt ist. Mit „Mein Schiff ist hier“ merken Sie sich Ihr Schiff.',
-  fr: '<b><u>Touchez</u></b> un nom de ville sur la carte ou dans la liste ci-dessous, puis <b><u>allez</u></b> à la page de son marché. Avec « GPS », vous voyez la distance jusqu’à chaque ville. Avec « Mon bateau est ici », vous mémorisez votre bateau.',
-  nl: '<b><u>Tik</u></b> op een plaatsnaam op de kaart of in de lijst eronder, dan <b><u>spring</u></b> je naar de marktpagina van die plaats. Met „GPS“ ziet u hoe ver elke plaats is. Met „Mijn schip ligt hier“ onthoudt u uw schip.',
-  en: '<b><u>Tap</u></b> a town name on the map or in the list below to <b><u>jump</u></b> to its market page. With “GPS” you see how far each town is from you. With “My ship is here” you save your ship.',
-  ru: '<b><u>Нажмите</u></b> на название города на карте или в списке ниже, чтобы <b><u>перейти</u></b> к странице его рынка. Кнопка «GPS» покажет, как далеко каждый город. Кнопка «Мой корабль здесь» запомнит ваш корабль.'
+  de: '<b><u>Tippen Sie</u></b> auf eine nummerierte Marktmarkierung auf der Karte oder auf eine Ortskarte darunter, um die Marktseite dieses Ortes zu öffnen. Mit „GPS“ sehen Sie die Entfernung von Ihrem Standort. Speichern Sie Ihr Schiff mit „Mein Schiff ist hier“, um die Rückkehrzeit vor der Abfahrt zu prüfen.',
+  fr: '<b><u>Touchez</u></b> un numéro de marché sur la carte ou une carte de ville ci-dessous pour ouvrir la page du marché. Avec « GPS », vous voyez la distance depuis votre position. Enregistrez votre bateau avec « Mon bateau est ici » pour vérifier le temps de retour avant le départ.',
+  nl: '<b><u>Tik</u></b> op een genummerde marktmarkering op de kaart of op een plaatskaart hieronder om de marktpagina te openen. Met „GPS“ ziet u de afstand vanaf uw locatie. Sla uw schip op met „Mijn schip ligt hier“ om te controleren of u op tijd terug bent.',
+  en: '<b><u>Tap</u></b> a numbered market marker on the map or a town card below to open that town’s market page. GPS shows the distance from your location. Save your ship with “My ship is here” to check your return time before departure.',
+  ru: '<b><u>Нажмите</u></b> на номер рынка на карте или карточку города ниже, чтобы открыть страницу его рынка. GPS покажет расстояние от вашего местоположения. Сохраните корабль кнопкой «Мой корабль здесь», чтобы проверить, успеваете ли вы вернуться к отправлению.'
 };
 function xmasExplainHtml() {
   const dict = xmasTown ? XMAS_EXPLAIN : XMAS_EXPLAIN_OVERVIEW;
@@ -4854,6 +4866,52 @@ function xmasWalkMin(d) { return Math.max(1, Math.round(d * 1.3 / 75)); } // Luf
 function xmasTravelInfo(d) {
   if (d > 2000) return { minutes: Math.max(1, Math.round((d / 1000) / 12 * 60)), label: xmasG('shipMin') };
   return { minutes: xmasWalkMin(d), label: xmasG('min') };
+}
+const XMAS_RETURN_ACK_KEY = 'xmasReturnWarningAckV1';
+const XMAS_RETURN_TEXT = {
+ de:{title:'Sie müssen jetzt zurück',late:'Sie kommen voraussichtlich zu spät. Gehen Sie sofort zurück zum Schiff.',left:'Nur noch wenig Zeitreserve. Kehren Sie jetzt zum Schiff zurück.',leftLabel:'MIN. ZEITPUFFER',lateLabel:'MIN. ZU SPÄT',button:'Verstanden — weiter'},
+ en:{title:'Return to your ship now',late:'You are likely to be late. Head back to your ship immediately.',left:'Very little time remains. Please return to your ship now.',leftLabel:'MINUTES TO SPARE',lateLabel:'MINUTES LATE',button:'I understand — continue'},
+ ru:{title:'Пора возвращаться на корабль',late:'Вы, вероятно, опоздаете. Немедленно направляйтесь обратно к кораблю.',left:'Запас времени почти закончился. Пожалуйста, возвращайтесь к кораблю сейчас.',leftLabel:'МИН. В ЗАПАСЕ',lateLabel:'МИН. ОПОЗДАНИЕ',button:'Понятно — продолжить'},
+ fr:{title:'Retournez à votre bateau',late:'Vous risquez d’être en retard. Retournez immédiatement à votre bateau.',left:'Il reste très peu de temps. Retournez maintenant à votre bateau.',leftLabel:'MIN. DE MARGE',lateLabel:'MIN. DE RETARD',button:'Compris — continuer'},
+ nl:{title:'Ga nu terug naar uw schip',late:'U komt waarschijnlijk te laat. Ga onmiddellijk terug naar uw schip.',left:'Er is nog maar weinig tijd. Ga nu terug naar uw schip.',leftLabel:'MIN. OVER',lateLabel:'MIN. TE LAAT',button:'Begrepen — doorgaan'},
+ zh:{title:'现在返回您的船',late:'您可能会迟到。请立即返回船上。',left:'剩余时间不多，请现在返回船上。',leftLabel:'分钟余量',lateLabel:'分钟迟到',button:'知道了 — 继续'},
+ he:{title:'זה הזמן לחזור לספינה',late:'כנראה תאחרו. חזרו מיד לספינה.',left:'נותר מעט מאוד זמן. חזרו לספינה עכשיו.',leftLabel:'דקות שנותרו',lateLabel:'דקות איחור',button:'הבנתי — להמשיך'}
+};
+function xmasReturnSignature(depart,sp){return [depart,Number(sp.lat).toFixed(3),Number(sp.lng).toFixed(3)].join('|');}
+function xmasUpdateReturnWarning(margin,depart,sp){
+ const badge=document.getElementById('xmasReturnCountdown');
+ const sig=sp&&depart?xmasReturnSignature(depart,sp):'';
+ let acknowledged=false;
+ try{acknowledged=!!sig&&localStorage.getItem(XMAS_RETURN_ACK_KEY)===sig;}catch(e){}
+ if(!sig||margin===null||margin>30||acknowledged){
+  if(badge)badge.hidden=true;
+  const modal=document.getElementById('xmasReturnWarningModal');if(modal)modal.hidden=true;
+  return;
+ }
+ if(badge){
+  const t=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
+  badge.hidden=false;
+  badge.innerHTML=margin<0?`${Math.abs(margin)}<small>${t.lateLabel}</small>`:`${margin}<small>${t.leftLabel}</small>`;
+ }
+ if(margin>15||currentView!=='christmas')return;
+ let modal=document.getElementById('xmasReturnWarningModal');
+ if(!modal){
+  modal=document.createElement('div');modal.id='xmasReturnWarningModal';modal.className='xmas-return-warning';modal.setAttribute('role','alertdialog');modal.setAttribute('aria-modal','true');
+  modal.innerHTML='<div class="xmas-return-warning-card"><div class="xmas-return-warning-kicker">⚠ WARNING</div><h2></h2><div class="xmas-return-warning-time"></div><p></p><button type="button"></button></div>';
+  document.body.appendChild(modal);
+  modal.querySelector('button').addEventListener('click',()=>{
+   try{if(modal.dataset.signature)localStorage.setItem(XMAS_RETURN_ACK_KEY,modal.dataset.signature);}catch(e){}
+   modal.hidden=true;
+   const b=document.getElementById('xmasReturnCountdown');if(b)b.hidden=true;
+  });
+ }
+ const t=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
+ modal.dataset.signature=sig;
+ modal.querySelector('h2').textContent=t.title;
+ modal.querySelector('.xmas-return-warning-time').textContent=margin<0?`${Math.abs(margin)} min late`:`${margin} min`;
+ modal.querySelector('p').textContent=margin<0?t.late:t.left;
+ modal.querySelector('button').textContent=t.button;
+ modal.hidden=false;
 }
 function xmasGpsBtnHtml() {
   const lock = isPremiumUnlocked() ? '' : ' <span class="xmas-lock">✦</span>';
@@ -5076,6 +5134,9 @@ function xmasUpdateGpsPanel() {
     const dep = new Date(); dep.setHours(hh, mm, 0, 0);
     const margin = Math.round((dep - new Date()) / 60000 - xmasTravelInfo(d).minutes);
     timeNotice = `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}" role="status" aria-live="polite">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
+    xmasUpdateReturnWarning(margin, depart, sp);
+  } else {
+    xmasUpdateReturnWarning(null, '', null);
   }
   let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
@@ -5156,7 +5217,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte Mittelrhein', fr: 'Carte du Rhin moyen', nl: 'Kaart Midden-Rijn', en: 'Middle Rhine map', ru: 'Карта Среднего Рейна', zh: '中莱茵河地图', he: 'מפת הריין התיכון' }[xmasLang] || 'Middle Rhine map';
   const chips = XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div><div class="nearest-toast" id="xmasNearestToast"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml());
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div><div class="xmas-return-countdown" id="xmasReturnCountdown" hidden aria-live="polite"></div><div class="nearest-toast" id="xmasNearestToast"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml());
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
@@ -5208,7 +5269,7 @@ function renderChristmas(townKey) {
       else if (isPremiumUnlocked()) xmasStartGps();
       else openPremiumPopup('xmas');
     });
-    // GPS startet nicht automatisch beim Laden: Standort nur auf Wunsch aktiv
+    // GPS is restored below only when it was previously enabled and a return-time check is configured. aktiv
   }
   xmasUpdateGpsPanel();
   if (!xmasTown && xmasListOnly) {
@@ -5240,6 +5301,10 @@ function renderChristmas(townKey) {
     });
   }
   initXmasFloatingNav();
+  // Resume a previously enabled GPS session so the saved-ship warning can be calculated after reopening.
+  let resumeXmasGps = false;
+  try { resumeXmasGps = localStorage.getItem('rhineGuideGpsActive') === 'true' && !!getSavedSpot() && !!localStorage.getItem(XMAS_DEPART_KEY); } catch (e) {}
+  if (resumeXmasGps && xmasGpsWatch === null && !xmasGpsPos) setTimeout(() => xmasStartGps(), 250);
   // При выборе города из общей карты/списка всегда показываем карту в начале его раздела,
   // а не сохраняем прежнюю прокрутку до фотогалереи.
   if (focusTownMap) {
