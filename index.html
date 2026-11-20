@@ -1359,6 +1359,8 @@
   }
   /* Christmas-market map uses the same in-map search position as the main map */
   .xmas-map-stage { position: relative; width: calc(100% + 6px); margin-left: -3px; }
+  .xmas-back-to-map{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:1900;min-height:48px;padding:0 18px;border:2px solid #fff;border-radius:26px;background:#7A1026;color:#fff;font:800 14px var(--sans);box-shadow:0 4px 18px rgba(0,0,0,.32);cursor:pointer}
+  .xmas-back-to-map[hidden]{display:none}
   /* Keep Leaflet zoom +/- below the market search field */
   .xmas-map-stage .leaflet-top.leaflet-left { top: auto; }
   .xmas-map-stage .leaflet-bottom.leaflet-left { bottom: 10px; left: 10px; }
@@ -4772,7 +4774,7 @@ function xmasFloatingText(k){
  };return (d[xmasLang]||d.en)[k] || d.en[k];
 }
 function xmasFloatingEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function xmasFloatingCollapse(){const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;nav.classList.remove('open','expanded','is-dragging');const st=nav.closest('.xmas-map-stage');if(st)st.classList.remove('xmas-sheet-open','xmas-sheet-expanded');if(xmasMapObj)setTimeout(()=>xmasMapObj.invalidateSize(),280);}
+function xmasFloatingCollapse(){const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;nav.classList.remove('open','expanded','is-dragging');const st=nav.closest('.xmas-map-stage');if(st)st.classList.remove('xmas-sheet-open','xmas-sheet-expanded');const back=document.querySelector('.xmas-back-to-map');if(back)back.hidden=false;if(xmasMapObj)setTimeout(()=>xmasMapObj.invalidateSize(),280);}
 function updateXmasFloatingNavContent(){
  const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;
  const cat=nav.dataset.category||'explore',p=nav.querySelector('.xmas-floating-content'),gp=p.querySelector('#xmasGpsPanel'),save=p.querySelector('#xmasSaveLocationBtn'),towns=p.querySelector('.xmas-town-list'),empty=nav.querySelector('.xmas-floating-empty'),saved=getSavedSpot();
@@ -4832,6 +4834,9 @@ function xmasBeginManualShipPick(){
 
 function xmasFloatingOpen(cat){
  const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;
+ const content=nav.querySelector('.xmas-floating-content');if(content)content.scrollTop=0;
+ const townList=nav.querySelector('.xmas-town-list');if(townList)townList.scrollTop=0;
+ const back=document.querySelector('.xmas-back-to-map');if(back)back.hidden=true;
  nav.style.setProperty('--sheet-height','54%');nav.style.setProperty('--sheet-side','7px');nav.dataset.category=cat;nav.classList.add('open');nav.classList.remove('expanded','is-dragging');const stage=nav.closest('.xmas-map-stage');if(stage){stage.classList.add('xmas-sheet-open');stage.classList.remove('xmas-sheet-expanded');}
  nav.querySelectorAll('.xmas-floating-shortcut').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
  updateXmasFloatingNavContent();
@@ -5113,6 +5118,22 @@ function xmasUpdateGpsPanel() {
     return;
   }
   const p = xmasGpsPos;
+  // iOS presents its time picker as a native sheet. Never replace the input node while it is open.
+  const activeDepart = document.getElementById('xmasDepart');
+  if (activeDepart && document.activeElement === activeDepart) {
+    const selected = activeDepart.value;
+    let saved = ''; try { saved = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
+    const spNow = getSavedSpot();
+    if (spNow && selected && /^\d{2}:\d{2}$/.test(selected)) {
+      const [hh,mm] = selected.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
+      const dNow=distanceMeters(p.lat,p.lng,spNow.lat,spNow.lng);
+      const marginNow=Math.round((depTime-new Date())/60000-xmasTravelInfo(dNow).minutes);
+      xmasUpdateReturnWarning(marginNow,selected,spNow);
+      const notice=document.getElementById('xmasDepartNotice');
+      if(notice){notice.className='xmas-gps-time '+(marginNow>=0?'ok':'late');notice.textContent=(marginNow>=0?xmasG('enough'):xmasG('notEnough')).replace('{n}',Math.abs(marginNow));}
+    }
+    return;
+  }
   const saveLocationBtn = document.getElementById('xmasSaveLocationBtn');
   if (saveLocationBtn) saveLocationBtn.hidden = false;
   const fmt = (ll) => {
@@ -5134,7 +5155,7 @@ function xmasUpdateGpsPanel() {
     const [hh, mm] = depart.split(':').map(Number);
     const dep = new Date(); dep.setHours(hh, mm, 0, 0);
     const margin = Math.round((dep - new Date()) / 60000 - xmasTravelInfo(d).minutes);
-    timeNotice = `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}" role="status" aria-live="polite">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
+    timeNotice = `<div id="xmasDepartNotice" class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}" role="status" aria-live="polite">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
     xmasUpdateReturnWarning(margin, depart, sp);
   } else {
     xmasUpdateReturnWarning(null, '', null);
@@ -5161,10 +5182,21 @@ function xmasUpdateGpsPanel() {
   const clr = document.getElementById('xmasShipClear');
   if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
   const dep = document.getElementById('xmasDepart');
-  if (dep) dep.addEventListener('change', () => {
-    try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {}
-    xmasUpdateGpsPanel();
-  });
+  if (dep) {
+    dep.addEventListener('input', () => { try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {} });
+    dep.addEventListener('change', () => {
+      try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {}
+      const spNow=getSavedSpot();
+      if(spNow&&xmasGpsPos&&/^\d{2}:\d{2}$/.test(dep.value)){
+        const [hh,mm]=dep.value.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
+        const dNow=distanceMeters(xmasGpsPos.lat,xmasGpsPos.lng,spNow.lat,spNow.lng);
+        const marginNow=Math.round((depTime-new Date())/60000-xmasTravelInfo(dNow).minutes);
+        xmasUpdateReturnWarning(marginNow,dep.value,spNow);
+        const notice=document.getElementById('xmasDepartNotice');
+        if(notice){notice.className='xmas-gps-time '+(marginNow>=0?'ok':'late');notice.textContent=(marginNow>=0?xmasG('enough'):xmasG('notEnough')).replace('{n}',Math.abs(marginNow));}
+      }else{xmasUpdateReturnWarning(null,'',null);}
+    });
+  }
 
   // Nearest market toast — persistent until the visitor interacts with the map or drawer.
   const xToast = document.getElementById('xmasNearestToast');
@@ -5252,6 +5284,16 @@ function renderChristmas(townKey) {
     <div class="xmas-chips">${chips}</div>
     ${body}
   </div>`;
+  if(xmasTown){
+    const mapBack=document.createElement('button');
+    mapBack.type='button';mapBack.className='xmas-back-to-map';
+    mapBack.textContent=({de:'↑ Zur Karte',en:'↑ Back to map',fr:'↑ Retour à la carte',nl:'↑ Terug naar de kaart',ru:'↑ К карте',zh:'↑ 返回地图',he:'↑ למפה'}[xmasLang]||'↑ Back to map');
+    mapBack.addEventListener('click',()=>{
+      const stage=document.querySelector('#view-christmas .xmas-map-stage');
+      if(stage){stage.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>{if(xmasMapObj)xmasMapObj.invalidateSize();},350);}
+    });
+    el.appendChild(mapBack);
+  }
   initXmasSearchTicker();
   el.querySelectorAll('.xmas-lang').forEach(b => b.addEventListener('click', () => {
     xmasLang = b.dataset.xl;
