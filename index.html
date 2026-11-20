@@ -4791,18 +4791,19 @@ document.addEventListener('pointerdown',e=>{
  if(apothekenLayer||toilettenLayer)clearMainPoiMode();
  if(xmasApoLayer||xmasWcLayer)clearXmasPoiMode();
 },true);
-function xmasSelectMarket(k){
+function xmasSelectMarket(k,targetLL=null){
  const g=XMAS_GEO[k],city=XMAS_CITY[k];if(!g||!city||!xmasMapObj)return;
  clearXmasPoiMode();
  if(xmasPendingMarketKey===k){xmasPendingMarketKey=null;const t=document.getElementById('xmasNearestToast');if(t){t.classList.remove('show');delete t.dataset.marketKey;}renderChristmas(k);return;}
  xmasPendingMarketKey=k;xmasMapObj.stop();
- if(g.pins&&g.pins.length>1)xmasMapObj.fitBounds(L.latLngBounds(g.pins),{paddingTopLeft:[55,105],paddingBottomRight:[55,150],maxZoom:16,animate:true});
+ if(targetLL)xmasMapObj.setView(targetLL,18,{animate:true});
+ else if(g.pins&&g.pins.length>1)xmasMapObj.fitBounds(L.latLngBounds(g.pins),{paddingTopLeft:[55,105],paddingBottomRight:[55,150],maxZoom:16,animate:true});
  else xmasMapObj.setView(g.center,Math.min(17,(g.zoom||15)+1),{animate:true});
  const toast=document.getElementById('xmasNearestToast');
  if(toast){
   const name=(city.name&&(city.name[xmasLang]||city.name.en||city.name.de))||k;
   let detail='';
-  if(xmasGpsPos){const d=distanceMeters(xmasGpsPos.lat,xmasGpsPos.lng,g.center[0],g.center[1]);const tr=xmasTravelInfo(d);detail=`<br><span class="toast-dist">≈ ${formatDistance(d)} · ${tr.minutes} ${tr.label}${d>2000?'':' 🚶'}</span>`;}
+  if(xmasGpsPos){const refLL=targetLL||g.center;const d=distanceMeters(xmasGpsPos.lat,xmasGpsPos.lng,refLL[0],refLL[1]);const tr=xmasTravelInfo(d);detail=`<br><span class="toast-dist">≈ ${formatDistance(d)} · ${tr.minutes} ${tr.label}${d>2000?'':' 🚶'}</span>`;}
   const openLabel=({de:'Markt öffnen',en:'Open market',fr:'Ouvrir le marché',nl:'Markt openen',ru:'Открыть рынок',zh:'打开市集',he:'פתיחת השוק'}[xmasLang]||'Open market');
   toast.dataset.marketKey=k;toast._dismissed=false;
   toast.innerHTML=`🎄 <strong>${name}</strong>${detail}<button type="button" class="xmas-market-open-btn">${openLabel}</button>`;
@@ -5398,7 +5399,7 @@ function renderChristmas(townKey) {
             ll,
             html: `<div class="xmas-overview-market"><span class="xmas-overview-num">${i + 1}</span><span class="xmas-overview-tree">${isAngel ? '<img src="schaengel-angel.svg" alt="">' : '🎄'}</span></div>`,
             anchor: [60, 18],
-            onClick: () => xmasSelectMarket(k)
+            onClick: () => xmasSelectMarket(k, ll)
           };
         });
       })
