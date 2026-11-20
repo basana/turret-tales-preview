@@ -4797,9 +4797,9 @@ function xmasShowShipSetupDialog(error=false){
  box.querySelector('h3').textContent=t.title;box.querySelector('p').textContent=error?t.error:t.body;
  box.querySelector('.xmas-ship-gps').textContent=t.gps;box.querySelector('.xmas-ship-manual').textContent=t.manual;box.hidden=false;
 }
-function xmasSaveShipAt(lat,lng){
+function xmasSaveShipAt(lat,lng,source='gps'){
  const label=window.prompt(xmasG('shipPrompt'),xmasG('shipDefault'));if(label===null)return false;
- setSavedSpot({lat,lng,label:(label||xmasG('shipDefault')).trim(),source:xmasManualPickMode?'manual':'gps'});
+ setSavedSpot({lat,lng,label:(label||xmasG('shipDefault')).trim(),source});
  xmasManualPickMode=false;xmasDrawGpsLayers();xmasUpdateGpsPanel();
  if(typeof updateXmasFloatingNavContent==='function')updateXmasFloatingNavContent();
  return true;
@@ -4814,7 +4814,7 @@ function xmasBeginManualShipPick(){
   if(!xmasManualPickMode)return;
   const ll=e.latlng;xmasManualPickMode=false;
   if(toast)toast.classList.remove('show');
-  xmasSaveShipAt(ll.lat,ll.lng);
+  xmasSaveShipAt(ll.lat,ll.lng,'manual');
  });
 }
 
@@ -4987,6 +4987,7 @@ function xmasFocusUserAndNearest() {
 function xmasStartGps() {
   if (xmasMapObj) xmasMapObj._xmasGpsFitDone = false;
   if (!navigator.geolocation) {
+    if(xmasPendingShipSave){xmasPendingShipSave=false;xmasShowShipSetupDialog(true);}
     const saveButton = document.getElementById('xmasSaveLocationBtn');
     if (saveButton) saveButton.hidden = true;
     xmasSetGpsLabel(xmasG('err')); return;
