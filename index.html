@@ -847,6 +847,20 @@
   }
   .splash-lang-btn.active { background: var(--terracotta); color: var(--cream-text); border-color: var(--terracotta); }
   body.xmas-on .splash-lang-btn:not(.active) { background: #fff; color: #7A1026; border-color: #7A1026; font-weight: 700; }
+  /* Splash only: enlarge language choices by 15%, while reserving a clear gap beside the emblem.
+     The second-screen language row (.xmas-home-langs) intentionally keeps its current size. */
+  .splash:not(.hide) .splash-lang {
+    gap: 7px;
+    max-width: min(70%, calc(100% - clamp(117px, 39vw, 183px) - 16px));
+  }
+  .splash:not(.hide) .splash-lang-btn {
+    font-size: 13.8px;
+    padding: 6.9px 12.65px;
+    border-radius: 16px;
+  }
+  body.xmas-on .splash:not(.hide) .splash-lang {
+    max-width: min(70%, calc(100% - clamp(90px, 30vw, 140px) - 16px));
+  }
 
   /* === ЗНАЧОК «ЭКСКУРСИЯ ВОЗМОЖНА» (там, где гид сам проводит туры) === */
   .tour-badge {
