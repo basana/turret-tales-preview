@@ -2415,7 +2415,7 @@ function _hidePoiToasts(mapObj) {
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   if (type === 'apotheke') {
-    if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasWcLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); } return; }
+    if (xmasApoLayer) { const old=xmasApoLayer; xmasMapObj.removeLayer(old); if(old.eachLayer)old.eachLayer(l=>{if(xmasMapObj.hasLayer(l))xmasMapObj.removeLayer(l);}); xmasApoLayer=null; xmasMapObj.getContainer().querySelector('.poi-toggle-btn.apotheke')?.classList.remove('active'); _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed=false; if(!xmasWcLayer){xmasMapObj._poiFocusActive=false;_stopPoiEmergency();} return; }
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
     _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
   } else {
@@ -4705,7 +4705,7 @@ function xmasFloatingText(k){
  ru:{ship:'Мой корабль',explore:'Обзор',shipSub:'Причал и точка возврата',exploreSub:'Рынки и расстояния',swipe:'Потяните вверх, чтобы открыть',gps:'Включите GPS, чтобы увидеть расстояния.',noShip:'Корабль ещё не сохранён. Включите GPS и сохраните текущий причал.',show:'Показать сохранённый причал',backShip:'К кораблю · нажмите, чтобы увидеть его'},
  zh:{ship:'我的船',explore:'探索',shipSub:'停靠点与返回位置',exploreSub:'集市与距离',swipe:'向上滑动查看更多',gps:'开启 GPS 以查看距离。',noShip:'尚未保存船只位置。开启 GPS 并保存当前位置。',show:'显示已保存的位置'},
  he:{ship:'הספינה שלי',explore:'לגלות',shipSub:'מיקום עגינה וחזרה',exploreSub:'שווקים ומרחקים',swipe:'החליקו למעלה לעוד',gps:'הפעילו GPS כדי לראות מרחקים.',noShip:'לא נשמרה ספינה. הפעילו GPS ושמרו את מקום העגינה.',show:'הצגת מקום העגינה'}
- };return(d[xmasLang]||d.en)[k];
+ };return (d[xmasLang]||d.en)[k] || d.en[k];
 }
 function xmasFloatingEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function xmasFloatingCollapse(){const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;nav.classList.remove('open','expanded');const st=nav.closest('.xmas-map-stage');if(st)st.classList.remove('xmas-sheet-open','xmas-sheet-expanded');}
