@@ -1033,6 +1033,10 @@
   .nearest-toast .toast-dist { font-size:16px; }
   /* POI distance toast: keep it in the lower clear area, above map controls */
   .nearest-toast.poi-info-toast { top:auto; bottom:16px; left:12px; right:96px; z-index:1300; }
+  /* MAP NAVI: nearest destination stays above the floating drawer, not below it. */
+  .xmas-map-stage #xmasNearestToast { left:12px; right:12px; bottom:calc(78px + env(safe-area-inset-bottom, 0px)); z-index:1501; }
+  .xmas-map-stage.xmas-sheet-open #xmasNearestToast { bottom:calc(54% + 12px); }
+  .xmas-map-stage.xmas-sheet-expanded #xmasNearestToast { bottom:calc(96% + 12px); }
   .gps-panel {
     position: absolute; z-index: 1000; top: 126px; left: 12px; display: none;
     flex-direction: column; align-items: flex-start; gap: 7px; max-width: 210px;
@@ -1384,6 +1388,15 @@
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-panel{flex-direction:column;overflow:visible}
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%}
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-depart,.xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-time{flex:0 0 auto}
+.xmas-floating-head{min-width:0}
+.xmas-floating-tab{flex:1 1 0;min-width:0;white-space:nowrap;writing-mode:horizontal-tb!important;text-orientation:mixed!important;word-break:normal!important;overflow-wrap:normal!important;line-height:1.2}
+.xmas-floating-shortcut,.xmas-floating-shortcut strong,.xmas-floating-shortcut small,.xmas-floating-head button,.xmas-top-actions button,.xmas-chips button,.xmas-lang{writing-mode:horizontal-tb!important;text-orientation:mixed!important;word-break:normal!important;overflow-wrap:normal!important;transform:none}
+.xmas-floating-shortcut{min-width:0}
+.xmas-floating-shortcut strong,.xmas-floating-shortcut small{white-space:normal;line-height:1.2}
+.xmas-floating-content .xmas-gps-row.xmas-gps-nearest{background:#7A1026!important;border:1px solid #7A1026!important;color:#fff!important;box-shadow:0 3px 10px rgba(60,10,22,.24)}
+.xmas-floating-content .xmas-gps-row.xmas-gps-nearest>span,.xmas-floating-content .xmas-gps-row.xmas-gps-nearest b,.xmas-floating-content .xmas-gps-row.xmas-gps-nearest small{color:#fff!important}
+.xmas-floating-content .xmas-gps-row.xmas-gps-nearest small{opacity:.92}
+.xmas-floating-content .xmas-gps-row.xmas-gps-nearest:active{background:#5f0b1d!important}
 .xmas-floating-static-link{width:100%;padding:11px 12px;border:1px solid #c5a98a;border-radius:11px;background:#fffaf0;color:#6b382f;font:700 13px var(--sans);text-align:left;cursor:pointer}.xmas-floating-empty{padding:12px;border-radius:12px;background:#f1e7d4;color:#654d3c;font-size:13px;line-height:1.4;margin:4px 0 10px}
 .xmas-floating-hint{padding:0 12px 7px;color:#7A1026;font-size:11px;font-weight:700;text-align:center}
 .xmas-floating-nav.hint-bounce .xmas-floating-sheet{animation:xmasSheetNudge 1.35s ease-in-out 1}
@@ -4983,7 +4996,7 @@ function xmasUpdateGpsPanel() {
   const mapTarget = focusedTarget || (rows.length ? rows[0].t : null);
   setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, mapTarget ? (mapTarget.label || '') : '', mapTarget ? (mapTarget.number ?? (mapTarget.index + 1)) : null);
   let depart = ''; try { depart = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
-  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + rows.map(r => `<div class="xmas-gps-row xmas-gps-link" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
   if (sp) {
@@ -5017,8 +5030,20 @@ function xmasUpdateGpsPanel() {
     xmasUpdateGpsPanel();
   });
 
-  // Nearest market toast — показывать только при смене ближайшего объекта
+  // Nearest market toast — persistent until the visitor interacts with the map or drawer.
   const xToast = document.getElementById('xmasNearestToast');
+  if (xmasMapObj && !xmasMapObj._xmasNearestToastInteractionBound) {
+    const dismissNearestToast = () => {
+      const t = document.getElementById('xmasNearestToast');
+      if (t) { t.classList.remove('show'); t._dismissed = true; clearTimeout(t._hideTimer); }
+    };
+    xmasMapObj.on('dragstart zoomstart', dismissNearestToast);
+    const mapContainer = xmasMapObj.getContainer();
+    mapContainer.addEventListener('pointerdown', e => {
+      if (!e.target.closest('#xmasNearestToast')) dismissNearestToast();
+    }, true);
+    xmasMapObj._xmasNearestToastInteractionBound = true;
+  }
   if (xToast && rows.length > 0) {
     const nr = rows[0];
     const newLabel = nr.t.label;
@@ -5028,19 +5053,13 @@ function xmasUpdateGpsPanel() {
       xToast.innerHTML = `⭐ ${nr.t.label}<br><span class="toast-dist">≈ ${formatDistance(nr.d)} · ${travel.minutes} ${travel.label}${nr.d > 2000 ? '' : ' 🚶'}</span>`;
       xToast.classList.add('show');
       xToast.onclick = () => {
-        if (xmasMapObj) xmasMapObj.setView(nr.t.ll, 17);
         xToast.classList.remove('show');
         clearTimeout(xToast._hideTimer);
-        // после движения карты — снова показать ближайший
         xToast._dismissed = true;
-        if (xmasMapObj) xmasMapObj.once('moveend', () => { xToast._dismissed = false; xToast._lastLabel = null; xmasUpdateGpsPanel(); });
+        if (xmasMapObj) xmasMapObj.setView(nr.t.ll, 17, { animate:true });
       };
-      if (!xToast._dismissed) {
-        clearTimeout(xToast._hideTimer);
-        xToast._hideTimer = setTimeout(() => xToast.classList.remove('show'), 4000);
-      } else {
-        xToast.classList.remove('show');
-      }
+      if (xToast._dismissed) xToast.classList.remove('show');
+      else { clearTimeout(xToast._hideTimer); }
     }
   } else if (xToast) {
     xToast.classList.remove('show');
@@ -5061,7 +5080,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte Mittelrhein', fr: 'Carte du Rhin moyen', nl: 'Kaart Midden-Rijn', en: 'Middle Rhine map', ru: 'Карта Среднего Рейна', zh: '中莱茵河地图', he: 'מפת הריין התיכון' }[xmasLang] || 'Middle Rhine map';
   const chips = XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml()) + '<div class="nearest-toast" id="xmasNearestToast"></div>';
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div><div class="nearest-toast" id="xmasNearestToast"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml());
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
