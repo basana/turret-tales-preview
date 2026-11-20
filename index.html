@@ -4773,8 +4773,9 @@ function xmasDrawMap(opts) {
   follow.type = 'button'; follow.className = 'xmas-gps-follow'; follow.id = 'xmasGpsFollowBtn';
   follow.textContent = '↻ Follow'; follow.setAttribute('aria-label', 'Show my location and nearest market');
   xmasMapObj.getContainer().appendChild(follow);
-  follow.addEventListener('click', () => { if (!xmasGpsPos) return; xmasFocusUserAndNearest(); follow.classList.remove('show'); });
-  xmasMapObj.on('dragstart', () => { if (xmasGpsWatch !== null && xmasGpsPos) follow.classList.add('show'); });
+  follow.addEventListener('click', () => { if (!xmasGpsPos) return; xmasFocusUserAndNearest(); follow.classList.add('show'); });
+  if (xmasGpsPos) follow.classList.add('show');
+  xmasMapObj.on('dragstart', () => { if (xmasGpsPos) follow.classList.add('show'); });
   // Do not auto-focus GPS when switching city maps or returning to the Rhine overview.
   // The visitor's explicit map selection owns the camera; Follow remains available on demand.
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
@@ -4843,10 +4844,20 @@ document.addEventListener('pointerdown',e=>{
  if(apothekenLayer||toilettenLayer)clearMainPoiMode();
  if(xmasApoLayer||xmasWcLayer)clearXmasPoiMode();
 },true);
+function xmasOpenMarketContent(k){
+ xmasPendingMarketKey=null;
+ const toast=document.getElementById('xmasNearestToast');
+ if(toast){toast.classList.remove('show');delete toast.dataset.marketKey;}
+ renderChristmas(k);
+ setTimeout(()=>{
+  const first=document.getElementById('xmasCard0');
+  if(first){first.style.scrollMarginTop='14px';first.scrollIntoView({behavior:'smooth',block:'start'});}
+ },650);
+}
 function xmasSelectMarket(k,targetLL=null){
  const g=XMAS_GEO[k],city=XMAS_CITY[k];if(!g||!city||!xmasMapObj)return;
  clearXmasPoiMode();
- if(xmasPendingMarketKey===k){xmasPendingMarketKey=null;const t=document.getElementById('xmasNearestToast');if(t){t.classList.remove('show');delete t.dataset.marketKey;}renderChristmas(k);return;}
+ if(xmasPendingMarketKey===k){xmasOpenMarketContent(k);return;}
  xmasPendingMarketKey=k;xmasMapObj.stop();
  if(targetLL)xmasMapObj.setView(targetLL,18,{animate:true});
  else if(g.pins&&g.pins.length>1)xmasMapObj.fitBounds(L.latLngBounds(g.pins),{paddingTopLeft:[55,105],paddingBottomRight:[55,150],maxZoom:16,animate:true});
@@ -4860,7 +4871,7 @@ function xmasSelectMarket(k,targetLL=null){
   toast.dataset.marketKey=k;toast._dismissed=false;
   toast.innerHTML=`🎄 <strong>${name}</strong>${detail}<button type="button" class="xmas-market-open-btn">${openLabel}</button>`;
   toast.classList.add('show');
-  toast.querySelector('button').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();xmasPendingMarketKey=null;delete toast.dataset.marketKey;toast.classList.remove('show');renderChristmas(k);});
+  toast.querySelector('button').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();xmasOpenMarketContent(k);});
  }
 }
 function xmasFloatingText(k){
@@ -5162,6 +5173,7 @@ function xmasStartGps() {
   xmasSetGpsLabel(xmasG('locating'), true);
   xmasGpsWatch = navigator.geolocation.watchPosition(pos => {
     xmasGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    const followButton = document.getElementById('xmasGpsFollowBtn'); if (followButton) followButton.classList.add('show');
     xmasSetGpsLabel('GPS ON', true);
     if (xmasMapObj) {
       if (xmasGpsMarker) xmasGpsMarker.setLatLng([xmasGpsPos.lat, xmasGpsPos.lng]);
