@@ -319,6 +319,8 @@
   .xmas-top-actions{display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:nowrap;margin:0 0 10px}.xmas-top-actions .xmas-back{margin:0;flex:0 0 auto;text-align:center;white-space:nowrap}.xmas-top-actions .xmas-overview-top{background:#7A1026;color:#fff;border-color:#7A1026;max-width:min(220px,52%);white-space:normal;line-height:1.15}
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
+  /* MAP NAVI: every market map uses the same full-size viewport as the main map. */
+  .xmas-map.xmas-map-big { height: 70vh; min-height: 520px; }
   .wine-emblem { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #7A1026; background: #fff; flex: none; display: flex; align-items: center; justify-content: center; }
   .wine-emblem-letter { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #7A1026; }
   .wine-pin { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #7A1026, 0 3px 8px rgba(0,0,0,.35); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -5267,7 +5269,7 @@ function renderChristmas(townKey) {
   const overviewLbl = { de: 'Karte Mittelrhein', fr: 'Carte du Rhin moyen', nl: 'Kaart Midden-Rijn', en: 'Middle Rhine map', ru: 'Карта Среднего Рейна', zh: '中莱茵河地图', he: 'מפת הריין התיכון' }[xmasLang] || 'Middle Rhine map';
   const chips = XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
-  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div><div class="xmas-return-countdown" id="xmasReturnCountdown" hidden aria-live="polite"></div><div class="nearest-toast" id="xmasNearestToast"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml());
+  const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="xmas-map xmas-map-big"></div><div class="xmas-return-countdown" id="xmasReturnCountdown" hidden aria-live="polite"></div><div class="nearest-toast" id="xmasNearestToast"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml());
   let body = '';
   if (!xmasTown && xmasListOnly) {
     body = `<p class="xmas-intro">${XMAS_OVERVIEW[xmasLang] || XMAS_OVERVIEW.de}</p>` + xmasTownListHtml() + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>';
