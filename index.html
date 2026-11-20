@@ -2414,15 +2414,29 @@ function _hidePoiToasts(mapObj) {
 }
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
+  const key = type === 'apotheke' ? 'apotheke' : 'wc';
+  const btn = xmasMapObj.getContainer().querySelector('.poi-toggle-btn.' + key);
   if (type === 'apotheke') {
-    if (xmasApoLayer) { const old=xmasApoLayer; xmasMapObj.removeLayer(old); if(old.eachLayer)old.eachLayer(l=>{if(xmasMapObj.hasLayer(l))xmasMapObj.removeLayer(l);}); xmasApoLayer=null; xmasMapObj.getContainer().querySelector('.poi-toggle-btn.apotheke')?.classList.remove('active'); _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed=false; if(!xmasWcLayer){xmasMapObj._poiFocusActive=false;_stopPoiEmergency();} return; }
+    if (xmasApoLayer) {
+      xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null;
+      if (btn) btn.classList.remove('active');
+      _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false;
+      if (!xmasWcLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); }
+      return;
+    }
     xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
-    _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
   } else {
-    if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false; if (!xmasApoLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); } return; }
+    if (xmasWcLayer) {
+      xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null;
+      if (btn) btn.classList.remove('active');
+      _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj); xmasMapObj._poiGpsZoomed = false;
+      if (!xmasApoLayer) { xmasMapObj._poiFocusActive = false; _stopPoiEmergency(); }
+      return;
+    }
     xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
-    _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
   }
+  if (btn) btn.classList.add('active');
+  _zoomToNearestPoi(xmasMapObj, type === 'apotheke' ? POI_APOTHEKEN : POI_TOILETTEN, type === 'apotheke' ? '💊' : '🚻');
   _startPoiEmergency();
   const xt = document.getElementById('xmasNearestToast'); if (xt) xt.classList.remove('show');
 }
@@ -4577,7 +4591,7 @@ function xmasDrawMap(opts) {
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
   const xResetHtml = '<button class="poi-toggle-btn" style="background:rgba(246,238,221,0.95);border-color:var(--gold,#c8a878)" id="xResetBtn" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
-  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
+  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC">🚻</button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
   if (L.DomEvent) { L.DomEvent.disableClickPropagation(xPoiBar); L.DomEvent.disableScrollPropagation(xPoiBar); }
   const resetMarketMapView = () => {
