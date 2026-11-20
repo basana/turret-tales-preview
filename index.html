@@ -4732,13 +4732,13 @@ const XG = {
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
 const XMAS_EXPLAIN = {
-  de: '<b><u>Tippen Sie</u></b> auf die Zahlen auf der Karte, dann <b><u>springen</u></b> Sie zum Markt. Mit „GPS“ sehen Sie, wie weit es zu jedem Markt und zum Viking-Anleger ist. Mit „Mein Schiff ist hier“ merken Sie sich Ihr Schiff, dann sehen Sie auch, ob die Zeit bis zur Abfahrt reicht.',
-  fr: '<b><u>Touchez</u></b> les numéros sur la carte, puis <b><u>allez</u></b> au marché. Avec « GPS », vous voyez la distance jusqu’à chaque marché et jusqu’à l’accostage Viking. Avec « Mon bateau est ici », vous mémorisez votre bateau et vous voyez si le temps suffit avant le départ.',
-  nl: '<b><u>Tik</u></b> op de cijfers op de kaart, dan <b><u>spring</u></b> je naar de markt. Met „GPS“ ziet u hoe ver het is naar elke markt en naar de Viking-aanlegplaats. Met „Mijn schip ligt hier“ onthoudt u uw schip, dan ziet u ook of de tijd tot vertrek genoeg is.',
-  en: '<b><u>Tap</u></b> the numbers on the map, then <b><u>jump</u></b> to a market. With “GPS” you see the distance to every market and to the Viking pier. With “My ship is here” you save your ship, then you also see whether there is enough time before departure.',
-  ru: '<b><u>Нажмите</u></b> на номер на карте, и страница <b><u>прокрутится</u></b> к нужному рынку. Кнопка «GPS» покажет расстояние до каждого рынка и до причала Viking. Кнопка «Мой корабль здесь» запомнит ваш корабль, и тогда видно, хватит ли времени до отхода.',
-  zh: '<b><u>点击</u></b>地图上的数字，页面会<b><u>跳转</u></b>到相应的市集。点击「GPS」可查看到每个市集及 Viking 码头的距离。点击「我的船在这里」可记住您的船只位置，并显示出发前时间是否充足。',
-  he: '<b><u>הקישו</u></b> על המספרים במפה, והעמוד <b><u>יעבור</u></b> לשוק המתאים. כפתור "GPS" מציג את המרחק לכל שוק ולרציף Viking. כפתור "הספינה שלי כאן" זוכר את מיקום הספינה שלכם, ואז מוצג גם אם יש מספיק זמן לפני היציאה.'
+  de: '<b><u>Tippen Sie</u></b> auf eine nummerierte Marktmarkierung auf der Karte, um die Marktseite zu öffnen. Mit „GPS“ sehen Sie die Entfernung von Ihrem Standort. Speichern Sie Ihr Schiff mit „Mein Schiff ist hier“, um zu prüfen, ob Sie rechtzeitig zurückkommen.',
+  fr: '<b><u>Touchez</u></b> un numéro de marché sur la carte pour ouvrir la page du marché. Avec « GPS », vous voyez la distance depuis votre position. Enregistrez votre bateau avec « Mon bateau est ici » pour vérifier si vous pouvez revenir à temps.',
+  nl: '<b><u>Tik</u></b> op een genummerde marktmarkering op de kaart om de marktpagina te openen. Met „GPS“ ziet u de afstand vanaf uw locatie. Sla uw schip op met „Mijn schip ligt hier“ om te controleren of u op tijd terug kunt zijn.',
+  en: '<b><u>Tap</u></b> a numbered market marker on the map to open that market’s page. GPS shows distances from your current location. Save your ship with “My ship is here” to check whether you can get back before departure.',
+  ru: '<b><u>Нажмите</u></b> на номер рынка на карте, чтобы открыть его страницу. GPS покажет расстояния от вашего местоположения. Сохраните корабль кнопкой «Мой корабль здесь», чтобы проверить, успеваете ли вы вернуться к отправлению.',
+  zh: '<b><u>点击</u></b>地图上的市场编号，打开相应市场页面。GPS 显示您当前位置到各处的距离。保存船只位置后，即可检查能否在开船前及时返回。',
+  he: '<b><u>הקישו</u></b> על מספר שוק במפה כדי לפתוח את עמוד השוק. GPS מציג מרחקים מהמיקום הנוכחי שלכם. שמרו את מיקום הספינה כדי לבדוק אם תוכלו לחזור לפני היציאה.'
 };
 const XMAS_EXPLAIN_OVERVIEW = {
   de: '<b><u>Tippen Sie</u></b> auf eine nummerierte Marktmarkierung auf der Karte oder auf eine Ortskarte darunter, um die Marktseite dieses Ortes zu öffnen. Mit „GPS“ sehen Sie die Entfernung von Ihrem Standort. Speichern Sie Ihr Schiff mit „Mein Schiff ist hier“, um die Rückkehrzeit vor der Abfahrt zu prüfen.',
@@ -5160,7 +5160,7 @@ function xmasUpdateGpsPanel() {
   } else {
     xmasUpdateReturnWarning(null, '', null);
   }
-  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="text" id="xmasDepart" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
@@ -5183,19 +5183,29 @@ function xmasUpdateGpsPanel() {
   if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
   const dep = document.getElementById('xmasDepart');
   if (dep) {
-    dep.addEventListener('input', () => { try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {} });
-    dep.addEventListener('change', () => {
-      try { localStorage.setItem(XMAS_DEPART_KEY, dep.value); } catch (e) {}
+    const applyDeparture = () => {
+      const value=dep.value.trim();
+      if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(value))return;
+      try { localStorage.setItem(XMAS_DEPART_KEY,value); } catch(e) {}
       const spNow=getSavedSpot();
-      if(spNow&&xmasGpsPos&&/^\d{2}:\d{2}$/.test(dep.value)){
-        const [hh,mm]=dep.value.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
+      if(spNow&&xmasGpsPos){
+        const [hh,mm]=value.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
         const dNow=distanceMeters(xmasGpsPos.lat,xmasGpsPos.lng,spNow.lat,spNow.lng);
         const marginNow=Math.round((depTime-new Date())/60000-xmasTravelInfo(dNow).minutes);
-        xmasUpdateReturnWarning(marginNow,dep.value,spNow);
+        xmasUpdateReturnWarning(marginNow,value,spNow);
         const notice=document.getElementById('xmasDepartNotice');
         if(notice){notice.className='xmas-gps-time '+(marginNow>=0?'ok':'late');notice.textContent=(marginNow>=0?xmasG('enough'):xmasG('notEnough')).replace('{n}',Math.abs(marginNow));}
-      }else{xmasUpdateReturnWarning(null,'',null);}
+      }
+    };
+    dep.addEventListener('input',()=>{
+      // iPhone numeric keypad: enter four digits (e.g. 1430); the colon is inserted automatically.
+      const digits=dep.value.replace(/\\D/g,'').slice(0,4);
+      const formatted=digits.length>2?digits.slice(0,2)+':'+digits.slice(2):digits;
+      if(dep.value!==formatted)dep.value=formatted;
+      if(/^([01]\\d|2[0-3]):[0-5]\\d$/.test(formatted))applyDeparture();
     });
+    dep.addEventListener('change',applyDeparture);
+    dep.addEventListener('blur',applyDeparture);
   }
 
   // Nearest market toast — persistent until the visitor interacts with the map or drawer.
