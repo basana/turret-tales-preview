@@ -5042,6 +5042,8 @@ function xmasUpdateGpsPanel() {
     mapContainer.addEventListener('pointerdown', e => {
       if (!e.target.closest('#xmasNearestToast')) dismissNearestToast();
     }, true);
+    // A page scroll is not a map gesture: dismiss the toast instead of letting it hover above the drawer.
+    window.addEventListener('scroll', dismissNearestToast, { passive: true });
     xmasMapObj._xmasNearestToastInteractionBound = true;
   }
   if (xToast && rows.length > 0) {
