@@ -295,6 +295,7 @@
      вне зависимости от активного состояния (так требуется по брендингу). */
   .tab.tab-xmas, .tab.tab-xmas-light { background: #7A1026 !important; color: #fff !important; border-color: #7A1026 !important; font-weight: 700; }
   .tab.tab-xmas.active, .tab.tab-xmas-light.active { background: #7A1026 !important; color: #fff !important; font-weight: 700; }
+  .xmas-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;margin:0 0 10px}.xmas-top-actions .xmas-back{margin:0;flex:1 1 0;min-width:0;text-align:center;white-space:nowrap}.xmas-top-actions .xmas-overview-top{background:#7A1026;color:#fff;border-color:#7A1026}
   .xmas-back { margin: 0 0 12px; padding: 8px 14px; border-radius: 999px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-weight: 700; cursor: pointer; }
   .xmas-map { width: 100%; height: 440px; border-radius: 12px; border: 1px solid #c8a878; margin: 0 0 14px; }
   .wine-emblem { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #7A1026; background: #fff; flex: none; display: flex; align-items: center; justify-content: center; }
@@ -5057,8 +5058,8 @@ function renderChristmas(townKey) {
   xmasHeroCaption();
   const langBtns = Object.keys(XMAS_LANG_LABELS).map(k =>
     `<button class="xmas-lang${k === xmasLang ? ' active' : ''}" data-xl="${k}">${XMAS_LANG_LABELS[k]}</button>`).join('');
-  const overviewLbl = { de: 'Karte', fr: 'Carte', nl: 'Kaart', en: 'Map', ru: 'Карта', zh: '地图', he: 'מפה' }[xmasLang] || 'Map';
-  const chips = `<button class="xmas-chip${!xmasTown ? ' active' : ''}" data-xc="">🗺 ${overviewLbl}</button>` + XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
+  const overviewLbl = { de: 'Karte Mittelrhein', fr: 'Carte du Rhin moyen', nl: 'Kaart Midden-Rijn', en: 'Middle Rhine map', ru: 'Карта Среднего Рейна', zh: '中莱茵河地图', he: 'מפת הריין התיכון' }[xmasLang] || 'Middle Rhine map';
+  const chips = XMAS_ORDER.filter(k => XMAS_CITY[k]).map(k =>
     `<button class="xmas-chip${k === xmasTown ? ' active' : ''}" data-xc="${k}">${T_(XMAS_CITY[k].name)}</button>`).join('');
   const mapHtml = `<div class="xmas-map-stage">${xmasSearchHtml()}${xmasGpsBtnHtml()}<button type="button" class="xmas-save-location-btn" id="xmasSaveLocationBtn" hidden>${xmasG('saveShip')}</button><div id="xmasMap" class="${xmasTown ? 'xmas-map' : 'xmas-map xmas-map-big'}"></div></div>` + '<div class="xmas-gps-panel" id="xmasGpsPanel"></div>' + xmasExplainHtml() + (xmasTown ? '' : xmasTownListHtml()) + '<div class="nearest-toast" id="xmasNearestToast"></div>';
   let body = '';
@@ -5081,7 +5082,7 @@ function renderChristmas(townKey) {
         </div>`).join('') +
       `<div class="xmas-block xmas-small">${TX.practical}</div>`;
   }
-  const backBtn = XMAS_MODE ? `<button class="xmas-back" id="xmasBack">${XMAS_BACK[xmasLang] || XMAS_BACK.de}</button>` : '';
+  const backBtn = XMAS_MODE ? `<div class="xmas-top-actions"><button class="xmas-back" id="xmasBack">${XMAS_BACK[xmasLang] || XMAS_BACK.de}</button><button class="xmas-back xmas-overview-top" id="xmasOverviewTop">${overviewLbl}</button></div>` : '';
   el.innerHTML = `<div class="xmas-wrap">
     ${backBtn}
     <div class="xmas-chips">${chips}</div>
@@ -5097,6 +5098,8 @@ function renderChristmas(townKey) {
   el.querySelectorAll('.xmas-town-card, .xmas-town-btn, .xmas-thumb-btn').forEach(b => b.addEventListener('click', () => renderChristmas(b.dataset.xc)));
   const bk = document.getElementById('xmasBack');
   if (bk) bk.addEventListener('click', () => openXmasHome());
+  const overviewTop = document.getElementById('xmasOverviewTop');
+  if (overviewTop) overviewTop.addEventListener('click', () => { xmasListOnly = false; renderChristmas(null); });
 
   const saveLocationBtn = document.getElementById('xmasSaveLocationBtn');
   if (saveLocationBtn) saveLocationBtn.addEventListener('click', () => {
