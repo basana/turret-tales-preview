@@ -173,9 +173,9 @@
   .xmas-gps-ship span { font-weight: 700; }
   .xmas-gps-arrived { color: #b85b00; font-size: 12px; font-weight: 800; text-align: right; }
   .xmas-return-zone { filter: drop-shadow(0 0 5px #ff8a00) drop-shadow(0 0 2px #ff8a00); }
-  .xmas-gps-time { margin: 8px 0; padding: 8px 10px; border-radius: 8px; }
-  .xmas-gps-time.ok { background: #e6f1e4; }
-  .xmas-gps-time.late { background: #f6e0dc; }
+  .xmas-gps-time { margin: 8px 0 12px; padding: 11px 13px; border-radius: 10px; font-size: 15px; font-weight: 800; line-height: 1.35; border: 1px solid transparent; }
+  .xmas-gps-time.ok { background: #e6f1e4; border-color: #9bbd91; color: #285b25; }
+  .xmas-gps-time.late { background: #f6e0dc; border: 2px solid #b33a2b; color: #8d2118; box-shadow: 0 2px 8px rgba(141,33,24,.14); }
   .xmas-gps-save, .xmas-gps-clear { margin: 8px 0; padding: 8px 12px; border-radius: 999px; cursor: pointer; font-family: var(--sans); }
   .xmas-gps-save { border: 1px solid rgba(255,255,255,.75); background: linear-gradient(135deg,var(--terracotta),#8f4a22); color: #fff; font-weight: 700; }
   .xmas-gps-clear { border: 1px solid #8eafd0; background: #e7f0f9; color: #285b88; }
@@ -5068,20 +5068,22 @@ function xmasUpdateGpsPanel() {
   const mapTarget = focusedTarget || (rows.length ? rows[0].t : null);
   setXmasGpsTargetMarker(mapTarget ? mapTarget.ll : null, mapTarget ? (mapTarget.label || '') : '', mapTarget ? (mapTarget.number ?? (mapTarget.index + 1)) : null);
   let depart = ''; try { depart = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
-  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
-  xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   const sp = getSavedSpot();
+  let timeNotice = '';
+  if (sp && depart && /^\d{2}:\d{2}$/.test(depart)) {
+    const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
+    const [hh, mm] = depart.split(':').map(Number);
+    const dep = new Date(); dep.setHours(hh, mm, 0, 0);
+    const margin = Math.round((dep - new Date()) / 60000 - xmasTravelInfo(d).minutes);
+    timeNotice = `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}" role="status" aria-live="polite">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
+  }
+  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="time" id="xmasDepart" value="${depart}"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
     const returned = d <= 60;
     const savedSpotStatus = returned ? `<strong class="xmas-gps-arrived">${xmasG('backAt').replace('{name}', sp.label)}</strong>` : fmt([sp.lat, sp.lng]);
     html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${sp.lat}" data-lng="${sp.lng}"><span>📌 ${sp.label}</span>${savedSpotStatus}</div>`;
-    if (depart && /^\d{2}:\d{2}$/.test(depart)) {
-      const [hh, mm] = depart.split(':').map(Number);
-      const dep = new Date(); dep.setHours(hh, mm, 0, 0);
-      const margin = Math.round((dep - new Date()) / 60000 - xmasTravelInfo(d).minutes);
-      html += `<div class="xmas-gps-time ${margin >= 0 ? 'ok' : 'late'}">${(margin >= 0 ? xmasG('enough') : xmasG('notEnough')).replace('{n}', Math.abs(margin))}</div>`;
-    }
     html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
   }
 
