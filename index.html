@@ -4698,11 +4698,11 @@ function xmasTownListHtml() {
 
 function xmasFloatingText(k){
  const d={
- de:{ship:'Mein Schiff',explore:'Entdecken',shipSub:'Liegeplatz & Rückkehr',exploreSub:'Märkte & Entfernungen',swipe:'Nach oben ziehen für mehr',gps:'GPS aktivieren, um Entfernungen zu sehen.',noShip:'Noch kein Schiff gespeichert. Aktiviere GPS und speichere den aktuellen Liegeplatz.',show:'Gespeicherten Liegeplatz zeigen'},
- en:{ship:'My Ship',explore:'Explore',shipSub:'Berth & return point',exploreSub:'Markets & distances',swipe:'Swipe up to explore',gps:'Enable GPS to see distances.',noShip:'No ship saved yet. Turn on GPS and save the current berth.',show:'Show saved berth'},
+ de:{ship:'Mein Schiff',explore:'Entdecken',shipSub:'Liegeplatz & Rückkehr',exploreSub:'Märkte & Entfernungen',swipe:'Nach oben ziehen für mehr',gps:'GPS aktivieren, um Entfernungen zu sehen.',noShip:'Noch kein Schiff gespeichert. Aktiviere GPS und speichere den aktuellen Liegeplatz.',show:'Gespeicherten Liegeplatz zeigen',backShip:'Zurück zum Schiff · antippen'},
+ en:{ship:'My Ship',explore:'Explore',shipSub:'Berth & return point',exploreSub:'Markets & distances',swipe:'Swipe up to explore',gps:'Enable GPS to see distances.',noShip:'No ship saved yet. Turn on GPS and save the current berth.',show:'Show saved berth',backShip:'Back to ship · tap to locate'},
  fr:{ship:'Mon bateau',explore:'Explorer',shipSub:'Amarrage & retour',exploreSub:'Marchés & distances',swipe:'Glissez vers le haut',gps:'Activez le GPS pour voir les distances.',noShip:'Aucun bateau enregistré. Activez le GPS et enregistrez le quai actuel.',show:'Voir le quai enregistré'},
  nl:{ship:'Mijn schip',explore:'Ontdekken',shipSub:'Ligplaats & terugkeer',exploreSub:'Markten & afstanden',swipe:'Veeg omhoog om te ontdekken',gps:'Schakel GPS in om afstanden te zien.',noShip:'Nog geen schip opgeslagen. Schakel GPS in en sla de huidige ligplaats op.',show:'Opgeslagen ligplaats tonen'},
- ru:{ship:'Мой корабль',explore:'Обзор',shipSub:'Причал и точка возврата',exploreSub:'Рынки и расстояния',swipe:'Потяните вверх, чтобы открыть',gps:'Включите GPS, чтобы увидеть расстояния.',noShip:'Корабль ещё не сохранён. Включите GPS и сохраните текущий причал.',show:'Показать сохранённый причал'},
+ ru:{ship:'Мой корабль',explore:'Обзор',shipSub:'Причал и точка возврата',exploreSub:'Рынки и расстояния',swipe:'Потяните вверх, чтобы открыть',gps:'Включите GPS, чтобы увидеть расстояния.',noShip:'Корабль ещё не сохранён. Включите GPS и сохраните текущий причал.',show:'Показать сохранённый причал',backShip:'К кораблю · нажмите, чтобы увидеть его'},
  zh:{ship:'我的船',explore:'探索',shipSub:'停靠点与返回位置',exploreSub:'集市与距离',swipe:'向上滑动查看更多',gps:'开启 GPS 以查看距离。',noShip:'尚未保存船只位置。开启 GPS 并保存当前位置。',show:'显示已保存的位置'},
  he:{ship:'הספינה שלי',explore:'לגלות',shipSub:'מיקום עגינה וחזרה',exploreSub:'שווקים ומרחקים',swipe:'החליקו למעלה לעוד',gps:'הפעילו GPS כדי לראות מרחקים.',noShip:'לא נשמרה ספינה. הפעילו GPS ושמרו את מקום העגינה.',show:'הצגת מקום העגינה'}
  };return(d[xmasLang]||d.en)[k];
@@ -4718,7 +4718,7 @@ function updateXmasFloatingNavContent(){
  if(towns)towns.hidden=cat!=='explore';
  if(empty){if(cat==='ship'){empty.hidden=!!saved;empty.textContent=xmasFloatingText('noShip');}else{const has=!!(gp&&gp.querySelector('.xmas-gps-row:not(.xmas-gps-ship)'));empty.hidden=has;empty.textContent=xmasFloatingText('gps');}}
  const staticSaved=nav.querySelector('.xmas-floating-static-saved');
- if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved||!!xmasGpsPos;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">⚓ '+xmasFloatingEsc(xmasFloatingText('show'))+' · '+xmasFloatingEsc(saved.label)+'</button>';staticSaved.querySelector('button').onclick=()=>{if(xmasMapObj)xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});};}}
+ if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">⚓ '+xmasFloatingEsc(xmasFloatingText('backShip')||xmasFloatingText('show'))+' · '+xmasFloatingEsc(saved.label)+'</button>';staticSaved.querySelector('button').onclick=()=>{xmasFloatingCollapse();if(xmasMapObj){xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});setTimeout(()=>xmasMapObj.invalidateSize(),280);}};}}
  const sub=nav.querySelector('[data-shortcut-sub="ship"]');if(sub)sub.textContent=saved?saved.label:xmasFloatingText('shipSub');
 }
 function xmasFloatingOpen(cat){
@@ -5126,7 +5126,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { const el = document.getElementById('xmasCard' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }))
+      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { xmasFloatingCollapse(); const el = document.getElementById('xmasCard' + i); if (el) setTimeout(()=>el.scrollIntoView({ behavior: 'smooth', block: 'start' }),260); } }))
     });
   }
   initXmasFloatingNav();
@@ -6274,7 +6274,7 @@ function renderGuide() {
   if (typeof xmasSpeechRender === 'function') xmasSpeechRender();
 
   // WhatsApp share button
-  const waBtn = document.getElementById('waShareBtn');
+  const waBtn = document.getElementById('waShareBtn'); if (waBtn) waBtn.remove();
   if (waBtn) {
     waBtn.onclick = () => {
       const txt = `${s.name} — ${s.town}\n${lang === 'ru' ? s.factsRu : s.facts}\n\nhttps://turret-tales.netlify.app/`;
