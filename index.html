@@ -5090,6 +5090,7 @@ function xmasStopGps() {
   const saveButton = document.getElementById('xmasSaveLocationBtn');
   if (saveButton) saveButton.hidden = true;
   const panel = document.getElementById('xmasGpsPanel'); if (panel) panel.innerHTML = '';
+  xmasUpdateReturnWarning(null, '', null);
   const xToast = document.getElementById('xmasNearestToast'); if (xToast) xToast.classList.remove('show');
 }
 function xmasSetGpsLabel(text, on) {
@@ -5203,6 +5204,13 @@ function xmasUpdateGpsPanel() {
     xToast._lastLabel = null;
   }
   if (typeof updateXmasFloatingNavContent === 'function') updateXmasFloatingNavContent();
+}
+
+// Keep the return-time digits counting down even when the visitor is standing still.
+if (!window._xmasReturnWarningClock) {
+  window._xmasReturnWarningClock = setInterval(() => {
+    if (currentView === 'christmas' && xmasGpsPos && getSavedSpot()) xmasUpdateGpsPanel();
+  }, 30000);
 }
 
 function renderChristmas(townKey) {
