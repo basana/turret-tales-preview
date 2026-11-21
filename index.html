@@ -8429,9 +8429,11 @@ if ('serviceWorker' in navigator) {
   }
   .leaflet-tooltip.xmas-pin-label {
     width: max-content;
-    max-width: min(180px, 60vw);
-    white-space: normal;
-    overflow-wrap: break-word;
+    min-width: max-content;
+    max-width: min(260px, 75vw);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Christmas map: keep search + GPS in one row; save the point below search. */
