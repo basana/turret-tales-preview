@@ -7784,6 +7784,8 @@ function openPremiumPopup(kind) {
   const pText = document.getElementById('premiumPopupText');
   const pTeaser = document.getElementById('premiumTeaser');
   premiumPopupEl.classList.remove('image-view');
+  if (pTitle) pTitle.style.display = '';
+  if (pText) pText.style.display = '';
   if (kind === 'gps') {
     if (pTitle) pTitle.textContent = t.premiumTitleGps;
     if (pTeaser) pTeaser.style.display = 'none';
