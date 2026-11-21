@@ -2470,7 +2470,9 @@ function _hideGpsHint(mapObj) {
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
   // determine reference point: GPS position ONLY — never map center
   let ref;
-  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
+  // Each map must use its own latest GPS fix; never borrow a stale fix from another map.
+  if (mapObj === xmasMapObj && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
+  else if (mapObj !== xmasMapObj && typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
   else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
   else {
     // No GPS — show hint, don't zoom to random location
@@ -4811,7 +4813,7 @@ function xmasDrawMap(opts) {
     if (!xmasGpsPos) return;
     if (xmasMapObj && xmasMapObj._poiFocusActive && xmasMapObj._poiSelected) _focusPoiOnMap(xmasMapObj, xmasMapObj._poiSelected);
     else xmasFocusUserAndNearest();
-    follow.classList.add('show');
+    follow.classList.remove('show');
   });
   if (xmasGpsPos) follow.classList.add('show');
   xmasMapObj.on('dragstart', () => { if (xmasGpsPos) follow.classList.add('show'); });
@@ -5248,6 +5250,7 @@ function xmasStopGps() {
   try { localStorage.setItem('rhineGuideGpsActive', 'false'); } catch(e){}
   if (xmasGpsMarker && xmasMapObj) xmasMapObj.removeLayer(xmasGpsMarker);
   xmasGpsMarker = null;
+  if (xmasMapObj && xmasMapObj._poiUserLine) { xmasMapObj.removeLayer(xmasMapObj._poiUserLine); xmasMapObj._poiUserLine = null; }
   setXmasGpsTargetMarker(null);
   if (xmasMapObj) { xmasMapObj._xmasGpsFocusActive = false; xmasMapObj._xmasGpsFocusSnapshot = null; xmasMapObj._xmasGpsFocusTarget = null; }
   xmasSetGpsLabel(xmasG('btn'));
