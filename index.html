@@ -1457,6 +1457,46 @@
 @keyframes xmasSheetNudge{0%,100%{transform:translateY(0)}35%{transform:translateY(-13px)}65%{transform:translateY(0)}}
 @media(max-width:380px){.xmas-floating-shortcut{padding:8px;gap:7px;min-height:54px}.xmas-floating-shortcut strong{font-size:13px}.xmas-floating-shortcut small{font-size:10px}.xmas-floating-content .xmas-gps-row{flex-basis:205px}}
 </style>
+
+<style id="map-navi-viewport-balance-v1">
+  /* MAP NAVI: all map canvases share a viewport 10% shorter than the former 62dvh.
+     No fixed minimum height: short screens must not force vertical page scrolling. */
+  #mapDiv,
+  .xmas-map,
+  .xmas-map-big {
+    height: 56dvh !important;
+    min-height: 0 !important;
+    max-height: 56dvh !important;
+    box-sizing: border-box;
+  }
+
+  /* Keep geographic coordinates untouched; reduce only the visual footprint
+     of map markers/emblems so their spacing remains balanced in the shorter map. */
+  #view-map .castle-marker,
+  #view-map .poi-marker,
+  #view-map .gps-user-halo,
+  #view-map .gps-target-pulse,
+  #view-map .saved-spot-marker,
+  #view-map .castle-selection-pulse,
+  #view-map .gps-target-town-dot,
+  #view-map .gps-target-castle-icon,
+  .xmas-map-stage .xmas-dot,
+  .xmas-map-stage .xmas-dot-angel,
+  .xmas-map-stage .xmas-pin,
+  .xmas-map-stage .xmas-pin-angel,
+  .xmas-map-stage .xmas-pin-town,
+  .xmas-map-stage .xmas-overview-market,
+  .xmas-map-stage .xmas-overview-tree,
+  .xmas-map-stage .xmas-berth,
+  .xmas-map-stage .gps-user-halo,
+  .xmas-map-stage .gps-target-pulse,
+  .xmas-map-stage .saved-spot-marker,
+  #view-food .food-pin,
+  #view-wine .wine-pin {
+    zoom: 0.9;
+  }
+</style>
+
 </head>
 <body>
 
