@@ -4782,10 +4782,8 @@ function xmasDrawMap(opts) {
     }
     xmasMapObj.invalidateSize(true);
   };
-  xmasMapObj.getContainer().addEventListener('pointerdown', e => {
-    if (e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc')) return;
-    if (xmasApoLayer || xmasWcLayer) clearXmasPoiMode();
-  }, true);
+  // Keep pharmacy/toilet mode active while the visitor pans or zooms the map.
+  // The mode is cleared only by explicit category selection or Reset.
   const resetBtn = xmasMapObj.getContainer().querySelector('#xResetBtn');
   if (resetBtn) resetBtn.addEventListener('click', e => {
     e.preventDefault(); e.stopPropagation(); clearXmasPoiMode();
@@ -4901,12 +4899,8 @@ function xmasTownListHtml() {
 }
 
 let xmasPendingMarketKey = null;
-document.addEventListener('pointerdown',e=>{
- const keep=e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc');
- if(keep)return;
- if(apothekenLayer||toilettenLayer)clearMainPoiMode();
- if(xmasApoLayer||xmasWcLayer)clearXmasPoiMode();
-},true);
+// POI mode is intentionally not cleared by document-wide pointerdown.
+ // Panning, zooming, and taps outside the POI markers must not dismiss the selected POI.
 function xmasOpenMarketContent(k){
  xmasPendingMarketKey=null;
  const toast=document.getElementById('xmasNearestToast');
