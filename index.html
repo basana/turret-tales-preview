@@ -974,6 +974,11 @@
     background: rgba(20,14,6,0.32);
   }
   .premium-unlocked-img { width: 100%; border-radius: 14px; margin-bottom: 16px; display: block; border: 1px solid var(--gold); }
+  /* Compact artwork viewer: the main screen keeps its original height. */
+  .premium-inline-artwork { display: none; width: 100%; max-height: 58vh; object-fit: contain; margin: 0 auto; border: 1px solid var(--gold); }
+  .premium-popup.image-view .premium-popup-card { max-height: 70vh; width: min(92vw, 560px); }
+  .premium-popup.image-view .premium-popup-scroll { max-height: 70vh; overflow: hidden; padding: 10px 12px 8px; }
+  .premium-popup.image-view .premium-popup-close { margin-top: 4px; }
   .premium-code-row { display: flex; gap: 8px; margin-bottom: 6px; }
   .premium-code-input {
     flex-grow: 1; padding: 13px 14px; border-radius: 10px; border: 1px solid var(--gold);
@@ -1528,6 +1533,7 @@
       </div>
 
       <div id="premiumUnlockedBlock" style="display:none;">
+        <img id="premiumUnlockedImage" class="premium-inline-artwork" src="" alt="Koblenz — another view">
         <p id="premiumUnlockedIntro" style="margin:0 0 14px; font-size:14px; line-height:1.5; color:var(--ink);">Access granted.</p>
         <a class="premium-unlock-btn" id="premiumOpenLink" href="https://basana.github.io/turret-tales-preview/#" target="_blank" rel="noopener" style="display:block; text-decoration:none; text-align:center; box-sizing:border-box;">Open the artwork →</a>
         <p id="premiumUnlockedFallback" style="display:none; margin-top:12px;">Artwork coming soon for this location.</p>
@@ -1890,7 +1896,7 @@ const castles = [
     // остальных станций), текст — тот же, что и на входном экране выше.
     id: "koblenz_city", lat: 50.3600, lng: 7.5978,
     images: ["koblenz_altstadt.jpg", "koblenz_altstadt_2.jpg", "koblenz_altstadt_3.jpg", "koblenz_altstadt_4.jpg", "koblenz_altstadt_5.jpg"],
-    premiumImage: true, premiumLink: "",
+    premiumImage: true, premiumImageSrc: "Rahmen%20KO%20kurz.webp", premiumLink: "",
     name: "Koblenz Old Town & Deutsches Eck", town: "Koblenz", pop: "~114,000",
     built: "Roman origins / Deutsches Eck 1897", builtRu: "Римское основание / Дойчес-Экк 1897",
     builtDe: "Römischer Ursprung / Deutsches Eck 1897",
@@ -7777,6 +7783,7 @@ function openPremiumPopup(kind) {
   const pTitle = document.getElementById('premiumPopupTitle');
   const pText = document.getElementById('premiumPopupText');
   const pTeaser = document.getElementById('premiumTeaser');
+  premiumPopupEl.classList.remove('image-view');
   if (kind === 'gps') {
     if (pTitle) pTitle.textContent = t.premiumTitleGps;
     if (pTeaser) pTeaser.style.display = 'none';
@@ -7803,9 +7810,31 @@ function openPremiumPopup(kind) {
 
 function showPremiumUnlockedView() {
   const s = castles[index];
+  const artwork = document.getElementById('premiumUnlockedImage');
+  const popupTitle = document.getElementById('premiumPopupTitle');
+  const popupText = document.getElementById('premiumPopupText');
   premiumLockedBlock.style.display = 'none';
   premiumUnlockedBlock.style.display = 'block';
-  // Ссылка на приватное хранилище картины (Google Drive / WeTransfer и т.п.) — заполняется в поле premiumLink у станции.
+
+  // Show the new Koblenz artwork in a compact overlay, not in the main layout.
+  if (s.premiumImageSrc && artwork) {
+    premiumPopupEl.classList.add('image-view');
+    artwork.src = s.premiumImageSrc;
+    artwork.alt = s.name + ' — another view';
+    artwork.style.display = 'block';
+    if (popupTitle) popupTitle.style.display = 'none';
+    if (popupText) popupText.style.display = 'none';
+    premiumOpenLinkEl.style.display = 'none';
+    premiumUnlockedIntroEl.style.display = 'none';
+    premiumUnlockedFallback.style.display = 'none';
+    return;
+  }
+
+  premiumPopupEl.classList.remove('image-view');
+  if (artwork) artwork.style.display = 'none';
+  if (popupTitle) popupTitle.style.display = '';
+  if (popupText) popupText.style.display = '';
+  // Existing link-based premium artwork remains unchanged for other stations.
   if (s.premiumLink) {
     premiumOpenLinkEl.style.display = 'block';
     premiumOpenLinkEl.href = s.premiumLink;
