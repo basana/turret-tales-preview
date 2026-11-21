@@ -1394,9 +1394,15 @@
   .xmas-search .map-search-ticker { left: 30px; right: 28px; font-size: 12px; }
   .xmas-search .map-search-input::placeholder { opacity: 0; }
   .xmas-map-stage .xmas-gps-label-mode .leaflet-tooltip-pane .xmas-gps-target-label {
-    z-index: 9999 !important; pointer-events: none; font: 800 13px/1.2 var(--sans);
-    color: #fff; background: #7A1026; border: 2px solid #fff; border-radius: 8px;
-    padding: 6px 9px; max-width: 190px; white-space: normal; overflow-wrap: anywhere; text-align: center;
+    z-index: 9999 !important; pointer-events: none; display: block !important;
+    font: 800 13px/1.2 var(--sans); color: #fff; background: #7A1026;
+    border: 2px solid #fff; border-radius: 8px; padding: 6px 9px;
+    width: max-content !important; min-width: max-content !important;
+    max-width: min(260px, 75vw) !important;
+    white-space: nowrap !important; overflow-wrap: normal !important;
+    word-break: normal !important; writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important; overflow: hidden !important;
+    text-overflow: ellipsis !important; text-align: center;
     box-shadow: 0 2px 10px rgba(0,0,0,.55); opacity: 1 !important;
   }
   @media (max-width: 360px) {
