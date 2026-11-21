@@ -2314,14 +2314,37 @@ let xmasApoLayer = null, xmasWcLayer = null;
 function _focusPoiOnMap(mapObj, poi) {
   if (!mapObj || !poi) return;
   mapObj._poiFocusActive = true;
-  // Keep the selected POI in the most visible central area, slightly left
-  // of the screen centre so the right-side quick buttons cannot cover it.
-  mapObj.setView([poi.lat, poi.lng], 17, { animate: true });
-  mapObj.once('moveend', () => {
-    if (!mapObj._poiFocusActive) return;
-    const size = mapObj.getSize();
-    mapObj.panBy([Math.min(44, Math.round(size.x * 0.08)), 0], { animate: true });
-  });
+  mapObj._poiSelected = poi;
+  const user = mapObj === xmasMapObj ? xmasGpsPos :
+    (Number.isFinite(gpsLastLat) && Number.isFinite(gpsLastLng) ? { lat: gpsLastLat, lng: gpsLastLng } : null);
+  if (mapObj._poiUserLine) mapObj.removeLayer(mapObj._poiUserLine);
+  if (mapObj._poiRadius) mapObj.removeLayer(mapObj._poiRadius);
+  mapObj._poiRadius = L.circle([poi.lat, poi.lng], {
+    radius: 150, color: '#F28C00', weight: 2.5, opacity: .95,
+    fillColor: '#F28C00', fillOpacity: .09, interactive: false
+  }).addTo(mapObj);
+  if (user) {
+    mapObj._poiUserLine = L.polyline([[user.lat, user.lng], [poi.lat, poi.lng]], {
+      color: '#7A1026', weight: 3, opacity: .9, dashArray: '5 8',
+      lineCap: 'round', interactive: false
+    }).addTo(mapObj);
+    mapObj.fitBounds([[user.lat, user.lng], [poi.lat, poi.lng]], {
+      paddingTopLeft: [34, 125], paddingBottomRight: [76, 100],
+      maxZoom: 16, animate: true
+    });
+  } else {
+    mapObj.setView([poi.lat, poi.lng], 16, { animate: true });
+  }
+}
+function _updatePoiUserLine(mapObj, user) {
+  if (!mapObj || !mapObj._poiFocusActive || !mapObj._poiSelected || !user) return;
+  const poi = mapObj._poiSelected;
+  const points = [[user.lat, user.lng], [poi.lat, poi.lng]];
+  if (mapObj._poiUserLine) mapObj._poiUserLine.setLatLngs(points);
+  else mapObj._poiUserLine = L.polyline(points, {
+    color: '#7A1026', weight: 3, opacity: .9, dashArray: '5 8',
+    lineCap: 'round', interactive: false
+  }).addTo(mapObj);
 }
 function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   const lg = L.layerGroup();
@@ -2500,23 +2523,27 @@ function _hidePoiToasts(mapObj) {
   const t = mapObj.getContainer().querySelector('.poi-info-toast');
   if (t) t.classList.remove('show');
 }
-function clearXmasPoiMode() {
+function clearXmasPoiMode(restoreBase = true) {
   if (xmasMapObj) {
     if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; }
     if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; }
+    if (xmasMapObj._poiUserLine) { xmasMapObj.removeLayer(xmasMapObj._poiUserLine); xmasMapObj._poiUserLine = null; }
+    if (xmasMapObj._poiRadius) { xmasMapObj.removeLayer(xmasMapObj._poiRadius); xmasMapObj._poiRadius = null; }
+    xmasMapObj._poiSelected = null;
     xmasMapObj._poiGpsZoomed = false; xmasMapObj._poiFocusActive = false;
     _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj);
   }
   document.querySelectorAll('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc').forEach(b=>b.classList.remove('active'));
   _stopPoiEmergency();
+  if (restoreBase && xmasMapObj && xmasGpsPos) xmasFocusUserAndNearest();
 }
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   const key = type === 'apotheke' ? 'apotheke' : 'wc';
   const btn = xmasMapObj.getContainer().querySelector('.poi-toggle-btn.' + key);
   const already = type === 'apotheke' ? !!xmasApoLayer : !!xmasWcLayer;
-  clearXmasPoiMode();
-  if (already) return;
+  clearXmasPoiMode(false);
+  if (already) { if (xmasGpsPos) xmasFocusUserAndNearest(); return; }
   if (type === 'apotheke') xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
   else xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
   if (btn) btn.classList.add('active');
@@ -4780,9 +4807,15 @@ function xmasDrawMap(opts) {
   follow.type = 'button'; follow.className = 'xmas-gps-follow'; follow.id = 'xmasGpsFollowBtn';
   follow.textContent = '↻ Follow'; follow.setAttribute('aria-label', 'Show my location and nearest market');
   xmasMapObj.getContainer().appendChild(follow);
-  follow.addEventListener('click', () => { if (!xmasGpsPos) return; xmasFocusUserAndNearest(); follow.classList.add('show'); });
+  follow.addEventListener('click', () => {
+    if (!xmasGpsPos) return;
+    if (xmasMapObj && xmasMapObj._poiFocusActive && xmasMapObj._poiSelected) _focusPoiOnMap(xmasMapObj, xmasMapObj._poiSelected);
+    else xmasFocusUserAndNearest();
+    follow.classList.add('show');
+  });
   if (xmasGpsPos) follow.classList.add('show');
   xmasMapObj.on('dragstart', () => { if (xmasGpsPos) follow.classList.add('show'); });
+  xmasMapObj.on('zoomstart', () => { if (xmasGpsPos) follow.classList.add('show'); });
   // Do not auto-focus GPS when switching city maps or returning to the Rhine overview.
   // The visitor's explicit map selection owns the camera; Follow remains available on demand.
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
@@ -5189,7 +5222,9 @@ function xmasStartGps() {
       else xmasDrawGpsLayers();
       // If POI mode was activated before the first GPS fix, focus it now.
       if (!xmasMapObj._xmasGpsFitDone && !xmasApoLayer && !xmasWcLayer) { xmasMapObj._xmasGpsFitDone = true; xmasFocusUserAndNearest(); }
-      if (!xmasMapObj._poiGpsZoomed && (xmasApoLayer || xmasWcLayer)) {
+      if (xmasMapObj._poiFocusActive && xmasMapObj._poiSelected) {
+        _updatePoiUserLine(xmasMapObj, xmasGpsPos);
+      } else if (!xmasMapObj._poiGpsZoomed && (xmasApoLayer || xmasWcLayer)) {
         if (xmasApoLayer) _zoomToNearestPoi(xmasMapObj, POI_APOTHEKEN, '💊');
         else if (xmasWcLayer) _zoomToNearestPoi(xmasMapObj, POI_TOILETTEN, '🚻');
       }
