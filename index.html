@@ -2339,12 +2339,18 @@ function _focusPoiOnMap(mapObj, poi) {
 function _updatePoiUserLine(mapObj, user) {
   if (!mapObj || !mapObj._poiFocusActive || !mapObj._poiSelected || !user) return;
   const poi = mapObj._poiSelected;
-  const points = [[user.lat, user.lng], [poi.lat, poi.lng]];
-  if (mapObj._poiUserLine) mapObj._poiUserLine.setLatLngs(points);
-  else mapObj._poiUserLine = L.polyline(points, {
+  const bounds = [[user.lat, user.lng], [poi.lat, poi.lng]];
+  if (mapObj._poiUserLine) mapObj._poiUserLine.setLatLngs(bounds);
+  else mapObj._poiUserLine = L.polyline(bounds, {
     color: '#7A1026', weight: 3, opacity: .9, dashArray: '5 8',
     lineCap: 'round', interactive: false
   }).addTo(mapObj);
+  if (mapObj._poiFollowEnabled) {
+    mapObj.fitBounds(bounds, {
+      paddingTopLeft: [34, 125], paddingBottomRight: [76, 100],
+      maxZoom: 16, animate: true
+    });
+  }
 }
 function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   const lg = L.layerGroup();
@@ -2532,6 +2538,7 @@ function clearXmasPoiMode(restoreBase = true) {
     if (xmasMapObj._poiUserLine) { xmasMapObj.removeLayer(xmasMapObj._poiUserLine); xmasMapObj._poiUserLine = null; }
     if (xmasMapObj._poiRadius) { xmasMapObj.removeLayer(xmasMapObj._poiRadius); xmasMapObj._poiRadius = null; }
     xmasMapObj._poiSelected = null;
+    xmasMapObj._poiFollowEnabled = false;
     xmasMapObj._poiGpsZoomed = false; xmasMapObj._poiFocusActive = false;
     _hidePoiToasts(xmasMapObj); _hideGpsHint(xmasMapObj);
   }
@@ -4811,13 +4818,21 @@ function xmasDrawMap(opts) {
   xmasMapObj.getContainer().appendChild(follow);
   follow.addEventListener('click', () => {
     if (!xmasGpsPos) return;
-    if (xmasMapObj && xmasMapObj._poiFocusActive && xmasMapObj._poiSelected) _focusPoiOnMap(xmasMapObj, xmasMapObj._poiSelected);
-    else xmasFocusUserAndNearest();
+    if (xmasMapObj && xmasMapObj._poiFocusActive && xmasMapObj._poiSelected) {
+      xmasMapObj._poiFollowEnabled = true;
+      _focusPoiOnMap(xmasMapObj, xmasMapObj._poiSelected);
+    } else xmasFocusUserAndNearest();
     follow.classList.remove('show');
   });
   if (xmasGpsPos) follow.classList.add('show');
-  xmasMapObj.on('dragstart', () => { if (xmasGpsPos) follow.classList.add('show'); });
-  xmasMapObj.on('zoomstart', () => { if (xmasGpsPos) follow.classList.add('show'); });
+  xmasMapObj.on('dragstart', () => {
+    if (xmasGpsPos) follow.classList.add('show');
+    if (xmasMapObj._poiFocusActive) xmasMapObj._poiFollowEnabled = false;
+  });
+  xmasMapObj.on('zoomstart', () => {
+    if (xmasGpsPos) follow.classList.add('show');
+    if (xmasMapObj._poiFocusActive) xmasMapObj._poiFollowEnabled = false;
+  });
   // Do not auto-focus GPS when switching city maps or returning to the Rhine overview.
   // The visitor's explicit map selection owns the camera; Follow remains available on demand.
   setTimeout(() => xmasMapObj && xmasMapObj.invalidateSize(), 60);
