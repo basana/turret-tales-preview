@@ -20,6 +20,8 @@ The map remains the dominant visual surface. The bottom sheet is the shared cont
 - Keep the established MAP NAVI visual identity and palette. Existing design anchors include burgundy `#7A1026`, parchment `#F5ECD6`, warm gold/brown borders and the current serif/sans typography. Do not introduce a new unrelated visual theme.
 - Collapsed state: map remains almost full-screen; a compact bottom entry/carousel remains visible.
 - Drag upward/downward to expand/collapse the same sheet. Expanded sheet can show complete content with photos and text.
+- **At its fully expanded/top position, the sheet must span the entire screen width edge-to-edge. It must not look like a narrow floating card or retain distracting side gutters.**
+- **Do not add an X/close button.** Use the vertical swipe gesture to collapse the sheet and return to the map; keep this interaction discoverable through natural behavior rather than a permanent close icon.
 - Horizontal swipe is reserved for carousels inside the sheet; it must not be confused with vertical sheet dragging.
 - Selecting a card/list item focuses the corresponding map location and opens/updates its content.
 - Selecting a map marker opens/focuses the matching item in the sheet.
@@ -84,6 +86,8 @@ The town page should support photo-led cards and longer expanded content. Select
 - [ ] Main/production untouched; Preview deployment verified.
 - [ ] Same recognizable MAP NAVI design and palette.
 - [ ] Bottom sheet opens, expands, collapses and scrolls reliably.
+- [ ] Fully expanded sheet covers the full screen width edge-to-edge.
+- [ ] No X/close button; vertical swipe reliably collapses the sheet.
 - [ ] Horizontal carousels work independently of vertical sheet dragging.
 - [ ] My Ship, Back to ship, departure/return details and Delete my ship work.
 - [ ] No market/town carousel appears in My Ship.
