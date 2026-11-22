@@ -29,6 +29,16 @@ The map remains the dominant visual surface. The bottom sheet is the shared cont
 - Map, GPS, zoom, search, location selection and sheet behavior must remain consistent across regional and town maps.
 - Preserve safe-area handling and usable map controls in collapsed, open and expanded states.
 
+
+## Castle Map (КЗ) — GPS nearest-castle link
+
+- When GPS is enabled on the Castle Map (КЗ), the left-side information panel displays the distance to the nearest castle.
+- The nearest castle is identified on the map by a pulsing circle.
+- Make the displayed distance itself an interactive link, not merely static text.
+- Selecting that distance link opens the exact nearest castle's own page/view.
+- On that castle page, the map must retain/show the same castle location with its pulsing marker, so the visitor can immediately identify the selected object.
+- The distance, linked castle page and pulsing map marker must refer to the same nearest-castle object; do not let the link open a different castle or lose the map focus.
+
 ## Regional navigator requirements
 
 ### My Ship
