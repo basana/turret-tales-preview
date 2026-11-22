@@ -8498,5 +8498,23 @@ if ('serviceWorker' in navigator) {
   setInterval(tick, 15000);
 })();
 </script>
+
+<style id="map-navi-sheet-map-shift-test-v1">
+  /* Experimental Preview: lift the map slightly as the lower sheet opens.
+     This is a visual-only transform: no Leaflet bounds, center or zoom recalculation. */
+  .xmas-map-stage #xmasMap {
+    transition: transform .28s ease;
+  }
+  .xmas-map-stage.xmas-sheet-open #xmasMap {
+    transform: translateY(-32px);
+  }
+  .xmas-map-stage.xmas-sheet-expanded #xmasMap {
+    transform: translateY(-52px);
+  }
+  .xmas-map-stage .xmas-floating-nav.is-dragging ~ #xmasMap {
+    transition: none;
+  }
+</style>
+
 </body>
 </html>
