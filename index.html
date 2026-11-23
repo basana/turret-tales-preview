@@ -1447,6 +1447,15 @@
 .xmas-floating-content .xmas-town-list[hidden]{display:none!important}
 .xmas-map-stage #xmasNearestToast{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;transform:none!important;display:block;max-width:none;text-align:left}
 .xmas-map-stage #xmasNearestToast *{writing-mode:horizontal-tb!important;text-orientation:mixed!important;word-break:normal!important}
+/* Keep every red ship-return alert horizontal, including the map countdown and screen badge. */
+.xmas-map-stage #xmasReturnCountdown,
+#xmasReturnCountdownScreen,
+.xmas-return-countdown,
+.xmas-return-countdown-screen{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;}
+.xmas-map-stage #xmasReturnCountdown small,
+#xmasReturnCountdownScreen small,
+.xmas-return-countdown small,
+.xmas-return-countdown-screen small{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:nowrap!important;word-break:normal!important;}
 .xmas-known-berth{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px dashed #c8a878;padding:9px 2px;color:inherit;cursor:pointer;font:inherit}
 .xmas-known-berth:active{background:#f1e7d4}
 .xmas-known-berth:focus-visible{outline:2px solid #397BC4;outline-offset:2px}
