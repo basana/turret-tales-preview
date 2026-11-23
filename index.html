@@ -1444,6 +1444,12 @@
 .xmas-floating-content .xmas-gps-depart,.xmas-floating-content .xmas-gps-time{flex:0 0 100%}
 .xmas-floating-content .xmas-gps-ship{border-color:#9c6a75;background:#fff7f6}
 .xmas-floating-content .xmas-town-list{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 8px;margin:8px 0 0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.xmas-floating-content .xmas-town-list[hidden]{display:none!important}
+.xmas-map-stage #xmasNearestToast{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;transform:none!important;display:block;max-width:none;text-align:left}
+.xmas-map-stage #xmasNearestToast *{writing-mode:horizontal-tb!important;text-orientation:mixed!important;word-break:normal!important}
+.xmas-known-berth{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px dashed #c8a878;padding:9px 2px;color:inherit;cursor:pointer;font:inherit}
+.xmas-known-berth:active{background:#f1e7d4}
+.xmas-known-berth:focus-visible{outline:2px solid #397BC4;outline-offset:2px}
 .xmas-floating-content .xmas-town-card{flex:0 0 190px;scroll-snap-align:start;min-height:78px;padding:8px}.xmas-floating-content .xmas-town-card img{width:58px;height:58px;min-width:58px}
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-panel{flex-direction:column;overflow:visible}
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%}
@@ -4960,7 +4966,17 @@ function updateXmasFloatingNavContent(){
   };
   const kt=KBT[xmasLang]||KBT.en;
   knownBerths.hidden=cat!=='ship';
-  knownBerths.innerHTML='<h3>'+kt.title+'</h3><div class="xmas-known-berth"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></div><div class="xmas-known-berth"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></div><div class="xmas-known-berth"><strong>KD · Rheinanlagen (Mitte)</strong><small>'+kt.confirmed+'</small></div><div class="xmas-known-berth"><strong>Viking · Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></div><p>'+kt.note+'</p>';
+  knownBerths.innerHTML='<h3>'+kt.title+'</h3>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.359750" data-berth-lng="7.604660"><strong>Viking · Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
+   '<p>'+kt.note+'</p>';
+  knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
+   const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
+   if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
+   xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();},280);
+  }));
  }
  const sub=nav.querySelector('[data-shortcut-sub="ship"]');if(sub)sub.textContent=saved?saved.label:xmasFloatingText('shipSub');
 }
@@ -5077,9 +5093,11 @@ function xmasUpdateReturnWarning(margin,depart,sp){
  }
  const countdownText=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
  if(badge){badge.hidden=false;badge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
- if(screenBadge){screenBadge.hidden=currentView!=='guide';screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
+ const splashEl=document.getElementById('splash');
+ const splashVisible=!!(splashEl&&!splashEl.classList.contains('hide')&&getComputedStyle(splashEl).display!=='none');
+ if(screenBadge){screenBadge.hidden=!(currentView==='guide'||currentView==='christmas'||splashVisible);screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
  let modal=document.getElementById('xmasReturnWarningModal');
- if(margin>15||currentView!=='christmas'){if(modal)modal.hidden=true;return;}
+ if(margin>15||(currentView!=='christmas'&&!splashVisible)){if(modal)modal.hidden=true;return;}
  if(!modal){
   modal=document.createElement('div');modal.id='xmasReturnWarningModal';modal.className='xmas-return-warning';modal.setAttribute('role','alertdialog');modal.setAttribute('aria-modal','true');
   modal.innerHTML='<div class="xmas-return-warning-card"><div class="xmas-return-warning-kicker">⚠ WARNING</div><h2></h2><div class="xmas-return-warning-time"></div><p></p><button type="button"></button></div>';
