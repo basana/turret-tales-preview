@@ -193,6 +193,11 @@
   .xmas-gps-clear { border: 1px solid #8eafd0; background: #e7f0f9; color: #285b88; }
   .xmas-gps-depart { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
   .xmas-gps-depart input { font: 16px/1.2 var(--sans) !important; min-height: 44px; width: 116px; box-sizing: border-box; touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+.xmas-ship-walk-time{margin-left:auto;color:#2786C5;font:800 12px/1.2 var(--sans);white-space:nowrap;text-align:right}
+.xmas-ship-actions{display:flex;align-items:center;gap:8px;margin:2px 0 7px}
+.xmas-ship-actions[hidden]{display:none}
+.xmas-ship-actions .xmas-save-location-btn,.xmas-ship-actions .xmas-gps-clear{position:static;display:inline-flex;align-items:center;justify-content:center;flex:1 1 0;min-width:0;min-height:40px;margin:0;padding:8px 10px;font-size:12px;white-space:normal;text-align:center}
+.xmas-ship-actions .xmas-save-location-btn[hidden],.xmas-ship-actions .xmas-gps-clear[hidden]{display:none}
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
   .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
   .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
@@ -1428,9 +1433,10 @@
 .xmas-floating-close{margin-left:auto;width:30px;height:30px;border:0;border-radius:50%;background:#eadfca;color:#563b31;font-size:20px;cursor:pointer}
 .xmas-floating-content{overflow:auto;overscroll-behavior:contain;padding:0 14px 14px;min-height:0;flex:1 1 auto}
  .xmas-floating-content .xmas-gps-panel{gap:5px;padding-top:0}
- .xmas-floating-content .xmas-gps-depart{margin:0 0 4px}
+ .xmas-floating-content .xmas-gps-depart{margin:0 0 4px;flex-wrap:wrap;width:100%}
+.xmas-floating-content .xmas-ship-walk-time{margin-left:auto}
  .xmas-floating-content .xmas-gps-time{margin:2px 0 5px;padding:7px 9px}
-.xmas-floating-content .xmas-save-location-btn{position:static;display:inline-flex;margin:2px 0 9px;min-height:40px;font-size:13px}.xmas-floating-content .xmas-save-location-btn[hidden]{display:none}
+.xmas-floating-content .xmas-save-location-btn{position:static;display:inline-flex;margin:0;min-height:40px;font-size:13px}.xmas-floating-content .xmas-save-location-btn[hidden]{display:none}
 .xmas-floating-content .xmas-gps-panel{margin:0;display:flex;flex-direction:column;gap:7px;overflow:visible;padding:2px 1px 9px}
 .xmas-floating-content .xmas-gps-panel>*{scroll-snap-align:start}
 .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%;min-height:68px;align-items:center;padding:10px 11px;margin:0;border:1px solid #d3c2a6;border-radius:12px;background:#fffdf7;box-sizing:border-box}
@@ -4933,8 +4939,10 @@ function updateXmasFloatingNavContent(){
  const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;
  const cat=nav.dataset.category||'explore',p=nav.querySelector('.xmas-floating-content'),gp=p.querySelector('#xmasGpsPanel'),save=p.querySelector('#xmasSaveLocationBtn'),towns=p.querySelector('.xmas-town-list'),empty=nav.querySelector('.xmas-floating-empty'),saved=getSavedSpot();
  nav.querySelectorAll('.xmas-floating-tab').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
- if(gp){gp.querySelectorAll('.xmas-gps-row').forEach(r=>{const ship=r.classList.contains('xmas-gps-ship');r.hidden=cat==='ship'?!ship:ship;});gp.querySelectorAll('.xmas-gps-depart,.xmas-gps-time,.xmas-gps-clear').forEach(e=>e.hidden=cat!=='ship');}
- if(save)save.hidden=cat!=='ship'||!xmasGpsPos||!!saved;
+ if(gp){gp.querySelectorAll('.xmas-gps-row').forEach(r=>{const ship=r.classList.contains('xmas-gps-ship');r.hidden=cat==='ship'?!ship:ship;});gp.querySelectorAll('.xmas-gps-depart,.xmas-gps-time').forEach(e=>e.hidden=cat!=='ship');}
+ const clear=nav.querySelector('.xmas-gps-clear');if(clear)clear.hidden=cat!=='ship';
+ if(save)save.hidden=cat!=='ship'||!xmasGpsPos;
+ const actions=nav.querySelector('.xmas-ship-actions');if(actions)actions.hidden=(!save||save.hidden)&&(!clear||clear.hidden);
  if(towns)towns.hidden=cat!=='explore';
  if(empty){if(cat==='ship'){empty.hidden=!!saved;empty.textContent=xmasFloatingText('noShip');}else{const has=!!(gp&&gp.querySelector('.xmas-gps-row:not(.xmas-gps-ship)'));empty.hidden=has;empty.textContent=xmasFloatingText('gps');}}
  const staticSaved=nav.querySelector('.xmas-floating-static-saved');
@@ -5021,7 +5029,7 @@ function initXmasFloatingNav(){
  const gp=document.getElementById('xmasGpsPanel'),towns=document.querySelector('#view-christmas .xmas-town-list'),save=document.getElementById('xmasSaveLocationBtn');if(!gp)return;
  const nav=document.createElement('div');nav.className='xmas-floating-nav';nav.dataset.category='explore';
  nav.innerHTML='<div class="xmas-floating-shortcuts"><button type="button" class="xmas-floating-shortcut" data-category="ship"><span class="xfs-icon">⚓</span><span><strong data-shortcut-title="ship">'+xmasFloatingText('ship')+'</strong><small data-shortcut-sub="ship"></small></span></button><button type="button" class="xmas-floating-shortcut" data-category="explore"><span class="xfs-icon">⌖</span><span><strong>'+xmasFloatingText('explore')+'</strong><small>'+xmasFloatingText('exploreSub')+'</small></span></button></div><section class="xmas-floating-sheet" aria-label="Map navigation panel"><button type="button" class="xmas-floating-handle" aria-label="Drag panel up or down"><span class="xmas-floating-grip"></span></button><div class="xmas-floating-head"><button type="button" class="xmas-floating-tab" data-category="ship">'+xmasFloatingText('ship')+'</button><button type="button" class="xmas-floating-tab active" data-category="explore">'+xmasFloatingText('explore')+'</button><button type="button" class="xmas-floating-close" aria-label="Close panel">×</button></div><div class="xmas-floating-hint" hidden>'+xmasFloatingText('swipe')+'</div><div class="xmas-floating-content"><div class="xmas-floating-empty"></div><div class="xmas-floating-static-saved" hidden></div></div></section>';
- stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');content.appendChild(gp);if(save)content.insertBefore(save,gp);if(towns)content.appendChild(towns);
+ stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');const actions=document.createElement('div');actions.className='xmas-ship-actions';content.appendChild(actions);if(save)actions.appendChild(save);content.appendChild(gp);const initialClear=gp.querySelector('.xmas-gps-clear');if(initialClear)actions.appendChild(initialClear);if(towns)content.appendChild(towns);
  const known=document.createElement('section');known.id='xmasKnownKoblenzBerths';known.className='xmas-known-berths';known.hidden=true;content.appendChild(known);
  if(towns)towns.addEventListener('click',e=>{const card=e.target.closest('.xmas-town-card');if(!card)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();xmasSelectMarket(card.dataset.xc);},true);
  nav.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>xmasFloatingOpen(b.dataset.category)));
@@ -5297,6 +5305,9 @@ function xmasUpdateGpsPanel() {
     const selected = activeDepart.value;
     let saved = ''; try { saved = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
     const spNow = getSavedSpot();
+    const walkTimeEl=document.querySelector('.xmas-ship-walk-time');
+    if(walkTimeEl&&spNow){const walkDistance=distanceMeters(p.lat,p.lng,spNow.lat,spNow.lng);walkTimeEl.textContent='≈ '+xmasWalkMin(walkDistance)+' '+xmasG('min');}
+    else if(walkTimeEl)walkTimeEl.remove();
     if (spNow && selected && /^\d{2}:\d{2}$/.test(selected)) {
       const [hh,mm] = selected.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
       const dNow=distanceMeters(p.lat,p.lng,spNow.lat,spNow.lng);
@@ -5333,7 +5344,8 @@ function xmasUpdateGpsPanel() {
   } else {
     xmasUpdateReturnWarning(null, '', null);
   }
-  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="text" id="xmasDepart" class="xmas-departure-time" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}" style="font-size:16px;min-height:44px;max-width:116px;touch-action:manipulation"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  const shipWalkTime=sp?`<span class="xmas-ship-walk-time">≈ ${xmasWalkMin(distanceMeters(p.lat,p.lng,sp.lat,sp.lng))} ${xmasG('min')}</span>`:'';
+  let html = `<label class="xmas-gps-depart"><span>${xmasG('departLabel')}</span><input type="text" id="xmasDepart" class="xmas-departure-time" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}" style="font-size:16px;min-height:44px;max-width:116px;touch-action:manipulation">${shipWalkTime}</label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
@@ -5343,7 +5355,10 @@ function xmasUpdateGpsPanel() {
     html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
   }
 
+  const previousClear=document.querySelector('.xmas-floating-nav .xmas-gps-clear');if(previousClear)previousClear.remove();
   panel.innerHTML = html;
+  const shipActions=document.querySelector('.xmas-floating-nav .xmas-ship-actions');
+  const newClear=panel.querySelector('.xmas-gps-clear');if(newClear&&shipActions)shipActions.appendChild(newClear);
   // Клик на строку — центрировать карту на этой точке
   panel.querySelectorAll('.xmas-gps-link').forEach(row => {
     row.addEventListener('click', () => {
