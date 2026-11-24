@@ -1134,7 +1134,8 @@
     background: transparent; border: none; font-size: 20px; width: 24px; height: 24px;
   }
   .saved-spot-marker { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45)); line-height: 1; }
-  .xmas-ship-anchor { width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:2px solid #7A1026;border-radius:50%;background:#fffaf0;color:#7A1026;font:800 25px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
+  .xmas-ship-anchor { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:800 25px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
+  .xmas-berth-marker { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:26px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
   .poi-marker {
     width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center; font-size: 13px;
@@ -5003,6 +5004,24 @@ function updateXmasFloatingNavContent(){
   };
   const kt=KBT[xmasLang]||KBT.en;
   knownBerths.hidden=cat!=='ship';
+  if(xmasMapObj){
+   const berthSpecs=[
+    {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4'},
+    {id:'kd5',lat:50.359770,lng:7.605171,label:'KD · Landebrücke Nr. 5'},
+    {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:'KD · Rheinanlagen'},
+    {id:'viking',lat:50.359750,lng:7.604660,label:'Viking · Konrad-Adenauer-Ufer'}
+   ];
+   if(!xmasMapObj._xmasKnownBerthLayerGroup)xmasMapObj._xmasKnownBerthLayerGroup=L.layerGroup().addTo(xmasMapObj);
+   const berthLayer=xmasMapObj._xmasKnownBerthLayerGroup;
+   berthLayer.clearLayers();
+   xmasMapObj._xmasKnownBerthMarkers={};
+   if(cat==='ship')berthSpecs.forEach(b=>{
+    const marker=L.marker([b.lat,b.lng],{icon:L.divIcon({className:'',html:'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:[42,42],iconAnchor:[21,21]})});
+    marker.bindPopup('<strong>'+b.label+'</strong>');
+    marker.addTo(berthLayer);
+    xmasMapObj._xmasKnownBerthMarkers[b.id]=marker;
+   });
+  }
   knownBerths.innerHTML='<h3>'+kt.title+'</h3>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
@@ -5012,7 +5031,8 @@ function updateXmasFloatingNavContent(){
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
-   xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();},280);
+   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
+   xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();const marker=xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[berthId];if(marker)marker.openPopup();},280);
   }));
  }
  const sub=nav.querySelector('[data-shortcut-sub="ship"]');if(sub)sub.textContent=saved?saved.label:xmasFloatingText('shipSub');
@@ -8622,17 +8642,17 @@ if ('serviceWorker' in navigator) {
     transform: none;
   }
   .poi-toggle-face {
-    width: 85%; height: 85%; flex: 0 0 85%;
+    width: 90%; height: 90%; flex: 0 0 90%;
     display: flex; align-items: center; justify-content: center;
     box-sizing: border-box; border: 3px solid #fff; border-radius: 50%;
     background: #e8f5e9; color: #263238;
     box-shadow: 0 2px 12px rgba(0,0,0,.4);
-    font: 30.6px/1 var(--sans); transition: background .2s, color .2s, box-shadow .2s;
+    font: 32.4px/1 var(--sans); transition: background .2s, color .2s, box-shadow .2s;
   }
   .poi-toggle-btn.wc .poi-toggle-face { background: #e3f2fd; }
   .poi-toggle-btn.map-reset-btn .poi-toggle-face {
     background: rgba(246,238,221,.97); border-color: var(--gold);
-    color: var(--ink); font-size: 37.4px;
+    color: var(--ink); font-size: 39.6px;
   }
   .poi-toggle-btn.active { animation: none !important; transform: none !important; }
   .poi-toggle-btn.active .poi-toggle-face {
@@ -8641,7 +8661,7 @@ if ('serviceWorker' in navigator) {
     box-shadow: 0 0 0 3px #B42332, 0 3px 12px rgba(0,0,0,.45);
   }
   .poi-toggle-btn.active::before, .poi-toggle-btn.active::after {
-    width: 85%; height: 85%;
+    width: 90%; height: 90%;
   }
   .poi-toggle-btn.active::before { animation: poiRing1 1.5s ease-out infinite; }
   .poi-toggle-btn.active::after { animation: poiRing2 1.5s ease-out .4s infinite; }
