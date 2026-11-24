@@ -8503,6 +8503,19 @@ if ('serviceWorker' in navigator) {
     text-orientation: mixed !important;
     word-break: normal !important;
   }
+  /* GPS nearest-object title: prevent the Leaflet tooltip from collapsing
+     into a one-character-wide vertical column on narrow mobile layouts. */
+  .leaflet-tooltip.xmas-gps-target-label {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    width: max-content !important;
+    max-width: min(190px, calc(100vw - 32px)) !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
   .leaflet-tooltip.xmas-pin-label {
     width: max-content;
     max-width: min(180px, 60vw);
