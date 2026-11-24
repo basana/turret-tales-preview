@@ -5652,17 +5652,23 @@ function renderChristmas(townKey) {
   if (focusTownMap) {
     const pendingPhotoKey = xmasPendingCardPhotoKey;
     if (pendingPhotoKey) {
-      // Resolve the card by its stable photo key, not by a translated title or a hard-coded index.
+      // Resolve the requested card by its stable photo key, never by translated text or card index.
       const targetGrid = Array.from(el.querySelectorAll('.xmas-grid')).find(node => node.dataset.photo === pendingPhotoKey);
       const targetCard = targetGrid && targetGrid.closest('.xmas-card');
       if (targetCard) {
         xmasPendingCardPhotoKey = null;
         targetCard.style.scrollMarginTop = '14px';
-        // Wait for the new view and its map layout to settle on mobile Safari/iPadOS.
-        requestAnimationFrame(() => {
+        // Mobile Safari/iPadOS can change the scroll geometry while the view and Leaflet map initialize.
+        // Re-apply the exact-card position after layout settles so the deep link cannot stop at the map/top.
+        [450, 850, 1350].forEach(delay => {
           setTimeout(() => {
-            targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 450);
+            if (currentView !== 'christmas' || xmasTown !== townKey) return;
+            const liveGrid = Array.from(el.querySelectorAll('.xmas-grid')).find(node => node.dataset.photo === pendingPhotoKey);
+            const liveCard = liveGrid && liveGrid.closest('.xmas-card');
+            if (!liveCard) return;
+            liveCard.style.scrollMarginTop = '14px';
+            liveCard.scrollIntoView({ behavior: delay === 1350 ? 'auto' : 'smooth', block: 'start' });
+          }, delay);
         });
       } else {
         xmasPendingCardPhotoKey = null;
@@ -5673,6 +5679,8 @@ function renderChristmas(townKey) {
         }
       }
     } else {
+      // Normal town entry (including the dedicated "Christmas market Koblenz" button)
+      // intentionally opens at the town map, not at a market card.
       const mapStage = el.querySelector('.xmas-map-stage');
       if (mapStage) {
         mapStage.style.scrollMarginTop = '12px';
