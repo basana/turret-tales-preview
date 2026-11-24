@@ -4297,7 +4297,8 @@ function xmasTownFromStation() {
 }
 
 let xmasListOnly = false; // true = только список рынков (кнопка «Рождественские локации»)
-function xmasOpen(townKey) { xmasTown = townKey; xmasListOnly = false; switchView('christmas'); }
+let xmasPendingCardPhotoKey = null; // optional deep-link from the framed Koblenz/Zentralplatz home button
+function xmasOpen(townKey, cardPhotoKey = null) { xmasTown = townKey; xmasListOnly = false; xmasPendingCardPhotoKey = cardPhotoKey; switchView('christmas'); }
 function xmasOpenList() { xmasTown = null; xmasListOnly = true; switchView('christmas'); }
 // Экран 2 в двух режимах: «станция» (фото, текст — из раздела Locations/карты) и «главный» (кнопки Christmas)
 function openStation(i) { index = i; document.body.classList.add('station-open'); switchView('guide'); renderGuide(); }
@@ -5649,10 +5650,34 @@ function renderChristmas(townKey) {
   // При выборе города из общей карты/списка всегда показываем карту в начале его раздела,
   // а не сохраняем прежнюю прокрутку до фотогалереи.
   if (focusTownMap) {
-    const mapStage = el.querySelector('.xmas-map-stage');
-    if (mapStage) {
-      mapStage.style.scrollMarginTop = '12px';
-      mapStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const pendingPhotoKey = xmasPendingCardPhotoKey;
+    if (pendingPhotoKey) {
+      // Resolve the card by its stable photo key, not by a translated title or a hard-coded index.
+      const targetGrid = Array.from(el.querySelectorAll('.xmas-grid')).find(node => node.dataset.photo === pendingPhotoKey);
+      const targetCard = targetGrid && targetGrid.closest('.xmas-card');
+      if (targetCard) {
+        xmasPendingCardPhotoKey = null;
+        targetCard.style.scrollMarginTop = '14px';
+        // Wait for the new view and its map layout to settle on mobile Safari/iPadOS.
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 450);
+        });
+      } else {
+        xmasPendingCardPhotoKey = null;
+        const mapStage = el.querySelector('.xmas-map-stage');
+        if (mapStage) {
+          mapStage.style.scrollMarginTop = '12px';
+          mapStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    } else {
+      const mapStage = el.querySelector('.xmas-map-stage');
+      if (mapStage) {
+        mapStage.style.scrollMarginTop = '12px';
+        mapStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }
 }
@@ -6681,7 +6706,8 @@ if (qlToursBtn) qlToursBtn.addEventListener('click', () => openInfoPopup('tours'
 const qlContactBtn = document.getElementById('qlContact');
 if (qlContactBtn) qlContactBtn.addEventListener('click', () => openInfoPopup('contact'));
 const qlChristmasBtn = document.getElementById('qlChristmas');
-if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => xmasOpen('koblenz'));
+// The framed star image is a direct shortcut to the Zentralplatz card, not just the top of Koblenz.
+if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => xmasOpen('koblenz', 'koblenz-zentralplatz'));
 const xmasHomeMapBtn = document.getElementById('xmasHomeMap');
 if (xmasHomeMapBtn) xmasHomeMapBtn.addEventListener('click', () => xmasOpen(null));
 const xmasHomeKoblenzBtn = document.getElementById('xmasHomeKoblenz');
