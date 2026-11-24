@@ -2578,17 +2578,34 @@ function clearXmasPoiMode() {
 }
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
-  const key = type === 'apotheke' ? 'apotheke' : 'wc';
+  const isApo = type === 'apotheke';
+  const key = isApo ? 'apotheke' : 'wc';
   const btn = xmasMapObj.getContainer().querySelector('.poi-toggle-btn.' + key);
-  const already = type === 'apotheke' ? !!xmasApoLayer : !!xmasWcLayer;
-  clearXmasPoiMode();
-  if (already) return;
-  if (type === 'apotheke') xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
-  else xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
-  if (btn) btn.classList.add('active');
-  _zoomToNearestPoi(xmasMapObj, type === 'apotheke' ? POI_APOTHEKEN : POI_TOILETTEN, type === 'apotheke' ? '💊' : '🚻');
-  _startPoiEmergency();
-  const xt = document.getElementById('xmasNearestToast'); if (xt) xt.classList.remove('show');
+  const currentLayer = isApo ? xmasApoLayer : xmasWcLayer;
+
+  // Toggle only the requested category; the other POI layer must remain visible.
+  if (currentLayer) {
+    xmasMapObj.removeLayer(currentLayer);
+    if (isApo) xmasApoLayer = null;
+    else xmasWcLayer = null;
+    if (btn) btn.classList.remove('active');
+  } else {
+    const data = isApo ? POI_APOTHEKEN : POI_TOILETTEN;
+    const emoji = isApo ? '💊' : '🚻';
+    const cssClass = isApo ? 'poi-apotheke' : 'poi-wc';
+    const layer = _buildPoiLayer(xmasMapObj, data, emoji, cssClass);
+    if (isApo) xmasApoLayer = layer;
+    else xmasWcLayer = layer;
+    if (btn) btn.classList.add('active');
+    _zoomToNearestPoi(xmasMapObj, data, emoji);
+  }
+
+  // Keep the emergency helper active while at least one urgent POI category is shown.
+  if (xmasApoLayer || xmasWcLayer) _startPoiEmergency();
+  else _stopPoiEmergency();
+
+  const xt = document.getElementById('xmasNearestToast');
+  if (xt) xt.classList.remove('show');
 }
 
 function renderPois() {
@@ -5059,7 +5076,7 @@ function xmasFloatingOpen(cat){
  const content=nav.querySelector('.xmas-floating-content');if(content)content.scrollTop=0;
  const townList=nav.querySelector('.xmas-town-list');if(townList)townList.scrollTop=0;
  const back=document.querySelector('.xmas-back-to-map');if(back)back.hidden=true;
- clearXmasPoiMode();
+ // Opening or switching the bottom panel must not erase visible pharmacy/toilet markers.
  nav.style.setProperty('--sheet-height','54%');nav.style.setProperty('--sheet-side','7px');nav.dataset.category=cat;nav.classList.add('open');nav.classList.remove('expanded','is-dragging');const stage=nav.closest('.xmas-map-stage');if(stage){stage.classList.add('xmas-sheet-open');stage.classList.remove('xmas-sheet-expanded');}
  nav.querySelectorAll('.xmas-floating-shortcut').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
  updateXmasFloatingNavContent();
