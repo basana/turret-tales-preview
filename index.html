@@ -4989,7 +4989,7 @@ function updateXmasFloatingNavContent(){
  if(towns)towns.hidden=cat!=='explore';
  if(empty){if(cat==='ship'){empty.hidden=!!saved;empty.textContent=xmasFloatingText('noShip');}else{const has=!!(gp&&gp.querySelector('.xmas-gps-row:not(.xmas-gps-ship)'));empty.hidden=has;empty.textContent=xmasFloatingText('gps');}}
  const staticSaved=nav.querySelector('.xmas-floating-static-saved');
- if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">⚓ '+xmasFloatingEsc(xmasFloatingText('backShip')||xmasFloatingText('show'))+' · '+xmasFloatingEsc(saved.label)+'</button>';staticSaved.querySelector('button').onclick=()=>{xmasFloatingCollapse();if(xmasMapObj){xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});setTimeout(()=>xmasMapObj.invalidateSize(),280);}};}}
+ if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">⚓ '+xmasFloatingEsc(xmasFloatingText('backShip')||xmasFloatingText('show'))+'</button>';staticSaved.querySelector('button').onclick=()=>{xmasFloatingCollapse();if(xmasMapObj){xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});setTimeout(()=>xmasMapObj.invalidateSize(),280);}};}}
  const knownBerths=nav.querySelector('#xmasKnownKoblenzBerths');
  if(knownBerths){
   const KBT={
@@ -5415,7 +5415,8 @@ function xmasUpdateGpsPanel() {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
     const returned = d <= 60;
     const savedSpotStatus = returned ? `<strong class="xmas-gps-arrived">${xmasG('backAt').replace('{name}', sp.label)}</strong>` : fmt([sp.lat, sp.lng]);
-    html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${sp.lat}" data-lng="${sp.lng}"><span>📌 ${sp.label}</span>${savedSpotStatus}</div>`;
+    // The return-to-ship action is already available as the anchor shortcut in row 2.
+    // Keep the clear control here, but do not repeat a second tappable ship destination row.
     html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
   }
 
