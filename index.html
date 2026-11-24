@@ -1134,6 +1134,7 @@
     background: transparent; border: none; font-size: 20px; width: 24px; height: 24px;
   }
   .saved-spot-marker { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45)); line-height: 1; }
+  .xmas-ship-anchor { width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:2px solid #7A1026;border-radius:50%;background:#fffaf0;color:#7A1026;font:800 25px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
   .poi-marker {
     width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center; font-size: 13px;
@@ -1444,6 +1445,7 @@
 .xmas-floating-content .xmas-gps-panel{margin:0;display:flex;flex-direction:column;gap:7px;overflow:visible;padding:2px 1px 9px}
 .xmas-floating-content .xmas-gps-panel>*{scroll-snap-align:start}
 .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%;min-height:68px;align-items:center;padding:10px 11px;margin:0;border:1px solid #d3c2a6;border-radius:12px;background:#fffdf7;box-sizing:border-box}
+.xmas-floating-content .xmas-gps-row[hidden],.xmas-floating-content .xmas-gps-depart[hidden],.xmas-floating-content .xmas-gps-time[hidden],.xmas-floating-content .xmas-town-list[hidden]{display:none!important}
 .xmas-floating-content .xmas-gps-row>span{font-size:13px;line-height:1.25;font-weight:700}.xmas-floating-content .xmas-gps-row b{display:block;color:#7A1026;font-size:15px;white-space:nowrap}.xmas-floating-content .xmas-gps-row small{display:block;margin:2px 0 0;font-size:11px;white-space:nowrap}
 .xmas-floating-content .xmas-gps-depart,.xmas-floating-content .xmas-gps-time{flex:0 0 100%}
 .xmas-floating-content .xmas-gps-ship{border-color:#9c6a75;background:#fff7f6}
@@ -4804,10 +4806,7 @@ function xmasDrawMap(opts) {
     }
     xmasMapObj.invalidateSize(true);
   };
-  xmasMapObj.getContainer().addEventListener('pointerdown', e => {
-    if (e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc')) return;
-    if (xmasApoLayer || xmasWcLayer) clearXmasPoiMode();
-  }, true);
+  // POI layers stay visible while visitors pan or zoom; the toggle or Reset clears them.
   const resetBtn = xmasMapObj.getContainer().querySelector('#xResetBtn');
   if (resetBtn) resetBtn.addEventListener('click', e => {
     e.preventDefault(); e.stopPropagation(); clearXmasPoiMode();
@@ -4926,12 +4925,7 @@ function xmasTownListHtml() {
 }
 
 let xmasPendingMarketKey = null;
-document.addEventListener('pointerdown',e=>{
- const keep=e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc');
- if(keep)return;
- if(apothekenLayer||toilettenLayer)clearMainPoiMode();
- if(xmasApoLayer||xmasWcLayer)clearXmasPoiMode();
-},true);
+// Do not clear POI layers on generic pointerdown; visitors need to inspect the map after finding an address.
 function xmasOpenMarketContent(k){
  xmasPendingMarketKey=null;
  const toast=document.getElementById('xmasNearestToast');
@@ -5254,12 +5248,17 @@ function syncXmasGpsMarkerOverlap() {
 }
 function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
-  if (xmasSpotCircle && xmasMapObj.hasLayer(xmasSpotCircle)) xmasMapObj.removeLayer(xmasSpotCircle);
+  // Remove previous layers before rebuilding them; do not leave stale GPS/ship markers behind.
+  [xmasSpotCircle, xmasGpsMarker, xmasSpotMarker, ...xmasBerthMarkers].forEach(layer => {
+    if (layer && xmasMapObj.hasLayer(layer)) xmasMapObj.removeLayer(layer);
+  });
   xmasSpotCircle = null;
-  xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
+  xmasGpsMarker = null;
+  xmasSpotMarker = null;
+  xmasBerthMarkers = [];
   xmasBerthList().forEach(b => {
-    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth" style="--bc:${xmasCompanyStyle(b.co).bg}"><span class="xmas-berth-letter">${xmasCompanyStyle(b.co).letter}</span>${b.co} PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
-      .bindTooltip(`${b.co} PIER: ${b.name}`).addTo(xmasMapObj));
+    const berthHtml = '<div class="xmas-berth" style="--bc:' + xmasCompanyStyle(b.co).bg + '"><span class="xmas-berth-letter">' + xmasCompanyStyle(b.co).letter + '</span>' + b.co + ' PIER</div>';
+    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: berthHtml, iconSize: null, iconAnchor: [0, 0] }) }).bindTooltip(b.co + ' PIER: ' + b.name).addTo(xmasMapObj));
   });
   if (xmasGpsPos) {
     xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [66, 66], iconAnchor: [33, 33] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
@@ -5267,7 +5266,9 @@ function xmasDrawGpsLayers() {
   const sp = getSavedSpot();
   if (sp) {
     xmasSpotCircle = L.circle([sp.lat, sp.lng], { radius: 150, color: '#ff8a00', weight: 4, opacity: 1, fillColor: '#ff8a00', fillOpacity: 0.035, interactive: false, className: 'xmas-return-zone' }).addTo(xmasMapObj);
-    xmasSpotMarker = L.marker([sp.lat, sp.lng], { icon: L.divIcon({ className: '', html: '<div class="saved-spot-marker">📌</div>', iconSize: [30, 30], iconAnchor: [15, 28] }), zIndexOffset: 900 }).addTo(xmasMapObj);
+    // Offset the anchor above the live GPS pulse, even when both share the same coordinates.
+    xmasSpotMarker = L.marker([sp.lat, sp.lng], { icon: L.divIcon({ className: '', html: '<div class="xmas-ship-anchor" aria-label="Saved ship">⚓</div>', iconSize: [40, 40], iconAnchor: [20, 42] }), zIndexOffset: 1800 }).addTo(xmasMapObj);
+    xmasSpotMarker.bindTooltip(String(sp.label || xmasG('ship')));
   }
 }
 
