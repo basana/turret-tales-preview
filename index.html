@@ -6571,7 +6571,15 @@ function renderQuickLinksText() {
     if (el) el.textContent = text;
   };
   setLbl('qlLocationsLabel', t.tabs[2]);
-  setLbl('qlMapLabel', t.tabs[6]);
+  setLbl('qlMapLabel', ({
+    en: 'Castles',
+    ru: 'Замки',
+    de: 'Burgen',
+    fr: 'Châteaux',
+    nl: 'Kastelen',
+    zh: '城堡',
+    he: 'טירות'
+  })[lang] || 'Castles');
   setLbl('qlInfoLabel', t.tabs[4]);
   xmasWhereUpdate();
   xmasSyncLangFromApp();
