@@ -2579,30 +2579,22 @@ function clearXmasPoiMode() {
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
   const isApo = type === 'apotheke';
-  const key = isApo ? 'apotheke' : 'wc';
-  const btn = xmasMapObj.getContainer().querySelector('.poi-toggle-btn.' + key);
   const currentLayer = isApo ? xmasApoLayer : xmasWcLayer;
+  const data = isApo ? POI_APOTHEKEN : POI_TOILETTEN;
+  const emoji = isApo ? '💊' : '🚻';
+  const cssClass = isApo ? 'poi-apotheke' : 'poi-wc';
 
-  // Toggle only the requested category; the other POI layer must remain visible.
-  if (currentLayer) {
-    xmasMapObj.removeLayer(currentLayer);
-    if (isApo) xmasApoLayer = null;
-    else xmasWcLayer = null;
-    if (btn) btn.classList.remove('active');
-  } else {
-    const data = isApo ? POI_APOTHEKEN : POI_TOILETTEN;
-    const emoji = isApo ? '💊' : '🚻';
-    const cssClass = isApo ? 'poi-apotheke' : 'poi-wc';
+  // One urgent destination at a time. Tapping the active category switches it off.
+  clearXmasPoiMode();
+  if (!currentLayer) {
     const layer = _buildPoiLayer(xmasMapObj, data, emoji, cssClass);
     if (isApo) xmasApoLayer = layer;
     else xmasWcLayer = layer;
+    const btn = xmasMapObj.getContainer().querySelector(isApo ? '.poi-toggle-btn.apotheke' : '.poi-toggle-btn.wc');
     if (btn) btn.classList.add('active');
     _zoomToNearestPoi(xmasMapObj, data, emoji);
+    _startPoiEmergency();
   }
-
-  // Keep the emergency helper active while at least one urgent POI category is shown.
-  if (xmasApoLayer || xmasWcLayer) _startPoiEmergency();
-  else _stopPoiEmergency();
 
   const xt = document.getElementById('xmasNearestToast');
   if (xt) xt.classList.remove('show');
@@ -4802,8 +4794,8 @@ function xmasDrawMap(opts) {
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
-  const xResetHtml = '<button class="poi-toggle-btn" style="background:rgba(246,238,221,0.95);border-color:var(--gold,#c8a878)" id="xResetBtn" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
-  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC">🚻</button>';
+  const xResetHtml = '<button class="poi-toggle-btn map-reset-btn" id="xResetBtn" title="Full map / Gesamte Karte" aria-label="Show full map"><span class="poi-toggle-face">⤢</span></button>';
+  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken" aria-label="Apotheken"><span class="poi-toggle-face">💊</span></button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC" aria-label="WC"><span class="poi-toggle-face">🚻</span></button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
   if (L.DomEvent) { L.DomEvent.disableClickPropagation(xPoiBar); L.DomEvent.disableScrollPropagation(xPoiBar); }
   const resetMarketMapView = () => {
@@ -7279,7 +7271,7 @@ function initMap() {
   // POI buttons inside map container
   const poiBar = document.createElement('div');
   poiBar.className = 'poi-toggle-bar';
-  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
+  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\')" title="Apotheken" aria-label="Apotheken"><span class="poi-toggle-face">💊</span></button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\')" title="WC" aria-label="WC"><span class="poi-toggle-face">🚻</span></button>';
   leafletMap.getContainer().appendChild(poiBar);
 
   const points = [];
@@ -8614,6 +8606,45 @@ if ('serviceWorker' in navigator) {
   .xmas-map-stage .xmas-floating-nav.is-dragging ~ #xmasMap {
     transition: none;
   }
+</style>
+
+
+<style id="map-navi-compact-poi-controls-v1">
+  /* Keep the original 72px finger target; shrink only the visible control face. */
+  .poi-toggle-bar { gap: 10px; }
+  .poi-toggle-btn {
+    width: 72px !important; height: 72px !important;
+    min-width: 72px; min-height: 72px; flex: 0 0 72px;
+    padding: 0 !important; border: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+    font-size: 0 !important; overflow: visible;
+    transform: none;
+  }
+  .poi-toggle-face {
+    width: 85%; height: 85%; flex: 0 0 85%;
+    display: flex; align-items: center; justify-content: center;
+    box-sizing: border-box; border: 3px solid #fff; border-radius: 50%;
+    background: #e8f5e9; color: #263238;
+    box-shadow: 0 2px 12px rgba(0,0,0,.4);
+    font: 30.6px/1 var(--sans); transition: background .2s, color .2s, box-shadow .2s;
+  }
+  .poi-toggle-btn.wc .poi-toggle-face { background: #e3f2fd; }
+  .poi-toggle-btn.map-reset-btn .poi-toggle-face {
+    background: rgba(246,238,221,.97); border-color: var(--gold);
+    color: var(--ink); font-size: 37.4px;
+  }
+  .poi-toggle-btn.active { animation: none !important; transform: none !important; }
+  .poi-toggle-btn.active .poi-toggle-face {
+    background: #B42332 !important; color: #fff !important;
+    border-color: #fff;
+    box-shadow: 0 0 0 3px #B42332, 0 3px 12px rgba(0,0,0,.45);
+  }
+  .poi-toggle-btn.active::before, .poi-toggle-btn.active::after {
+    width: 85%; height: 85%;
+  }
+  .poi-toggle-btn.active::before { animation: poiRing1 1.5s ease-out infinite; }
+  .poi-toggle-btn.active::after { animation: poiRing2 1.5s ease-out .4s infinite; }
+  .poi-toggle-btn.active:focus-visible { outline: 3px solid #1677D2; outline-offset: 2px; }
 </style>
 
 </body>
