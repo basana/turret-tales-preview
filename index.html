@@ -1186,12 +1186,12 @@
   .poi-toggle-btn.map-reset-btn:active { background: var(--gold); }
   .gps-user-halo {
     width: 66px; height: 66px; border-radius: 50%;
-    background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
+    background: rgba(22,119,210,0.24); display: flex; align-items: center; justify-content: center;
     animation: gpsHaloPulse 1.8s ease-in-out infinite;
   }
   .gps-user-halo::after {
     content: ''; width: 30px; height: 30px; border-radius: 50%;
-    background: var(--terracotta); border: 6px solid #fff; box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    background: #1677D2; border: 6px solid #fff; box-shadow: 0 0 12px rgba(0,0,0,0.4);
   }
   /* Selected/nearest destination: unmistakable marker, visually distinct from the user's GPS dot. */
   .gps-target-pulse {
@@ -5639,7 +5639,7 @@ function renderChristmas(townKey) {
     const mapStage = el.querySelector('.xmas-map-stage');
     if (mapStage) {
       mapStage.style.scrollMarginTop = '12px';
-      mapStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      mapStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 }
@@ -6069,7 +6069,7 @@ function switchView(viewName) {
   const scrollBox = document.querySelector('.content');
   if (scrollBox) scrollBox.scrollTop = 0;
   window.scrollTo(0, 0);
-  if (viewName === 'christmas') renderChristmas();
+  if (viewName === 'christmas') renderChristmas(xmasTown || null);
   if (viewName === 'food') { renderFood(); hideFoodPromo(); }
   if (viewName === 'wine') { renderWine(); hideFoodPromo(); }
   if (viewName === 'links') { renderLinks(); hideFoodPromo(); }
