@@ -178,6 +178,10 @@
   .xmas-gps-time.late { background: #f6e0dc; border: 2px solid #b33a2b; color: #8d2118; box-shadow: 0 2px 8px rgba(141,33,24,.14); }
   .xmas-return-countdown{position:absolute;z-index:1550;left:50%;top:50%;transform:translate(-50%,-50%);min-width:168px;padding:15px 22px;border:3px solid #fff;border-radius:18px;background:rgba(141,33,24,.96);color:#fff;text-align:center;font:900 clamp(23px,6vw,34px)/1.05 var(--sans);letter-spacing:.02em;text-shadow:0 2px 3px rgba(0,0,0,.35);box-shadow:0 0 0 3px #b33a2b,0 8px 28px rgba(0,0,0,.4);pointer-events:none;animation:xmasReturnPulse 1.35s ease-in-out infinite}
   .xmas-return-countdown[hidden]{display:none}
+  /* Keep the red countdown in the visible map area when the drawer is open. */
+  .xmas-map-stage.xmas-sheet-open .xmas-return-countdown{top:23%}
+  .xmas-map-stage.xmas-sheet-expanded .xmas-return-countdown{display:none!important}
+  .xmas-return-warning,.xmas-return-warning *{writing-mode:horizontal-tb!important;text-orientation:mixed!important;}
   .xmas-return-countdown small{display:block;margin-top:6px;font:800 11px/1.2 var(--sans);letter-spacing:.13em;text-transform:uppercase}
   @keyframes xmasReturnPulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 3px #b33a2b,0 8px 28px rgba(0,0,0,.4)}50%{transform:translate(-50%,-50%) scale(1.07);box-shadow:0 0 0 9px rgba(179,58,43,.28),0 10px 34px rgba(0,0,0,.48)}}
   .xmas-return-warning{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(28,15,12,.72);font-family:var(--sans)}
@@ -4873,6 +4877,23 @@ const XG = {
   he: {backAt:'חזרתם אל {name}', btn:'GPS', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 שמירת נקודת חזרה', saveLocation:'📌 שמירה', clearShip:'הסרת הספינה', min:'דק׳ הליכה', shipMin:'דק׳ בספינה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
+// A newly saved or removed ship must never inherit the previous ship's departure time or warning acknowledgement.
+function xmasClearDepartureState() {
+  try {
+    localStorage.removeItem(XMAS_DEPART_KEY);
+    localStorage.removeItem(XMAS_RETURN_ACK_KEY);
+  } catch (e) {}
+  const input = document.getElementById('xmasDepart');
+  if (input) input.value = '';
+  const notice = document.getElementById('xmasDepartNotice');
+  if (notice) notice.remove();
+  const badge = document.getElementById('xmasReturnCountdown');
+  if (badge) badge.hidden = true;
+  const screenBadge = document.getElementById('xmasReturnCountdownScreen');
+  if (screenBadge) screenBadge.hidden = true;
+  const modal = document.getElementById('xmasReturnWarningModal');
+  if (modal) modal.hidden = true;
+}
 const XMAS_EXPLAIN = {
   de: '<b>KARTE ERKUNDEN</b><br>Tippen Sie auf eine nummerierte Marktmarkierung oder eine Ortskarte unten, um die Marktseite dieses Ortes zu öffnen.<br><br><b>ORIENTIERUNG</b><br>GPS zeigt die Entfernung von Ihrem Standort zum Markt.<br><br><b>IHR SCHIFF IM BLICK</b><br>Tippen Sie auf „Mein Schiff ist hier“, um den Standort Ihres Schiffes zu speichern und vor der Abfahrt Ihre Rückkehrzeit zu prüfen.',
   fr: '<b>EXPLORER LA CARTE</b><br>Touchez un marché numéroté sur la carte ou une carte de ville ci-dessous pour ouvrir la page du marché de cette ville.<br><br><b>SE REPÉRER</b><br>Le GPS indique la distance entre votre position et le marché.<br><br><b>GARDER UN ŒIL SUR VOTRE BATEAU</b><br>Touchez « Mon bateau est ici » pour enregistrer la position de votre bateau et vérifier votre heure de retour avant le départ.',
@@ -5019,6 +5040,7 @@ function xmasShowShipSetupDialog(error=false){
 }
 function xmasSaveShipAt(lat,lng,source='gps'){
  const label=window.prompt(xmasG('shipPrompt'),xmasG('shipDefault'));if(label===null)return false;
+ xmasClearDepartureState();
  setSavedSpot({lat,lng,label:(label||xmasG('shipDefault')).trim(),source});
  xmasManualPickMode=false;xmasDrawGpsLayers();xmasUpdateGpsPanel();
  if(typeof updateXmasFloatingNavContent==='function')updateXmasFloatingNavContent();
@@ -5399,7 +5421,7 @@ function xmasUpdateGpsPanel() {
     });
   });
   const clr = document.getElementById('xmasShipClear');
-  if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
+  if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasClearDepartureState(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
   const dep = document.getElementById('xmasDepart');
   if (dep) {
     const parseDeparture = raw => {
