@@ -217,7 +217,7 @@
   .xmas-cell-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
   .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
-  .xmas-hero img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
+  .xmas-hero img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; clip-path: inset(0 0 7px 0); margin-bottom: -7px; }
   .xmas-hero { pointer-events: auto; }
   .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
@@ -343,8 +343,8 @@
   /* GPS target is identified by its pulse and number, never by a text label. */
   .gps-target-label-mode .leaflet-tooltip.gps-base-label { display: none !important; }
   .xmas-hero-caption {
-    position: absolute; right: 0; top: auto; bottom: 12%; z-index: 2; background: #7A1026; color: #fff;
-    font-family: var(--sans); font-size: 13px; font-weight: 400; line-height: 1.2;
+    position: absolute; right: 0; top: auto; bottom: 12%; z-index: 2; background: #fff; color: #7A1026;
+    font-family: var(--sans); font-size: 13px; font-weight: 700; line-height: 1.2;
     padding: 4px 9px; border-radius: 6px 0 0 0; text-align: right; max-width: 85%;
   }
   /* Значок ангела (schaengel-angel.svg) для Schängelbar: вместо 🎄 на обзорной карте и вместо номера в городе */
