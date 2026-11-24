@@ -5116,7 +5116,7 @@ function xmasTravelInfo(d) {
 const XMAS_RETURN_ACK_KEY = 'xmasReturnWarningAckV1';
 const XMAS_RETURN_TEXT = {
  de:{title:'Sie müssen jetzt zurück',late:'Sie kommen voraussichtlich zu spät. Gehen Sie sofort zurück zum Schiff.',left:'Nur noch wenig Zeitreserve. Kehren Sie jetzt zum Schiff zurück.',leftLabel:'MIN. ZEITPUFFER',lateLabel:'MIN. ZU SPÄT',button:'Verstanden — weiter'},
- en:{title:'Return to your ship now',late:'You are likely to be late. Head back to your ship immediately.',left:'Very little time remains. Please return to your ship now.',leftLabel:'MINUTES TO SPARE',lateLabel:'MINUTES LATE',button:'I understand — continue'},
+ en:{title:'Return to your ship now',late:'You are likely to be late. Head back to your ship immediately.',left:'Very little time remains. Please return to your ship now.',leftLabel:'MINUTES IN BUFFER',lateLabel:'MINUTES LATE',button:'I understand — continue'},
  ru:{title:'Пора возвращаться на корабль',late:'Вы, вероятно, опоздаете. Немедленно направляйтесь обратно к кораблю.',left:'Запас времени почти закончился. Пожалуйста, возвращайтесь к кораблю сейчас.',leftLabel:'МИН. В ЗАПАСЕ',lateLabel:'МИН. ОПОЗДАНИЕ',button:'Понятно — продолжить'},
  fr:{title:'Retournez à votre bateau',late:'Vous risquez d’être en retard. Retournez immédiatement à votre bateau.',left:'Il reste très peu de temps. Retournez maintenant à votre bateau.',leftLabel:'MIN. DE MARGE',lateLabel:'MIN. DE RETARD',button:'Compris — continuer'},
  nl:{title:'Ga nu terug naar uw schip',late:'U komt waarschijnlijk te laat. Ga onmiddellijk terug naar uw schip.',left:'Er is nog maar weinig tijd. Ga nu terug naar uw schip.',leftLabel:'MIN. OVER',lateLabel:'MIN. TE LAAT',button:'Begrepen — doorgaan'},
@@ -5141,7 +5141,7 @@ function xmasUpdateReturnWarning(margin,depart,sp){
  if(badge){badge.hidden=false;badge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
  const splashEl=document.getElementById('splash');
  const splashVisible=!!(splashEl&&!splashEl.classList.contains('hide')&&getComputedStyle(splashEl).display!=='none');
- if(screenBadge){screenBadge.hidden=!(currentView==='guide'||currentView==='christmas'||splashVisible);screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
+ if(screenBadge){screenBadge.hidden=!(currentView==='guide'||splashVisible);screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
  let modal=document.getElementById('xmasReturnWarningModal');
  if(margin>15||(currentView!=='christmas'&&!splashVisible)){if(modal)modal.hidden=true;return;}
  if(!modal){
@@ -5152,6 +5152,7 @@ function xmasUpdateReturnWarning(margin,depart,sp){
    try{if(modal.dataset.signature)localStorage.setItem(XMAS_RETURN_ACK_KEY,modal.dataset.signature);}catch(e){}
    modal.hidden=true;
    const b=document.getElementById('xmasReturnCountdown');if(b)b.hidden=true;
+   const sb=document.getElementById('xmasReturnCountdownScreen');if(sb)sb.hidden=true;
   });
  }
  const t=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
