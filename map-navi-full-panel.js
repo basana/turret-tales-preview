@@ -4,13 +4,13 @@ var rail=document.getElementById('mnBottomRail'),panel=document.getElementById('
 if(!rail||!panel||window.__mnFullPanelInstalled)return;
 window.__mnFullPanelInstalled=true;
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function tr(ru,de,en){return window.lang==='ru'?(ru||en||de||''):window.lang==='de'?(de||en||ru||''):(en||de||ru||'');}
+function tr(ru,de,en){var L=typeof lang!=='undefined'?lang:'en';return L==='ru'?(ru||en||de||''):L==='de'?(de||en||ru||''):(en||de||ru||'');}
 function state(s){
  document.body.classList.remove('mn-panel-compact','mn-panel-expanded','mn-panel-full');
  document.body.classList.add('mn-panel-'+s);
  rail.classList.toggle('mn-state-full',s==='full');
  rail.style.height='';rail.style.maxHeight='';rail.style.top='';
- if(window.leafletMap)setTimeout(function(){window.leafletMap.invalidateSize();},240);
+ if(typeof leafletMap!=='undefined'&&leafletMap)setTimeout(function(){leafletMap.invalidateSize();},240);
 }
 function content(){
  var n=panel.querySelector('.mn-full-object-content');
@@ -21,7 +21,7 @@ function speak(t){
  if(!t||!window.speechSynthesis)return;
  window.speechSynthesis.cancel();
  var u=new SpeechSynthesisUtterance(t);
- u.lang=window.lang==='ru'?'ru-RU':window.lang==='de'?'de-DE':'en-US';u.rate=.9;
+ var L=typeof lang!=='undefined'?lang:'en';u.lang=L==='ru'?'ru-RU':L==='de'?'de-DE':'en-US';u.rate=.9;
  window.speechSynthesis.speak(u);
 }
 function castle(i){
@@ -41,11 +41,11 @@ function castle(i){
 function poi(p,emoji){
  var n=content(),txt=[p.name,p.city].filter(Boolean).join(' · '),distance='';
  var lat=null,lng=null;
- if(typeof window.gpsLastLat==='number'&&typeof window.gpsLastLng==='number'){lat=window.gpsLastLat;lng=window.gpsLastLng;}
- else if(window.xmasGpsPos){lat=window.xmasGpsPos.lat;lng=window.xmasGpsPos.lng;}
- if(lat!==null&&typeof window.distanceMeters==='function'){
-  var d=window.distanceMeters(lat,lng,p.lat,p.lng),mins=Math.ceil(d*1.3/75);
-  distance='<p>'+esc(tr('Примерно ','Ca. ','Approx. ')+window.formatDistance(d)+' · '+mins+' '+tr('мин пешком','Min. zu Fuß','min walk'))+'</p>';
+ if(typeof gpsLastLat==='number'&&typeof gpsLastLng==='number'){lat=gpsLastLat;lng=gpsLastLng;}
+ else if(typeof xmasGpsPos!=='undefined'&&xmasGpsPos){lat=xmasGpsPos.lat;lng=xmasGpsPos.lng;}
+ if(lat!==null&&typeof distanceMeters==='function'){
+  var d=distanceMeters(lat,lng,p.lat,p.lng),mins=Math.ceil(d*1.3/75);
+  distance='<p>'+esc(tr('Примерно ','Ca. ','Approx. ')+formatDistance(d)+' · '+mins+' '+tr('мин пешком','Min. zu Fuß','min walk'))+'</p>';
  }
  n.innerHTML='<h3>'+esc(emoji+' '+(p.name||''))+'</h3><p>'+esc(p.city||'')+'</p>'+distance+
  '<button type="button" class="mn-full-listen">🔊 '+esc(tr('Прослушать','Anhören','Listen'))+'</button>';
@@ -60,7 +60,7 @@ if(typeof oldShow==='function'&&!oldShow.__mnFullWrapped){
 var oldPoi=window._showPoiToast;
 if(typeof oldPoi==='function'&&!oldPoi.__mnFullWrapped){
  var wrappedPoi=function(mapObj,p,emoji){
-  if(mapObj!==window.leafletMap){oldPoi(mapObj,p,emoji);return;}
+  if(typeof leafletMap==='undefined'||mapObj!==leafletMap){oldPoi(mapObj,p,emoji);return;}
   document.querySelectorAll('.nearest-toast').forEach(function(t){t.classList.remove('show');});
   var a=document.getElementById('mapPanelTitle'),b=document.getElementById('mapPanelMeta'),d=document.getElementById('mapPanelDesc');
   if(a)a.textContent=p.name||'';if(b)b.textContent=p.city||'';if(d)d.textContent='';
