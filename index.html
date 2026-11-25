@@ -8966,11 +8966,30 @@ body.mn-panel-full .mn-back{display:none}
     if(!hint){hint=document.createElement('div');hint.className='mn-poi-hint';}
     var gpsOff=typeof gpsLastLat==='undefined'||gpsLastLat===null;
     var swipeText=lang==='ru'?'Листайте карточки — точка на карте будет перемещаться. Нажмите, чтобы выбрать.':lang==='de'?'Karten wischen — der Kartenpunkt folgt. Tippen zum Auswählen.':'Swipe cards to move the map marker. Tap to select.';
-    var gpsText=lang==='ru'?'GPS выключен — включите его, чтобы найти ближайший объект.':lang==='de'?'GPS ist aus — aktivieren Sie es für das nächstgelegene Objekt.':'GPS is off — enable it to find the nearest place.';
+    var gpsText=lang==='ru'?'GPS выключен — включите его, чтобы найти ближайший объект.':lang==='de'?'GPS ist aus — aktivieren Sie es für den nächstgelegenen Ort.':'GPS is off — enable it to find the nearest place.';
     hint.textContent=(gpsOff?gpsText+' ':'')+swipeText;
-    hint.style.cssText='display:block;flex:0 0 auto;padding:7px 4px 3px;text-align:center;font:italic 14px/1.2 EB Garamond,serif;color:#80633D';
+    hint.style.cssText='display:block;flex:0 0 auto;padding:6px 4px 2px;text-align:center;font:italic 13px/1.2 EB Garamond,serif;color:#80633D';
+    var advice=rail.querySelector('.mn-poi-advice');
+    if(!advice){advice=document.createElement('section');advice.className='mn-poi-advice';}
+    var title=lang==='ru'?'Полезно знать в Германии':lang==='de'?'Gut zu wissen':'Useful to know in Germany';
+    if(cat==='toilets'){
+      var body=lang==='ru'
+        ?'<div class="mn-poi-advice-block"><strong>Часы работы</strong><p>У общественных туалетов разные часы работы. По воскресеньям и официальным праздничным дням отдельные места могут быть закрыты или работать меньше. Totensonntag — памятное воскресенье, а не отдельный общенациональный государственный выходной; ориентируйтесь на воскресный график конкретного объекта.</p></div><div class="mn-poi-advice-block"><strong>Если общественный туалет закрыт</strong><p>В кафе и ресторанах посетители обычно могут воспользоваться туалетом. Если вы не клиент, вежливо спросите персонал: иногда попросят заказать напиток или заплатить небольшую сумму. Полезно иметь при себе монеты €0,50 и €1.</p><p class="mn-poi-german">„Entschuldigung, dürfte ich bitte die Toilette benutzen?“</p></div>'
+        :lang==='de'
+        ?'<div class="mn-poi-advice-block"><strong>Öffnungszeiten</strong><p>Öffentliche Toiletten haben unterschiedliche Öffnungszeiten. An Sonntagen und gesetzlichen Feiertagen können einzelne Anlagen geschlossen sein oder kürzer öffnen. Totensonntag ist kein eigener bundesweiter gesetzlicher Feiertag, fällt aber immer auf einen Sonntag. Prüfen Sie deshalb die Öffnungszeiten der jeweiligen Anlage.</p></div><div class="mn-poi-advice-block"><strong>Wenn die öffentliche Toilette geschlossen ist</strong><p>Als Gast eines Cafés oder Restaurants können Sie die Toilette normalerweise benutzen. Wenn Sie nichts bestellen, fragen Sie bitte vorher höflich; manche Betriebe bitten um eine Bestellung oder verlangen eine kleine Gebühr. Nehmen Sie 50-Cent- und 1-Euro-Münzen mit.</p><p class="mn-poi-german">„Entschuldigung, dürfte ich bitte die Toilette benutzen?“</p></div>'
+        :'<div class="mn-poi-advice-block"><strong>Opening hours</strong><p>Public toilets have different opening hours. On Sundays and public holidays, some facilities may be closed or have shorter hours. Totensonntag (Sunday of the Dead) is not a separate nationwide public holiday, but it always falls on a Sunday. Check the hours of the individual facility.</p></div><div class="mn-poi-advice-block"><strong>If a public toilet is closed</strong><p>Cafés and restaurants normally let their customers use the toilet. If you are not a customer, ask staff politely; some places may ask you to buy a drink or pay a small fee. Keep €0.50 and €1 coins with you.</p><p class="mn-poi-german">“Entschuldigung, dürfte ich bitte die Toilette benutzen?”</p></div>';
+      advice.innerHTML='<h3>'+title+'</h3>'+body;
+    }else{
+      var body=lang==='ru'
+        ?'<div class="mn-poi-advice-block"><strong>Воскресенья и праздничные дни</strong><p>Обычные аптеки в Германии, как правило, закрыты. Но ночью, по выходным и праздникам работает сменная дежурная аптека — <b>Apotheken-Notdienst</b>. Дежурство меняется: проверьте, какая аптека открыта именно сейчас.</p></div><div class="mn-poi-advice-block"><strong>Как найти дежурную аптеку</strong><p>На дверях аптек, которые не дежурят, размещают информацию о ближайшей дежурной аптеке. Можно также воспользоваться официальным поиском.</p><a class="mn-poi-advice-link" href="https://www.aponet.de/notdienstsuche" target="_blank" rel="noopener">Найти дежурную аптеку →</a></div>'
+        :lang==='de'
+        ?'<div class="mn-poi-advice-block"><strong>Sonntage und Feiertage</strong><p>Die meisten normalen Apotheken sind dann geschlossen. Nachts, am Wochenende und an Feiertagen gibt es jedoch den wechselnden <b>Apotheken-Notdienst</b>. Der Dienstplan ändert sich — prüfen Sie, welche Apotheke gerade geöffnet hat.</p></div><div class="mn-poi-advice-block"><strong>Notdienst finden</strong><p>An geschlossenen Apotheken finden Sie einen Hinweis auf die nächstgelegene dienstbereite Apotheke. Sie können auch die offizielle Suche nutzen.</p><a class="mn-poi-advice-link" href="https://www.aponet.de/notdienstsuche" target="_blank" rel="noopener">Notdienstapotheke finden →</a></div>'
+        :'<div class="mn-poi-advice-block"><strong>Sundays and public holidays</strong><p>Most regular pharmacies in Germany are closed then. However, a rotating <b>Apotheken-Notdienst</b> (emergency pharmacy service) operates at night, on weekends and public holidays. The rota changes, so check which pharmacy is on duty now.</p></div><div class="mn-poi-advice-block"><strong>Find an emergency pharmacy</strong><p>Pharmacies that are closed display information about the nearest pharmacy on duty. You can also use the official search.</p><a class="mn-poi-advice-link" href="https://www.aponet.de/notdienstsuche" target="_blank" rel="noopener">Find an emergency pharmacy →</a></div>';
+      advice.innerHTML='<h3>'+title+'</h3>'+body;
+    }
     var mp=rail.querySelector('#mapPanel');
-    if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
+    if(mp){rail.insertBefore(hint,mp);rail.insertBefore(advice,mp);}
+    else{rail.appendChild(hint);rail.appendChild(advice);}
   }
   function syncCastleCard(index){
     var card=rail.querySelector('[data-mn-index="'+index+'"]');
@@ -9021,7 +9040,7 @@ body.mn-panel-full .mn-back{display:none}
     if(cat==='toilets'||cat==='pharmacy')renderPoiCards(cat);
     else {
       currentSelection='';prepareRail();
-      var ph=rail.querySelector('.mn-poi-hint');if(ph)ph.remove();
+      var ph=rail.querySelector('.mn-poi-hint');if(ph)ph.remove();var pa=rail.querySelector('.mn-poi-advice');if(pa)pa.remove();
       if(cat==='places'||cat==='ship'){
         var hint=document.createElement('div');hint.className='mn-sheet-hint';
         hint.textContent=lang==='ru'?'Листайте карточки. Нажмите на место, чтобы открыть фотографии, историю и маршрут.':lang==='de'?'Karten wischen. Tippen Sie auf einen Ort für Fotos, Geschichte und Route.':'Swipe the cards. Tap a place to open photos, story and route.';
