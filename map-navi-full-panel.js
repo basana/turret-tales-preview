@@ -43,7 +43,7 @@ function castle(i){
  var route=routesFor(c);
  var parts=[story,facts!==story?facts:'',legend].filter(Boolean);
  route.forEach(function(r){parts.push(tr(r.textRu,r.textDe,r.text));if(tr(r.extraRu,r.extraDe,r.extra))parts.push(tr(r.extraRu,r.extraDe,r.extra));if(tr(r.hookRu,r.hookDe,r.hook))parts.push(tr(r.hookRu,r.hookDe,r.hook));});
- var n=content();n.setAttribute('data-kind','castle');
+ var n=content();n.setAttribute('data-kind','castle');panel.classList.remove('mn-poi-selected');
  n.innerHTML=(imgs.length?'<div class="mn-full-gallery" aria-label="Photographs">'+imgs.map(function(src,k){return '<img src="'+esc(src)+'" alt="'+esc(c.name)+' — '+(k+1)+'" loading="lazy">';}).join('')+'</div>':'')+
  (story?'<section class="mn-detail-section"><h3>'+esc(tr('Story','Geschichte','Story'))+'</h3><p>'+esc(story)+'</p></section>':'')+
  (facts&&facts!==story?'<section class="mn-detail-section"><h3>'+esc(tr('Facts','Fakten','Facts'))+'</h3><p>'+esc(facts)+'</p></section>':'')+
@@ -56,7 +56,7 @@ function castle(i){
  var title=document.getElementById('mapPanelTitle'),meta=document.getElementById('mapPanelMeta'),desc=document.getElementById('mapPanelDesc');
  if(title)title.textContent=c.name||'';
  if(meta)meta.textContent=[c.town,c.built].filter(Boolean).join(' · ');
- if(desc)desc.textContent=story||facts||'';
+ if(desc)desc.textContent='';
  var read=document.getElementById('mapPanelSpeak');
  if(read){read.style.display='inline-flex';read.textContent='🔊 '+tr('Read aloud','Vorlesen','Read aloud');read.onclick=function(){speak(parts.join('\n\n'));};}
  var guide=document.getElementById('mapPanelOpenGuide');if(guide)guide.style.display='none';
@@ -64,7 +64,7 @@ function castle(i){
  setState('full');panel.classList.add('open');
 }
 function poi(p,emoji){
- var n=content(),address=p.address||p.location||p.city||'';
+ var n=content(),address=p.address||p.location||p.city||'';panel.classList.add('mn-poi-selected');
  var txt=[p.name,address].filter(Boolean).join(' · ');
  var distance='';
  var lat=null,lng=null;
@@ -116,12 +116,12 @@ style.textContent=
 "body.map-navi-active .mn-bottom-rail{position:absolute!important;left:8px!important;right:8px!important;bottom:calc(env(safe-area-inset-bottom) + 8px)!important;top:auto;display:flex;flex-direction:column;gap:6px;box-sizing:border-box;padding:7px 9px 10px;overflow-x:hidden;overflow-y:hidden;overscroll-behavior:contain;transition:height .22s ease,top .22s ease;touch-action:pan-y}"+
 "body.map-navi-active .mn-bottom-rail.mn-is-dragging{transition:none!important}"+
 "body.map-navi-active .mn-bottom-handle{flex:0 0 18px;min-height:18px;touch-action:none;cursor:ns-resize}"+
-"body.map-navi-active .mn-top-rail{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;width:100%;flex:0 0 62px;min-height:62px;display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;padding:0 1px;touch-action:pan-x;scrollbar-width:none}"+
-"body.map-navi-active .mn-category{flex:1 0 82px;min-width:82px;max-width:none;height:60px;min-height:60px;padding:4px 6px;gap:5px;flex-direction:row;justify-content:center;border-radius:12px;font-size:14px;white-space:nowrap}"+
+"body.map-navi-active .mn-top-rail{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;width:100%;flex:0 0 58px;min-height:58px;display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding:0 1px;touch-action:pan-x;scrollbar-width:none}"+
+"body.map-navi-active .mn-category{flex:1 0 82px;min-width:82px;max-width:none;height:54px;min-height:54px;padding:3px 6px;gap:5px;flex-direction:row;justify-content:center;border-radius:12px;font-size:14px;white-space:nowrap}"+
 "body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji{width:38px;height:38px;flex:0 0 38px;font-size:32px;object-fit:contain}"+
-"body.map-navi-active .mn-card-track{display:none;flex:0 0 116px;min-height:116px;width:100%;gap:9px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none}"+
-"body.map-navi-active .mn-card-track .mn-place-card{display:flex;flex:0 0 min(82vw,360px);height:108px;min-height:108px;box-sizing:border-box;align-items:center;gap:10px;padding:7px 9px;scroll-snap-align:center}"+
-"body.map-navi-active .mn-card-track .mn-place-card img{display:block;flex:0 0 92px;width:92px;height:92px;max-height:92px;aspect-ratio:1/1;object-fit:contain;object-position:center;background:transparent;border-radius:8px}"+
+"body.map-navi-active .mn-card-track{display:none;flex:0 0 100px;min-height:100px;width:100%;gap:8px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none}"+
+"body.map-navi-active .mn-card-track .mn-place-card{display:flex;flex:0 0 min(82vw,360px);height:94px;min-height:94px;box-sizing:border-box;align-items:center;gap:10px;padding:6px 9px;scroll-snap-align:center}"+
+"body.map-navi-active .mn-card-track .mn-place-card img{display:block;flex:0 0 82px;width:82px;height:82px;max-height:82px;aspect-ratio:1/1;object-fit:contain;object-position:center;background:transparent;border-radius:8px}"+
 "body.map-navi-active .mn-place-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}"+
 "body.map-navi-active .mn-place-copy strong{font:600 19px/1.08 'EB Garamond',serif;white-space:normal}"+
 "body.map-navi-active .mn-place-copy small{font:15px/1.12 'EB Garamond',serif;white-space:normal}"+
@@ -145,16 +145,16 @@ style.textContent=
 "body.mn-panel-quarter .mn-bottom-rail .map-panel{display:none!important}"+
 "body.mn-panel-third .mn-bottom-rail{height:max(34dvh,260px)!important;min-height:max(34dvh,260px)!important;max-height:max(34dvh,260px)!important}"+
 "body.mn-panel-third .mn-card-track{display:flex!important}"+
-"body.mn-panel-third .mn-bottom-rail .map-panel{display:none!important}"+
+"body.mn-panel-third .mn-bottom-rail .map-panel{display:block!important}+body.mn-panel-third .mn-bottom-rail .map-panel:not(.open){display:none!important}+body.mn-panel-third .mn-poi-selected .map-panel-title,body.mn-panel-third .mn-poi-selected .map-panel-meta,body.mn-panel-third .mn-poi-selected .map-panel-desc,body.mn-panel-third .mn-poi-selected .map-panel-actions{display:none!important}+body.mn-panel-third .mn-poi-selected .mn-full-object-content{display:block!important;padding:2px 2px 8px}"+
 "body.mn-panel-half .mn-bottom-rail{height:52dvh!important;min-height:52dvh!important;max-height:58dvh!important;overflow-y:auto!important}"+
 "body.mn-panel-half .mn-card-track{display:flex!important}"+
 "body.mn-panel-half .mn-bottom-rail .map-panel{display:block!important}"+
-"body.mn-panel-half .mn-full-object-content{display:block;padding-top:0;max-height:130px;overflow:hidden}"+
+"body.mn-panel-half .mn-full-object-content{display:block;padding-top:0;max-height:220px;overflow:hidden}"+
 "body.mn-panel-half .mn-full-gallery{display:none!important}"+
-"body.mn-panel-half .mn-full-object-content .mn-detail-section:not(:first-child),body.mn-panel-half .mn-full-object-content .mn-route-section{display:none!important}"+
+"body.mn-panel-half .mn-full-object-content .mn-detail-section:not(:first-child),body.mn-panel-half .mn-full-object-content .mn-route-section{display:block!important}"+
 "body.mn-panel-half .mn-full-object-content .mn-detail-section:first-child p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}"+
 "body.mn-panel-full .mn-bottom-rail{top:calc(env(safe-area-inset-top) + 8px)!important;bottom:calc(env(safe-area-inset-bottom) + 8px)!important;height:auto!important;min-height:0!important;max-height:none!important;overflow-x:hidden!important;overflow-y:auto!important;padding-bottom:18px;touch-action:pan-y}"+
-"body.mn-panel-full .mn-card-track{display:flex!important;flex:0 0 116px;min-height:116px}"+
+"body.mn-panel-full .mn-card-track{display:flex!important;flex:0 0 100px;min-height:100px}"+
 "body.mn-panel-full .mn-bottom-rail .map-panel{display:block!important}"+
 "body.mn-panel-full .mn-full-object-content{display:block!important}"+
 "body.mn-panel-full .mn-full-gallery img{flex-basis:min(24vw,124px)}"+
@@ -168,6 +168,19 @@ style.textContent=
 "@media(orientation:landscape){body.mn-panel-quarter .mn-bottom-rail{height:30dvh!important;min-height:180px!important;max-height:30dvh!important}body.mn-panel-third .mn-bottom-rail{height:38dvh!important;min-height:220px!important;max-height:38dvh!important}body.mn-panel-half .mn-bottom-rail{height:58dvh!important;max-height:62dvh!important}}"+
 "@media(max-width:390px){body.map-navi-active .mn-category{flex-basis:76px;min-width:76px}body.map-navi-active .mn-card-track .mn-place-card{flex-basis:86vw}body.map-navi-active .mn-card-track .mn-place-card img{flex-basis:84px;width:84px;height:84px}}"+
 "@media(prefers-reduced-motion:reduce){body.map-navi-active .mn-bottom-rail{transition:none!important}}";
+style.textContent +=
+"body.mn-panel-third .mn-full-object-content{display:none!important}"+
+"body.mn-panel-third .mn-poi-selected .mn-full-object-content{display:block!important}"+
+"body.mn-panel-half .mn-full-object-content .mn-route-section{display:block!important}"+
+"body.mn-panel-half .mn-full-object-content .mn-detail-section:not(:first-child){display:block!important}"+
+"body.mn-panel-half .mn-full-gallery{display:none!important}"+
+"body.mn-panel-half .mn-full-object-content .mn-route-entry{display:none!important}"+
+"body.mn-panel-half .mn-full-object-content .mn-route-entry:first-of-type{display:block!important}"+
+"body.mn-panel-half .mn-full-object-content .mn-route-section{display:block!important}"+
+"body.mn-panel-quarter .mn-top-rail{flex-basis:58px!important;min-height:58px!important}"+
+"body.mn-panel-quarter .mn-card-track{flex-basis:100px!important;min-height:100px!important}"+
+"body.mn-panel-third .mn-card-track{flex-basis:100px!important;min-height:100px!important}"+
+"body.mn-panel-full .mn-card-track{flex-basis:100px!important;min-height:100px!important}";
 document.head.appendChild(style);
 function installDrag(){
  var h=rail.querySelector('.mn-bottom-handle');if(!h||h.__mnFiveStateBound)return;
