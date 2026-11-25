@@ -247,7 +247,6 @@ style.textContent +=
 "body.map-navi-active.mn-panel-full .xmas-map-stage .poi-info-toast,body.map-navi-active.mn-panel-full .xmas-map-stage #xmasNearestToast{display:none!important}"+
 "body.map-navi-active .mn-card-track{display:flex!important;overflow-x:auto!important;overflow-y:hidden!important;touch-action:pan-x!important;overscroll-behavior-x:contain!important;scroll-snap-type:x mandatory!important;pointer-events:auto!important}"+
 "body.map-navi-active .mn-card-track .mn-place-card{touch-action:pan-x!important;scroll-snap-align:center!important}"+
-style.textContent +=
 "body.map-navi-active .mn-poi-advice{display:block;flex:0 0 auto;margin:3px 1px 12px;padding:12px 14px;border:1px solid #D6C39E;border-radius:13px;background:rgba(255,250,240,.98);color:#493A29;box-shadow:0 2px 8px rgba(50,30,15,.08)}"+
 "body.map-navi-active .mn-poi-advice h3{margin:0 0 9px;font:600 19px/1.12 'EB Garamond',serif;color:#7A1026}"+
 "body.map-navi-active .mn-poi-advice-block{margin:0 0 10px}"+
