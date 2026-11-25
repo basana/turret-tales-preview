@@ -8609,7 +8609,17 @@ body.map-navi-active .mn-category {
   flex:0 0 76px; min-width:76px; min-height:54px; height:54px; flex-direction:row;
   gap:5px; justify-content:center; padding:5px 7px; border-radius:12px; font-size:13px;
 }
-body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji { width:25px; height:25px; font-size:22px; }
+body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji { width:34px; height:34px; font-size:29px; }
+body.map-navi-active .mn-category { flex-basis:88px; min-width:88px; min-height:62px; height:62px; font-size:14px; }
+body.map-navi-active .mn-place-card { min-height:88px; padding:10px 12px; }
+body.map-navi-active .mn-poi-card-icon { width:38px; height:38px; font-size:30px; display:grid; place-items:center; }
+body.map-navi-active .mn-bottom-rail::after {
+  content:""; position:absolute; right:8px; top:76px; width:18px; height:82px; pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(246,238,221,.72)); border-radius:0 10px 10px 0;
+  animation:mn-carousel-peek 2.8s ease-in-out 2;
+}
+@keyframes mn-carousel-peek { 0%,100%{opacity:.18;transform:translateX(0)} 45%{opacity:.75;transform:translateX(4px)} }
+@media (prefers-reduced-motion:reduce){body.map-navi-active .mn-bottom-rail::after{animation:none}}
 body.map-navi-active .mn-card-track { flex:0 0 92px; min-height:92px; }
 body.map-navi-active .gps-panel {
   position:relative; inset:auto; top:auto; left:auto; z-index:auto; display:none; flex:0 0 auto;
@@ -8866,7 +8876,9 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
     var html=data.map(function(p){
       return '<button type="button" class="mn-place-card" data-mn-poi="'+String(p.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"><span class="mn-poi-card-icon">'+emoji+'</span><span class="mn-place-copy"><strong>'+p.name+'</strong><small>'+p.city+'</small></span></button>';
     }).join('');
-    rail.innerHTML=html;
+    var track=rail.querySelector('.mn-card-track');
+    if(!track){prepareRail();track=rail.querySelector('.mn-card-track');}
+    if(track)track.innerHTML=html;
     currentSelection='';
     prepareRail();
   }
