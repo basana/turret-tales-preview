@@ -8837,7 +8837,7 @@ body.mn-panel-full .mn-back{display:none}
       h=document.createElement('div'); h.className='mn-bottom-handle'; h.setAttribute('role','button');
       h.setAttribute('tabindex','0'); h.setAttribute('aria-label','Expand or collapse place cards');
       rail.insertBefore(h,rail.firstChild);
-      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var order=['compact','quarter','third','half','full'],idx=order.indexOf(currentState);setPanelState(order[idx<0?1:(idx+1)%order.length]);}});
+      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var order=['compact','quarter','third','half','full'],idx=order.findIndex(function(n){return document.body.classList.contains('mn-panel-'+n);});setPanelState(order[idx<0?1:(idx+1)%order.length]);}});
     }
     return h;
   }
@@ -8947,6 +8947,12 @@ body.mn-panel-full .mn-back{display:none}
     if(track)track.innerHTML=html;
     currentSelection='';
     prepareRail();
+    var hint=rail.querySelector('.mn-poi-hint');
+    if(!hint){hint=document.createElement('div');hint.className='mn-poi-hint';}
+    hint.textContent=lang==='ru'?'Листайте карточки — точка на карте будет перемещаться. Нажмите, чтобы выбрать.':lang==='de'?'Karten wischen — der Kartenpunkt folgt. Tippen zum Auswählen.':'Swipe cards to move the map marker. Tap to select.';
+    hint.style.cssText='flex:0 0 auto;padding:7px 4px 3px;text-align:center;font:italic 14px/1.2 EB Garamond,serif;color:#80633D';
+    var mp=rail.querySelector('#mapPanel');
+    if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
   }
   function syncCastleCard(index){
     var card=rail.querySelector('[data-mn-index="'+index+'"]');
@@ -8995,7 +9001,7 @@ body.mn-panel-full .mn-back{display:none}
     var cat=active&&active.getAttribute('data-mn-category');
     activeCategory=cat||'places';
     if(cat==='toilets'||cat==='pharmacy')renderPoiCards(cat);
-    else {currentSelection='';prepareRail();}
+    else {currentSelection='';prepareRail();var ph=rail.querySelector('.mn-poi-hint');if(ph)ph.remove();}
     setPanelState(cat==='toilets'||cat==='pharmacy'?'third':'quarter');
   },80);},true);
 
