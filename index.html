@@ -8544,8 +8544,8 @@ if ('serviceWorker' in navigator) {
   function selectCategory(cat){
     currentCategory=cat;
     topRail.querySelectorAll('[data-mn-category]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-mn-category')===cat);});
-    if(cat==='places'){renderPlaces();return;}
-    if(cat==='ship'){
+    if(cat==='places'){if(typeof clearMainPoiMode==='function')clearMainPoiMode();renderPlaces();return;}
+    if(cat==='ship'){if(typeof clearMainPoiMode==='function')clearMainPoiMode();
       var sp=savedSpot();
       if(sp){
         statusCard('⚓','My Ship',sp.label||'Saved berth','Show on map',function(){
@@ -8561,7 +8561,8 @@ if ('serviceWorker' in navigator) {
       return;
     }
     if(cat==='toilets'||cat==='pharmacy'){
-      if(typeof togglePoiLayer==='function')togglePoiLayer(cat==='toilets'?'wc':'apotheke');
+      var already=cat==='toilets'?!!toilettenLayer:!!apothekenLayer;
+      if(!already&&typeof togglePoiLayer==='function')togglePoiLayer(cat==='toilets'?'wc':'apotheke');
       statusCard(cat==='toilets'?'🚻':'💊',cat==='toilets'?'Nearby toilets':'Nearby pharmacies',
         cat==='toilets'?'Toilet locations are shown on the map.':'Pharmacy locations are shown on the map.',
         'Back to places',function(){selectCategory('places');});
