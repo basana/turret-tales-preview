@@ -8623,6 +8623,7 @@ body.map-navi-active .mn-bottom-rail {
   box-shadow:0 0 0 2px rgba(201,160,92,.38),0 3px 12px rgba(30,20,10,.2);
 }
 .mn-card-track .mn-place-card.active strong { color:#7A1026; }
+.mn-poi-card-icon { flex:0 0 48px; width:48px; height:48px; display:grid; place-items:center; border-radius:10px; background:#EFE0BE; font:30px/1 sans-serif; }
 .mn-card-track .mn-status-card { flex:0 0 min(290px,82vw); height:100%; }
 body.mn-panel-expanded .mn-bottom-rail {
   height:40dvh; min-height:40dvh; max-height:40dvh;
@@ -8694,6 +8695,7 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
   var panelHomeNext=mapPanel?mapPanel.nextSibling:null;
   var currentState='compact';
   var currentSelection='';
+  var activeCategory='places';
   var scrollTimer=null;
   var pointerStartY=null;
   var pointerDragged=false;
@@ -8774,10 +8776,10 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
   }
   function selectPoi(p,scroll){
     if(!p||!leafletMap)return;
-    var card=rail.querySelector('[data-mn-poi="'+CSS.escape(p.name)+'"]');
+    var card=Array.prototype.slice.call(rail.querySelectorAll('[data-mn-poi]')).find(function(el){return el.getAttribute('data-mn-poi')===p.name;});
     if(card){setCardActive(card);if(scroll)centerCard(card,rail.querySelector('.mn-card-track'));}
     if(typeof _focusPoiOnMap==='function')_focusPoiOnMap(leafletMap,p);
-    var emoji=currentCategory==='pharmacy'?'💊':'🚻';
+    var emoji=activeCategory==='pharmacy'?'💊':'🚻';
     if(typeof _showPoiToast==='function')_showPoiToast(leafletMap,p,emoji);
     if(leafletMap._mnPoiPulse)leafletMap.removeLayer(leafletMap._mnPoiPulse);
     var pulse=L.divIcon({className:'mn-poi-pulse-wrap',html:'<div class="mn-poi-pulse"></div>',iconSize:[76,76],iconAnchor:[38,38]});
@@ -8871,6 +8873,7 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
   topRail.addEventListener('click',function(){restoreMapPanel();setTimeout(function(){
     var active=topRail.querySelector('.mn-category.active');
     var cat=active&&active.getAttribute('data-mn-category');
+    activeCategory=cat||'places';
     if(cat==='toilets'||cat==='pharmacy')renderPoiCards(cat);
     else {currentSelection='';prepareRail();}
     setPanelState('compact');
