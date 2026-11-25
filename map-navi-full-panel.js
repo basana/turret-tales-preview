@@ -189,6 +189,38 @@ style.textContent +=
 "body.mn-panel-full .mn-sheet-hint,body.mn-panel-full .mn-poi-hint{display:none!important}"+
 "body.mn-panel-third .mn-poi-hint{display:block!important}"+
 "body.mn-panel-third .mn-poi-selected .mn-poi-hint{display:none!important}";
+style.textContent +=
+"body.map-navi-active .mn-bottom-rail{bottom:0!important;height:25.5dvh;min-height:220px;max-height:25.5dvh;padding:7px 9px env(safe-area-inset-bottom);gap:4px}"+
+"body.map-navi-active .mn-sheet-top{position:sticky;top:0;z-index:30;display:flex;flex:0 0 auto;flex-direction:column;gap:4px;padding:0 0 2px;background:linear-gradient(to bottom,rgba(246,238,221,.99),rgba(246,238,221,.94))}"+
+"body.map-navi-active .mn-bottom-handle{flex:0 0 12px!important;min-height:12px!important;height:12px;cursor:grab}"+
+"body.map-navi-active .mn-bottom-handle:before{width:38px;height:4px}"+
+"body.map-navi-active .mn-bottom-handle:after{display:none!important}"+
+"body.map-navi-active .mn-search-wrap{position:relative!important;top:auto!important;left:auto!important;right:auto!important;z-index:31;width:100%!important;min-height:38px;height:38px;margin:0;padding:2px 6px 2px 10px;gap:5px;box-sizing:border-box;border-radius:13px;box-shadow:0 1px 5px rgba(40,25,10,.12);background:rgba(255,250,240,.98)}"+
+"body.map-navi-active .mn-search-wrap .map-search-icon{font-size:16px}"+
+"body.map-navi-active .mn-search-wrap .map-search-input{min-height:30px;height:30px;font-size:16px}"+
+"body.map-navi-active .mn-search-wrap .map-search-ticker{left:32px;right:76px;font-size:14px}"+
+"body.map-navi-active .mn-search-wrap .map-search-clear{width:24px;height:24px;flex-basis:24px}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn{position:relative!important;top:auto!important;left:auto!important;right:auto!important;z-index:32;display:flex;flex:0 0 32px;width:32px;height:32px;min-height:32px;padding:0;justify-content:center;align-items:center;gap:0;border-radius:50%;box-shadow:none}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn .lock-star,body.map-navi-active .mn-search-wrap .gps-toggle-btn #gpsToggleLabel{display:none!important}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn span:nth-child(2){font-size:18px;line-height:1}"+
+"body.map-navi-active .mn-search-wrap .gps-follow-btn{position:relative!important;top:auto!important;left:auto!important;right:auto!important;z-index:32;min-height:32px;height:32px;padding:4px 8px;border-radius:16px;box-shadow:none;font-size:11px}"+
+"body.map-navi-active .mn-top-rail{flex:0 0 42px!important;min-height:42px!important;height:42px;gap:5px;padding:0}"+
+"body.map-navi-active .mn-category{height:40px!important;min-height:40px!important;padding:2px 4px!important;gap:4px!important;font-size:12px!important;border-radius:10px!important}"+
+"body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji{width:30px!important;height:30px!important;flex-basis:30px!important;font-size:27px!important}"+
+"body.map-navi-active .mn-card-track{flex:0 0 92px;min-height:92px}"+
+"body.map-navi-active .mn-card-track .mn-place-card{height:86px;min-height:86px;padding:5px 8px}"+
+"body.map-navi-active .mn-card-track .mn-place-card img{width:72px;height:72px;max-height:72px;flex-basis:72px}"+
+"body.mn-panel-compact .mn-bottom-rail{height:152px!important;min-height:152px!important;max-height:152px!important;bottom:0!important;padding-bottom:env(safe-area-inset-bottom)!important}"+
+"body.mn-panel-compact .mn-card-track{display:none!important}"+
+"body.mn-panel-quarter .mn-bottom-rail{height:25.5dvh!important;min-height:220px!important;max-height:25.5dvh!important;bottom:0!important}"+
+"body.mn-panel-quarter .mn-card-track{display:flex!important;flex:0 0 92px!important;min-height:92px!important}"+
+"body.mn-panel-quarter .mn-top-rail{flex-basis:42px!important;min-height:42px!important}"+
+"body.mn-panel-third .mn-bottom-rail{height:34dvh!important;min-height:260px!important;max-height:34dvh!important;bottom:0!important}"+
+"body.mn-panel-third .mn-card-track{display:flex!important;flex:0 0 100px!important;min-height:100px!important}"+
+"body.mn-panel-half .mn-bottom-rail{height:52dvh!important;min-height:52dvh!important;max-height:58dvh!important;bottom:0!important}"+
+"body.mn-panel-full .mn-sheet-top{top:0!important}"+
+"@media(orientation:landscape){body.map-navi-active .mn-bottom-rail{padding-bottom:6px}body.mn-panel-quarter .mn-bottom-rail{height:30dvh!important;min-height:180px!important;max-height:30dvh!important}body.mn-panel-third .mn-bottom-rail{height:38dvh!important;min-height:220px!important;max-height:38dvh!important}body.mn-panel-half .mn-bottom-rail{height:58dvh!important;max-height:62dvh!important}}"+
+"@media(max-width:390px){body.map-navi-active .mn-category{flex-basis:76px!important;min-width:76px!important}body.map-navi-active .mn-card-track .mn-place-card{flex-basis:86vw}}";
 document.head.appendChild(style);
 function installDrag(){
  var h=rail.querySelector('.mn-bottom-handle');if(!h||h.__mnFiveStateBound)return;
@@ -197,7 +229,7 @@ function installDrag(){
  var names=['compact','quarter','third','half','full'];
  function heights(){
   var vh=window.innerHeight,landscape=window.innerWidth>window.innerHeight;
-  return [{s:'compact',h:92},{s:'quarter',h:Math.max(205,vh*(landscape?.30:.25))},{s:'third',h:Math.max(260,vh*(landscape?.38:.34))},{s:'half',h:vh*(landscape?.58:.52)},{s:'full',h:vh-32}];
+  return [{s:'compact',h:landscape?142:152},{s:'quarter',h:Math.max(220,vh*(landscape?.30:.255))},{s:'third',h:Math.max(260,vh*(landscape?.38:.34))},{s:'half',h:vh*(landscape?.58:.52)},{s:'full',h:vh-32}];
  }
  function snap(h0){
   var hs=heights();hs.sort(function(a,b){return Math.abs(a.h-h0)-Math.abs(b.h-h0);});setState(hs[0].s);
@@ -210,7 +242,7 @@ function installDrag(){
  h.addEventListener('pointermove',function(e){
   if(!dragging)return;
   var dy=startY-e.clientY;if(Math.abs(dy)>4)moved=true;
-  var max=window.innerHeight-32,height=Math.max(92,Math.min(max,startHeight+dy));
+  var max=window.innerHeight-32,height=Math.max(142,Math.min(max,startHeight+dy));
   rail.style.setProperty('height',height+'px','important');rail.style.setProperty('max-height',max+'px','important');rail.style.setProperty('top','auto','important');
   var hs=heights(),closest=hs.reduce(function(best,x){return !best||Math.abs(x.h-height)<Math.abs(best.h-height)?x:best;},null);
   document.body.classList.remove('mn-panel-compact','mn-panel-quarter','mn-panel-third','mn-panel-half','mn-panel-full');
@@ -234,5 +266,5 @@ document.addEventListener('click',function(e){
  var card=e.target.closest&&e.target.closest('.mn-place-card');
  if(card&&card.hasAttribute('data-mn-index')){var i=Number(card.getAttribute('data-mn-index'));setTimeout(function(){castle(i);setState('full');},40);}
 });
-setState('compact');
+setState('quarter');
 })();
