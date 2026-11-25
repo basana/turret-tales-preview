@@ -2489,6 +2489,8 @@ const POI_GPS_HINT = {
   he: 'הפעל GPS כדי למצוא את המיקום הקרוב ביותר'
 };
 function _showGpsHint(mapObj) {
+  // In MAP NAVI, GPS guidance belongs inside the bottom sheet, never over the map.
+  if (mapObj === leafletMap && document.body.classList.contains('map-navi-active')) return;
   const cont = mapObj.getContainer();
   let h = cont.querySelector('.poi-gps-hint');
   if (h) { h.classList.add('show'); return; }
@@ -8950,7 +8952,10 @@ body.mn-panel-full .mn-back{display:none}
     prepareRail();
     var hint=rail.querySelector('.mn-poi-hint');
     if(!hint){hint=document.createElement('div');hint.className='mn-poi-hint';}
-    hint.textContent=lang==='ru'?'Листайте карточки — точка на карте будет перемещаться. Нажмите, чтобы выбрать.':lang==='de'?'Karten wischen — der Kartenpunkt folgt. Tippen zum Auswählen.':'Swipe cards to move the map marker. Tap to select.';
+    var gpsOff=typeof gpsLastLat==='undefined'||gpsLastLat===null;
+    var swipeText=lang==='ru'?'Листайте карточки — точка на карте будет перемещаться. Нажмите, чтобы выбрать.':lang==='de'?'Karten wischen — der Kartenpunkt folgt. Tippen zum Auswählen.':'Swipe cards to move the map marker. Tap to select.';
+    var gpsText=lang==='ru'?'GPS выключен — включите его, чтобы найти ближайший объект.':lang==='de'?'GPS ist aus — aktivieren Sie es für das nächstgelegene Objekt.':'GPS is off — enable it to find the nearest place.';
+    hint.textContent=(gpsOff?gpsText+' ':'')+swipeText;
     hint.style.cssText='display:block;flex:0 0 auto;padding:7px 4px 3px;text-align:center;font:italic 14px/1.2 EB Garamond,serif;color:#80633D';
     var mp=rail.querySelector('#mapPanel');
     if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
