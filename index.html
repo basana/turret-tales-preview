@@ -8843,6 +8843,7 @@ body.mn-panel-full .mn-back{display:none}
     if(mapPanel&&mapPanel.parentNode!==rail)rail.appendChild(mapPanel);
   }
   function setPanelState(next){
+    next=(next==='compact'||next==='full')?next:'third';
     currentState=next;
     document.body.classList.remove('mn-panel-compact','mn-panel-quarter','mn-panel-third','mn-panel-half','mn-panel-full','mn-panel-expanded');
     document.body.classList.add('mn-panel-'+next);
@@ -8861,7 +8862,7 @@ body.mn-panel-full .mn-back{display:none}
     if(!h){
       h=document.createElement('div'); h.className='mn-bottom-handle'; h.setAttribute('role','button');
       h.setAttribute('tabindex','0'); h.setAttribute('aria-label','Expand or collapse place cards');
-      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var order=['compact','quarter','third','half','full'],idx=order.findIndex(function(n){return document.body.classList.contains('mn-panel-'+n);});setPanelState(order[idx<0?1:(idx+1)%order.length]);}});
+      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var order=['compact','third','full'],idx=order.findIndex(function(n){return document.body.classList.contains('mn-panel-'+n);});setPanelState(order[idx<0?1:(idx+1)%order.length]);}});
     }
     if(h.parentNode!==top)top.insertBefore(h,top.firstChild);
     return h;
@@ -8939,7 +8940,7 @@ body.mn-panel-full .mn-back{display:none}
       var card=e.target.closest('.mn-place-card');
       if(!card)return;
       if(card.hasAttribute('data-mn-poi')){
-        var list=currentCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
+        var list=activeCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
         var p=list.find(function(x){return x.name===card.getAttribute('data-mn-poi');});
         if(p)selectPoi(p,false);
       }
@@ -8960,7 +8961,7 @@ body.mn-panel-full .mn-back{display:none}
         if(!key||key===currentSelection)return;
         if(chosen.card.hasAttribute('data-mn-index'))selectCastle(Number(chosen.card.getAttribute('data-mn-index')),false,false);
         else if(chosen.card.hasAttribute('data-mn-poi')){
-          var list=currentCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
+          var list=activeCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
           var p=list.find(function(x){return x.name===chosen.card.getAttribute('data-mn-poi');});
           if(p)selectPoi(p,false);
         }
@@ -9007,7 +9008,7 @@ body.mn-panel-full .mn-back{display:none}
     var mp=rail.querySelector('#mapPanel');
     var poiTrack=rail.querySelector('.mn-card-track');
     if(poiTrack){
-      rail.insertBefore(advice,poiTrack);
+      rail.insertBefore(advice,poiTrack.nextSibling);
       if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
     }else{
       rail.appendChild(advice);rail.appendChild(hint);
@@ -9080,17 +9081,17 @@ body.mn-panel-full .mn-back{display:none}
         var mp=rail.querySelector('#mapPanel');if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
       }
     }
-    setPanelState(cat==='toilets'||cat==='pharmacy'?'third':'quarter');
+    setPanelState('third');
   },80);},true);
 
   var viewObserver=new MutationObserver(function(){
-    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('quarter');},120);
+    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('compact');},120);
   });
   viewObserver.observe(mapView,{attributes:true,attributeFilter:['class']});
   // Existing map may already be open when this script loads.
-  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('quarter');}},150);
+  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('compact');}},150);
   document.addEventListener('click',function(e){
-    if(e.target&&e.target.id==='mapPanelClose')setPanelState(activeCategory==='toilets'||activeCategory==='pharmacy'?'third':'quarter');
+    if(e.target&&e.target.id==='mapPanelClose')setPanelState('third');
   },true);
 })();
 </script>
