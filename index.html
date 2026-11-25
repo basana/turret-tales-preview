@@ -8824,14 +8824,12 @@ body.mn-panel-full .mn-back{display:none}
   }
   function setPanelState(next){
     currentState=next;
-    document.body.classList.remove('mn-panel-compact','mn-panel-expanded','mn-panel-full');
+    document.body.classList.remove('mn-panel-compact','mn-panel-quarter','mn-panel-third','mn-panel-half','mn-panel-full','mn-panel-expanded');
     document.body.classList.add('mn-panel-'+next);
     rail.classList.toggle('mn-state-full',next==='full');
-    if(next==='full'&&mapPanel){
-      var track=rail.querySelector('.mn-card-track');
-      if(track&&mapPanel.parentNode!==rail) rail.appendChild(mapPanel);
-    } else restoreMapPanel();
-    if(typeof leafletMap!=='undefined'&&leafletMap) setTimeout(function(){leafletMap.invalidateSize();},300);
+    if(next!=='compact'&&mapPanel&&mapPanel.parentNode!==rail)rail.appendChild(mapPanel);
+    else if(next==='compact')restoreMapPanel();
+    if(typeof leafletMap!=='undefined'&&leafletMap)setTimeout(function(){leafletMap.invalidateSize();},240);
   }
   function addHandle(){
     var h=rail.querySelector('.mn-bottom-handle');
@@ -8839,7 +8837,7 @@ body.mn-panel-full .mn-back{display:none}
       h=document.createElement('div'); h.className='mn-bottom-handle'; h.setAttribute('role','button');
       h.setAttribute('tabindex','0'); h.setAttribute('aria-label','Expand or collapse place cards');
       rail.insertBefore(h,rail.firstChild);
-      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var next=currentState==='compact'?'expanded':currentState==='expanded'?'full':'compact';setPanelState(next);}});
+      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var order=['compact','quarter','third','half','full'],idx=order.indexOf(currentState);setPanelState(order[idx<0?1:(idx+1)%order.length]);}});
     }
     return h;
   }
@@ -8874,14 +8872,15 @@ body.mn-panel-full .mn-back{display:none}
     currentSelection=card.getAttribute('data-mn-index')!==null?'castle:'+card.getAttribute('data-mn-index'):
       card.getAttribute('data-mn-poi')!==null?'poi:'+card.getAttribute('data-mn-poi'):'status';
   }
-  function selectCastle(index,scroll){
+  function selectCastle(index,scroll,openDetail){
     var c=typeof castles!=='undefined'?castles[index]:null;
     if(!c||!leafletMap)return;
     var card=rail.querySelector('[data-mn-index="'+index+'"]');
     if(card){setCardActive(card);if(scroll)centerCard(card,rail.querySelector('.mn-card-track'));}
     leafletMap.stop();
     leafletMap.setView([c.lat,c.lng],Math.max(14,leafletMap.getZoom()),{animate:true});
-    if(typeof window.showMapPanel==='function')window.showMapPanel(index);
+    if(typeof applyCastleMarker==='function')applyCastleMarker(index);
+    if(openDetail!==false&&typeof window.showMapPanel==='function')window.showMapPanel(index);
   }
   function applyPoiMarker(mapObj,name){
     if(!mapObj||!mapObj._mnPoiMarkers)return;
@@ -8927,7 +8926,7 @@ body.mn-panel-full .mn-back{display:none}
         var key=chosen.card.getAttribute('data-mn-index')!==null?'castle:'+chosen.card.getAttribute('data-mn-index'):
           chosen.card.getAttribute('data-mn-poi')!==null?'poi:'+chosen.card.getAttribute('data-mn-poi'):'';
         if(!key||key===currentSelection)return;
-        if(chosen.card.hasAttribute('data-mn-index'))selectCastle(Number(chosen.card.getAttribute('data-mn-index')),false);
+        if(chosen.card.hasAttribute('data-mn-index'))selectCastle(Number(chosen.card.getAttribute('data-mn-index')),false,false);
         else if(chosen.card.hasAttribute('data-mn-poi')){
           var list=currentCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
           var p=list.find(function(x){return x.name===chosen.card.getAttribute('data-mn-poi');});
@@ -8940,7 +8939,8 @@ body.mn-panel-full .mn-back{display:none}
     var data=cat==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
     var emoji=cat==='pharmacy'?'💊':'🚻';
     var html=data.map(function(p){
-      return '<button type="button" class="mn-place-card" data-mn-poi="'+String(p.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"><span class="mn-poi-card-icon">'+emoji+'</span><span class="mn-place-copy"><strong>'+p.name+'</strong><small>'+p.city+'</small></span></button>';
+      var address=p.address||p.location||p.city||'';
+      return '<button type="button" class="mn-place-card" data-mn-poi="'+String(p.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"><span class="mn-poi-card-icon">'+emoji+'</span><span class="mn-place-copy"><strong>'+p.name+'</strong><small>'+address+'</small></span></button>';
     }).join('');
     var track=rail.querySelector('.mn-card-track');
     if(!track){prepareRail();track=rail.querySelector('.mn-card-track');}
@@ -8996,7 +8996,7 @@ body.mn-panel-full .mn-back{display:none}
     activeCategory=cat||'places';
     if(cat==='toilets'||cat==='pharmacy')renderPoiCards(cat);
     else {currentSelection='';prepareRail();}
-    setPanelState('compact');
+    setPanelState(cat==='toilets'||cat==='pharmacy'?'third':'quarter');
   },80);},true);
 
   var viewObserver=new MutationObserver(function(){
@@ -9006,7 +9006,7 @@ body.mn-panel-full .mn-back{display:none}
   // Existing map may already be open when this script loads.
   setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('compact');}},150);
   document.addEventListener('click',function(e){
-    if(e.target&&e.target.id==='mapPanelClose')setPanelState('compact');
+    if(e.target&&e.target.id==='mapPanelClose')setPanelState(activeCategory==='toilets'||activeCategory==='pharmacy'?'third':'quarter');
   },true);
 })();
 </script>
