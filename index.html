@@ -1457,6 +1457,58 @@
 @keyframes xmasSheetNudge{0%,100%{transform:translateY(0)}35%{transform:translateY(-13px)}65%{transform:translateY(0)}}
 @media(max-width:380px){.xmas-floating-shortcut{padding:8px;gap:7px;min-height:54px}.xmas-floating-shortcut strong{font-size:13px}.xmas-floating-shortcut small{font-size:10px}.xmas-floating-content .xmas-gps-row{flex-basis:205px}}
 </style>
+
+<style id="map-navi-fullscreen-style">
+/* MAP NAVI — full-screen portrait map with large floating horizontal rails */
+body.map-navi-active { overflow:hidden; }
+body.map-navi-active .app { position:fixed; inset:0; width:100%; height:100dvh; padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+body.map-navi-active .header,
+body.map-navi-active .tabs-wrapper,
+body.map-navi-active .footer { display:none !important; }
+body.map-navi-active .content { position:absolute; inset:0; width:100%; max-width:none; height:100%; margin:0; padding:0; overflow:hidden; }
+body.map-navi-active #view-map.active { display:block; position:absolute; inset:0; height:100%; padding:0 !important; }
+body.map-navi-active .castle-map-stage { position:absolute; inset:0; width:100%; height:100%; margin:0; }
+body.map-navi-active #mapDiv { width:100%; height:100%; min-height:0; border:0; border-radius:0; }
+body.map-navi-active .map-legend { display:none !important; }
+body.map-navi-active .poi-toggle-bar { display:none !important; }
+body.map-navi-active .map-search-wrap { top:calc(env(safe-area-inset-top) + 10px); left:12px; right:102px; width:auto; max-width:none; }
+body.map-navi-active .gps-toggle-btn { top:calc(env(safe-area-inset-top) + 10px); right:12px; }
+body.map-navi-active .gps-follow-btn { top:calc(env(safe-area-inset-top) + 54px); right:12px; }
+body.map-navi-active .leaflet-bottom.leaflet-left { bottom:150px !important; }
+body.map-navi-active .map-panel { bottom:calc(env(safe-area-inset-bottom) + 146px); left:12px; right:12px; max-height:34%; overflow:auto; border-radius:16px; }
+.mn-floating-rail { position:absolute; z-index:1450; left:10px; right:10px; display:flex; gap:9px; pointer-events:auto; }
+.mn-top-rail { top:calc(env(safe-area-inset-top) + 64px); overflow-x:auto; overflow-y:hidden; padding:7px 2px 9px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.mn-top-rail::-webkit-scrollbar,.mn-bottom-rail::-webkit-scrollbar { display:none; }
+.mn-category { flex:0 0 92px; min-width:92px; min-height:86px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:7px 5px; border:1px solid rgba(201,160,92,.95); border-radius:15px; background:rgba(246,238,221,.96); color:#5A4327; box-shadow:0 3px 12px rgba(50,30,15,.2); font:600 12px/1.1 'EB Garamond',serif; cursor:pointer; }
+.mn-category img { width:42px; height:42px; object-fit:contain; display:block; }
+.mn-category .mn-emoji { width:42px; height:42px; display:grid; place-items:center; font:32px/1 sans-serif; }
+.mn-category.active { background:#7A1026; color:#FCEFDD; border-color:#C9A05C; box-shadow:0 0 0 2px rgba(122,16,38,.18),0 4px 14px rgba(50,20,15,.3); }
+.mn-bottom-rail { bottom:calc(env(safe-area-inset-bottom) + 10px); padding:9px 9px 10px; min-height:120px; border:1px solid rgba(201,160,92,.96); border-radius:18px; background:rgba(246,238,221,.97); box-shadow:0 5px 20px rgba(50,30,15,.28); overflow-x:auto; overflow-y:hidden; align-items:stretch; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.mn-place-card { flex:0 0 205px; min-width:0; display:flex; align-items:center; gap:10px; padding:8px; border:1px solid #d6c39e; border-radius:13px; background:#fffaf0; color:#5A4327; text-align:left; cursor:pointer; scroll-snap-align:start; }
+.mn-place-card.active { border:2px solid #7A1026; background:#fff5f0; }
+.mn-place-card img { flex:0 0 78px; width:78px; height:78px; border-radius:9px; object-fit:cover; background:#EFE0BE; }
+.mn-place-copy { min-width:0; display:flex; flex-direction:column; gap:4px; }
+.mn-place-copy strong { font:600 17px/1.05 'EB Garamond',serif; color:#7A1026; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.mn-place-copy small { font:12px/1.2 system-ui,sans-serif; color:#7A5A2A; }
+.mn-status-card { flex:0 0 260px; min-width:0; display:flex; align-items:center; gap:12px; padding:10px 13px; border:1px solid #d6c39e; border-radius:13px; background:#fffaf0; color:#5A4327; }
+.mn-status-icon { flex:0 0 54px; width:54px; height:54px; display:grid; place-items:center; border-radius:12px; background:#7A1026; color:#fff; font:34px/1 sans-serif; }
+.mn-status-copy { min-width:0; display:flex; flex-direction:column; gap:5px; font:13px/1.25 system-ui,sans-serif; }
+.mn-status-copy strong { font:600 18px/1.05 'EB Garamond',serif; color:#7A1026; }
+.mn-status-action { margin-top:3px; align-self:flex-start; min-height:36px; padding:6px 13px; border:1px solid #7A1026; border-radius:20px; background:#7A1026; color:#fff; font:700 12px system-ui,sans-serif; cursor:pointer; }
+@media(max-width:390px) {
+ .mn-category { flex-basis:84px; min-width:84px; min-height:80px; }
+ .mn-category img,.mn-category .mn-emoji { width:38px; height:38px; }
+ .mn-place-card { flex-basis:184px; }
+ .mn-place-card img { flex-basis:68px; width:68px; height:68px; }
+ .mn-place-copy strong { font-size:16px; }
+}
+@media(orientation:landscape) {
+ .mn-top-rail { top:calc(env(safe-area-inset-top) + 58px); right:auto; width:min(48vw,520px); }
+ .mn-bottom-rail { left:auto; right:10px; bottom:10px; width:min(54vw,580px); min-height:104px; }
+ .mn-place-card { flex-basis:190px; }
+ body.map-navi-active .map-panel { left:12px; right:auto; width:min(42vw,390px); bottom:12px; max-height:45%; }
+}
+</style>
 </head>
 <body>
 
@@ -1781,6 +1833,14 @@
             <button class="btn-wa-share" id="mapPanelWa" style="margin-left:auto">💬</button>
           </div>
         </div>
+      </div>
+        <div class="mn-floating-rail mn-top-rail" id="mnTopRail" aria-label="Map categories">
+          <button type="button" class="mn-category active" data-mn-category="places"><img src="icon-castles.webp" alt=""><span>Places</span></button>
+          <button type="button" class="mn-category" data-mn-category="ship"><span class="mn-emoji">⚓</span><span>My Ship</span></button>
+          <button type="button" class="mn-category" data-mn-category="toilets"><span class="mn-emoji">🚻</span><span>Toilets</span></button>
+          <button type="button" class="mn-category" data-mn-category="pharmacy"><span class="mn-emoji">💊</span><span>Pharmacy</span></button>
+        </div>
+        <div class="mn-floating-rail mn-bottom-rail" id="mnBottomRail" aria-label="Places"></div>
       </div>
       <div class="map-legend" id="mapLegend">
         <div class="map-legend-title" id="mapLegendTitle">EXCURSIONS</div>
@@ -8439,6 +8499,83 @@ if ('serviceWorker' in navigator) {
   document.getElementById('winePromoClose').addEventListener('click', hide);
   document.getElementById('winePromoLink').addEventListener('click', hide);
   setInterval(tick, 15000);
+})();
+</script>
+
+<script id="map-navi-fullscreen-script">
+(function(){
+  'use strict';
+  var currentCategory='places';
+  var rail=document.getElementById('mnBottomRail');
+  var topRail=document.getElementById('mnTopRail');
+  var mapView=document.getElementById('view-map');
+  if(!rail||!topRail||!mapView)return;
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function savedSpot(){try{return typeof getSavedSpot==='function'?getSavedSpot():null;}catch(e){return null;}}
+  function statusCard(icon,title,detail,actionLabel,action){
+    rail.innerHTML='<div class="mn-status-card"><span class="mn-status-icon">'+icon+'</span><div class="mn-status-copy"><strong>'+esc(title)+'</strong><span>'+esc(detail)+'</span><button type="button" class="mn-status-action">'+esc(actionLabel)+'</button></div></div>';
+    var b=rail.querySelector('button');if(b)b.addEventListener('click',action);
+  }
+  function renderPlaces(){
+    var items=(window.castles||[]).map(function(c,i){return {c:c,i:i};}).filter(function(x){return typeof x.c.lat==='number';});
+    rail.innerHTML=items.map(function(x){
+      var c=x.c, img=(c.images&&c.images[0])?c.images[0]:'new-vector-castle.png';
+      return '<button type="button" class="mn-place-card" data-mn-index="'+x.i+'"><img src="'+esc(img)+'" alt=""><span class="mn-place-copy"><strong>'+esc(c.name)+'</strong><small>'+esc(c.town||'')+'</small></span></button>';
+    }).join('');
+    rail.querySelectorAll('[data-mn-index]').forEach(function(card){
+      card.addEventListener('click',function(){
+        var i=Number(card.getAttribute('data-mn-index')),c=window.castles&&window.castles[i];
+        if(!c||!window.leafletMap)return;
+        rail.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.toggle('active',el===card);});
+        window.leafletMap.stop();window.leafletMap.setView([c.lat,c.lng],Math.max(14,window.leafletMap.getZoom()),{animate:true});
+        if(typeof window.showMapPanel==='function')window.showMapPanel(i);
+      });
+    });
+  }
+  function selectCategory(cat){
+    currentCategory=cat;
+    topRail.querySelectorAll('[data-mn-category]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-mn-category')===cat);});
+    if(cat==='places'){renderPlaces();return;}
+    if(cat==='ship'){
+      var sp=savedSpot();
+      if(sp){
+        statusCard('⚓','My Ship',sp.label||'Saved berth','Show on map',function(){
+          if(window.leafletMap){window.leafletMap.stop();window.leafletMap.setView([sp.lat,sp.lng],17,{animate:true});}
+        });
+      }else{
+        statusCard('⚓','My Ship','Save your ship’s berth so you can find your way back.','Set up My Ship',function(){
+          var gps=document.getElementById('gpsToggleBtn');
+          if(gps&&!window.gpsActive)gps.click();
+          else if(window.gpsActive){var save=document.getElementById('gpsSaveSpotBtn');if(save)save.click();}
+        });
+      }
+      return;
+    }
+    if(cat==='toilets'||cat==='pharmacy'){
+      if(typeof window.togglePoiLayer==='function')window.togglePoiLayer(cat==='toilets'?'wc':'apotheke');
+      statusCard(cat==='toilets'?'🚻':'💊',cat==='toilets'?'Nearby toilets':'Nearby pharmacies',
+        cat==='toilets'?'Toilet locations are shown on the map.':'Pharmacy locations are shown on the map.',
+        'Back to places',function(){selectCategory('places');});
+    }
+  }
+  topRail.querySelectorAll('[data-mn-category]').forEach(function(b){
+    b.addEventListener('click',function(){selectCategory(b.getAttribute('data-mn-category'));});
+  });
+  function sync(){
+    var active=mapView.classList.contains('active');
+    document.body.classList.toggle('map-navi-active',active);
+    if(active){
+      if(!rail.dataset.ready){rail.dataset.ready='1';renderPlaces();}
+      if(window.leafletMap)requestAnimationFrame(function(){window.leafletMap.invalidateSize();});
+    }
+  }
+  new MutationObserver(sync).observe(mapView,{attributes:true,attributeFilter:['class']});
+  sync();
+  document.addEventListener('click',function(e){
+    if(e.target&&e.target.id==='mapPanelClose'){
+      rail.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.remove('active');});
+    }
+  });
 })();
 </script>
 </body>
