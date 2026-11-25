@@ -8524,24 +8524,43 @@ if ('serviceWorker' in navigator) {
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function savedSpot(){try{return typeof getSavedSpot==='function'?getSavedSpot():null;}catch(e){return null;}}
   function statusCard(icon,title,detail,actionLabel,action){
-    rail.innerHTML='<div class="mn-status-card"><span class="mn-status-icon">'+icon+'</span><div class="mn-status-copy"><strong>'+esc(title)+'</strong><span>'+esc(detail)+'</span><button type="button" class="mn-status-action">'+esc(actionLabel)+'</button></div></div>';
-    var b=rail.querySelector('button');if(b)b.addEventListener('click',action);
+    prepareRail();
+    var track=rail.querySelector('.mn-card-track');
+    if(!track)return;
+    track.innerHTML='<div class="mn-status-card"><span class="mn-status-icon">'+icon+'</span><div class="mn-status-copy"><strong>'+esc(title)+'</strong><span>'+esc(detail)+'</span><button type="button" class="mn-status-action">'+esc(actionLabel)+'</button></div></div>';
+    var b=track.querySelector('.mn-status-action');if(b)b.addEventListener('click',action);
+    var advice=rail.querySelector('.mn-poi-advice');if(advice)advice.remove();
+    var hint=rail.querySelector('.mn-poi-hint');if(hint)hint.remove();
+    setPanelState('quarter');
   }
   function renderPlaces(){
     var items=(typeof castles!=="undefined"?castles:[]).map(function(c,i){return {c:c,i:i};}).filter(function(x){return typeof x.c.lat==='number';});
-    rail.innerHTML=items.map(function(x){
+    prepareRail();
+    var track=rail.querySelector('.mn-card-track');
+    if(!track)return;
+    track.innerHTML=items.map(function(x){
       var c=x.c, img=(c.images&&c.images[0])?c.images[0]:'new-vector-castle.png';
       return '<button type="button" class="mn-place-card" data-mn-index="'+x.i+'"><img src="'+esc(img)+'" alt=""><span class="mn-place-copy"><strong>'+esc(c.name)+'</strong><small>'+esc(c.town||'')+'</small></span></button>';
     }).join('');
-    rail.querySelectorAll('[data-mn-index]').forEach(function(card){
+    var advice=rail.querySelector('.mn-poi-advice');if(advice)advice.remove();
+    var poiHint=rail.querySelector('.mn-poi-hint');if(poiHint)poiHint.remove();
+    var hint=rail.querySelector('.mn-sheet-hint');
+    if(!hint){hint=document.createElement('div');hint.className='mn-sheet-hint';}
+    hint.textContent=lang==='ru'?'Листайте карточки. Нажмите на место, чтобы открыть фотографии, историю и маршрут.':lang==='de'?'Karten wischen. Tippen Sie auf einen Ort für Fotos, Geschichte und Route.':'Swipe the cards. Tap a place to open photos, story and route.';
+    hint.style.cssText='flex:0 0 auto;padding:7px 4px 3px;text-align:center;font:italic 14px/1.25 EB Garamond,serif;color:#80633D';
+    var mp=rail.querySelector('#mapPanel');
+    if(mp){mp.classList.remove('open','mn-poi-selected');var c=mp.querySelector('.mn-full-object-content');if(c)c.innerHTML='';}
+    rail.insertBefore(hint,mp||null);
+    track.querySelectorAll('[data-mn-index]').forEach(function(card){
       card.addEventListener('click',function(){
         var i=Number(card.getAttribute('data-mn-index')),c=typeof castles!=="undefined"&&castles[i];
         if(!c||typeof leafletMap==="undefined"||!leafletMap)return;
-        rail.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.toggle('active',el===card);});
+        track.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.toggle('active',el===card);});
         leafletMap.stop();leafletMap.setView([c.lat,c.lng],Math.max(14,leafletMap.getZoom()),{animate:true});
         if(typeof showMapPanel==='function')showMapPanel(i);
       });
     });
+    setPanelState('quarter');
   }
   function selectCategory(cat){
     currentCategory=cat;
@@ -8565,9 +8584,7 @@ if ('serviceWorker' in navigator) {
     if(cat==='toilets'||cat==='pharmacy'){
       var already=cat==='toilets'?!!toilettenLayer:!!apothekenLayer;
       if(!already&&typeof togglePoiLayer==='function')togglePoiLayer(cat==='toilets'?'wc':'apotheke');
-      statusCard(cat==='toilets'?'🚻':'💊',cat==='toilets'?'Nearby toilets':'Nearby pharmacies',
-        cat==='toilets'?'Toilet locations are shown on the map.':'Pharmacy locations are shown on the map.',
-        'Back to places',function(){selectCategory('places');});
+      setPanelState('third');
     }
   }
   topRail.querySelectorAll('[data-mn-category]').forEach(function(b){
@@ -8964,7 +8981,7 @@ body.mn-panel-full .mn-back{display:none}
     prepareRail();
     var hint=rail.querySelector('.mn-poi-hint');
     if(!hint){hint=document.createElement('div');hint.className='mn-poi-hint';}
-    var gpsOff=typeof gpsLastLat==='undefined'||gpsLastLat===null;
+    var gpsOff=!(typeof gpsActive!=='undefined'&&gpsActive&&typeof gpsLastLat==='number'&&gpsLastLat!==null);
     var swipeText=lang==='ru'?'Листайте карточки — точка на карте будет перемещаться. Нажмите, чтобы выбрать.':lang==='de'?'Karten wischen — der Kartenpunkt folgt. Tippen zum Auswählen.':'Swipe cards to move the map marker. Tap to select.';
     var gpsText=lang==='ru'?'GPS выключен — включите его, чтобы найти ближайший объект.':lang==='de'?'GPS ist aus — aktivieren Sie es für den nächstgelegenen Ort.':'GPS is off — enable it to find the nearest place.';
     hint.textContent=(gpsOff?gpsText+' ':'')+swipeText;
@@ -8988,8 +9005,23 @@ body.mn-panel-full .mn-back{display:none}
       advice.innerHTML='<h3>'+title+'</h3>'+body;
     }
     var mp=rail.querySelector('#mapPanel');
-    if(mp){rail.insertBefore(hint,mp);rail.insertBefore(advice,mp);}
-    else{rail.appendChild(hint);rail.appendChild(advice);}
+    var poiTrack=rail.querySelector('.mn-card-track');
+    if(poiTrack){
+      rail.insertBefore(advice,poiTrack);
+      if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
+    }else{
+      rail.appendChild(advice);rail.appendChild(hint);
+    }
+    if(mp){
+      mp.classList.remove('open','mn-poi-selected');
+      var oldContent=mp.querySelector('.mn-full-object-content');if(oldContent)oldContent.innerHTML='';
+      var oldTitle=document.getElementById('mapPanelTitle');if(oldTitle)oldTitle.textContent='';
+      var oldMeta=document.getElementById('mapPanelMeta');if(oldMeta)oldMeta.textContent='';
+      var oldDesc=document.getElementById('mapPanelDesc');if(oldDesc)oldDesc.textContent='';
+      var oldRead=document.getElementById('mapPanelSpeak');if(oldRead)oldRead.style.display='none';
+      var oldWa=document.getElementById('mapPanelWa');if(oldWa)oldWa.style.display='none';
+    }
+    setPanelState('third');
   }
   function syncCastleCard(index){
     var card=rail.querySelector('[data-mn-index="'+index+'"]');
