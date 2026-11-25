@@ -7193,7 +7193,7 @@ function initMap() {
   // его в левом верхнем, где он перекрывался полем поиска.
   leafletMap = L.map('mapDiv', { scrollWheelZoom: true, zoomControl: false, zoomSnap: 0.25, zoomDelta: 0.5 }).setView([50.18, 7.75], 10);
   L.control.zoom({ position: 'bottomleft' }).addTo(leafletMap);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(leafletMap);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(leafletMap);
 
   // POI buttons inside map container
   const poiBar = document.createElement('div');
@@ -8586,5 +8586,307 @@ if ('serviceWorker' in navigator) {
   });
 })();
 </script>
+
+<style id="map-navi-interaction-build">
+/* Preserve MAP NAVI's parchment / terracotta / EB Garamond identity.
+   The map tiles alone use a dark, high-contrast cartographic base. */
+body.map-navi-active #mapDiv { background:#202832; }
+body.map-navi-active .leaflet-container { background:#202832; }
+body.map-navi-active .mn-bottom-rail {
+  display:flex; flex-direction:column; gap:7px; height:136px; min-height:136px; max-height:136px;
+  overflow:hidden; padding:7px 9px 9px; transition:height .28s ease,max-height .28s ease;
+  touch-action:pan-x;
+}
+.mn-bottom-handle {
+  flex:0 0 17px; min-height:17px; width:100%; display:flex; align-items:center; justify-content:center;
+  position:relative; cursor:ns-resize; touch-action:none; user-select:none;
+}
+.mn-bottom-handle:before {
+  content:""; width:42px; height:5px; border-radius:8px; background:#B99B6A;
+  box-shadow:0 1px 1px rgba(40,25,10,.18);
+}
+.mn-bottom-handle:after {
+  content:"SWIPE UP TO EXPLORE"; position:absolute; right:8px; top:1px;
+  color:#80633D; font:700 9px/14px system-ui,sans-serif; letter-spacing:.07em; opacity:.72;
+}
+.mn-card-track {
+  display:flex; flex:1 1 auto; min-height:0; width:100%; gap:9px; overflow-x:auto; overflow-y:hidden;
+  scroll-snap-type:x mandatory; scroll-padding-inline:10px; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch; align-items:stretch;
+}
+.mn-card-track::-webkit-scrollbar { display:none; }
+.mn-card-track > * { scroll-snap-align:center; }
+.mn-card-track .mn-place-card { flex:0 0 220px; height:100%; min-height:0; }
+.mn-card-track .mn-place-card img { width:78px; height:78px; }
+.mn-card-track .mn-place-card.active {
+  border:2px solid #7A1026; background:#FFF1D2;
+  box-shadow:0 0 0 2px rgba(201,160,92,.38),0 3px 12px rgba(30,20,10,.2);
+}
+.mn-card-track .mn-place-card.active strong { color:#7A1026; }
+.mn-card-track .mn-status-card { flex:0 0 min(290px,82vw); height:100%; }
+body.mn-panel-expanded .mn-bottom-rail {
+  height:40dvh; min-height:40dvh; max-height:40dvh;
+}
+body.mn-panel-expanded .map-panel {
+  bottom:calc(env(safe-area-inset-bottom) + 40dvh + 18px);
+  max-height:calc(100dvh - 40dvh - 205px); overflow:auto;
+}
+body.mn-panel-full .mn-bottom-rail {
+  height:78dvh; min-height:78dvh; max-height:78dvh;
+  overflow-y:auto; overflow-x:hidden;
+}
+body.mn-panel-full .mn-card-track { flex:0 0 124px; min-height:124px; }
+body.mn-panel-full .mn-card-track .mn-place-card { height:100%; }
+body.mn-panel-full .mn-bottom-rail > .map-panel {
+  position:relative !important; inset:auto !important; display:block !important;
+  flex:1 1 auto; width:100%; max-height:none !important; min-height:190px;
+  overflow:auto; margin:0; border-radius:14px; box-shadow:none;
+}
+body.mn-panel-full .mn-bottom-rail > .map-panel:not(.open) { display:none !important; }
+body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-desc {
+  font-size:18px; line-height:1.35;
+}
+body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24px; }
+.mn-selected-marker .castle-marker {
+  transform:scale(1.2); background:#FFF0B8; border:3px solid #fff;
+  box-shadow:0 0 0 4px rgba(255,240,184,.55),0 3px 12px rgba(0,0,0,.6);
+  transition:transform .18s ease,background .18s ease;
+}
+.mn-selected-marker .castle-marker img { filter:brightness(.32) sepia(.35) saturate(1.6); }
+.castle-selection-pulse-wrap { pointer-events:none; }
+.castle-selection-pulse {
+  width:84px; height:84px; box-sizing:border-box; border-radius:50%;
+  border:3px solid rgba(255,246,207,.98); background:rgba(255,235,160,.12);
+  box-shadow:0 0 0 6px rgba(255,246,207,.28),0 2px 14px rgba(0,0,0,.5);
+  animation:mnCastlePulse 1.65s ease-out infinite;
+}
+@keyframes mnCastlePulse {
+  0% { transform:scale(.66); opacity:.98; }
+  72% { transform:scale(1.18); opacity:.36; }
+  100% { transform:scale(.66); opacity:.98; }
+}
+.mn-poi-pulse-wrap { pointer-events:none; }
+.mn-poi-pulse {
+  width:76px; height:76px; border-radius:50%; border:3px solid #FFF2B8;
+  box-shadow:0 0 0 6px rgba(255,242,184,.26),0 2px 12px rgba(0,0,0,.42);
+  animation:mnCastlePulse 1.65s ease-out infinite;
+}
+@media (prefers-reduced-motion:reduce) {
+  .castle-selection-pulse,.mn-poi-pulse { animation:none !important; }
+  body.map-navi-active .mn-bottom-rail { transition:none; }
+}
+@media (max-height:620px) {
+  body.map-navi-active .mn-top-rail { top:calc(env(safe-area-inset-top) + 88px); }
+  body.mn-panel-expanded .mn-bottom-rail { height:48dvh; min-height:48dvh; max-height:48dvh; }
+  body.mn-panel-full .mn-bottom-rail { height:82dvh; min-height:82dvh; max-height:82dvh; }
+}
+</style>
+<script id="map-navi-interaction-build-script">
+(function(){
+  'use strict';
+  var rail=document.getElementById('mnBottomRail');
+  var topRail=document.getElementById('mnTopRail');
+  var mapView=document.getElementById('view-map');
+  var mapPanel=document.getElementById('mapPanel');
+  if(!rail||!topRail||!mapView)return;
+
+  var panelHomeParent=mapPanel?mapPanel.parentNode:null;
+  var panelHomeNext=mapPanel?mapPanel.nextSibling:null;
+  var currentState='compact';
+  var currentSelection='';
+  var scrollTimer=null;
+  var pointerStartY=null;
+  var pointerDragged=false;
+
+  function restoreMapPanel(){
+    if(!mapPanel||mapPanel.parentNode===panelHomeParent)return;
+    if(panelHomeNext&&panelHomeNext.parentNode===panelHomeParent) panelHomeParent.insertBefore(mapPanel,panelHomeNext);
+    else panelHomeParent.appendChild(mapPanel);
+  }
+  function setPanelState(next){
+    currentState=next;
+    document.body.classList.remove('mn-panel-compact','mn-panel-expanded','mn-panel-full');
+    document.body.classList.add('mn-panel-'+next);
+    rail.classList.toggle('mn-state-full',next==='full');
+    if(next==='full'&&mapPanel){
+      var track=rail.querySelector('.mn-card-track');
+      if(track&&mapPanel.parentNode!==rail) rail.appendChild(mapPanel);
+    } else restoreMapPanel();
+    if(typeof leafletMap!=='undefined'&&leafletMap) setTimeout(function(){leafletMap.invalidateSize();},300);
+  }
+  function addHandle(){
+    var h=rail.querySelector('.mn-bottom-handle');
+    if(!h){
+      h=document.createElement('div'); h.className='mn-bottom-handle'; h.setAttribute('role','button');
+      h.setAttribute('tabindex','0'); h.setAttribute('aria-label','Expand or collapse place cards');
+      rail.insertBefore(h,rail.firstChild);
+      h.addEventListener('pointerdown',function(e){pointerStartY=e.clientY;pointerDragged=false;});
+      h.addEventListener('pointerup',function(e){
+        if(pointerStartY===null)return;
+        var dy=e.clientY-pointerStartY; pointerStartY=null;
+        if(Math.abs(dy)>24){pointerDragged=true;setPanelState(dy<0?(currentState==='compact'?'expanded':'full'):(currentState==='full'?'expanded':'compact'));}
+      });
+      h.addEventListener('click',function(){
+        if(pointerDragged){pointerDragged=false;return;}
+        setPanelState(currentState==='compact'?'expanded':currentState==='expanded'?'full':'compact');
+      });
+      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();setPanelState(currentState==='compact'?'expanded':currentState==='expanded'?'full':'compact');}});
+    }
+    return h;
+  }
+  function ensureTrack(){
+    var track=rail.querySelector('.mn-card-track');
+    if(track)return track;
+    track=document.createElement('div');track.className='mn-card-track';
+    Array.prototype.slice.call(rail.children).forEach(function(el){
+      if(el.classList.contains('mn-bottom-handle')||el===mapPanel)return;
+      track.appendChild(el);
+    });
+    rail.appendChild(track);
+    return track;
+  }
+  function prepareRail(){
+    if(mapPanel&&mapPanel.parentNode===rail)restoreMapPanel();
+    addHandle();
+    var track=ensureTrack();
+    bindTrack(track);
+    if(currentState==='full'&&mapPanel&&mapPanel.classList.contains('open'))rail.appendChild(mapPanel);
+  }
+  function centerCard(card,track){
+    if(!card||!track)return;
+    var left=card.offsetLeft-track.offsetLeft-(track.clientWidth-card.offsetWidth)/2;
+    track.scrollTo({left:left,behavior:'smooth'});
+  }
+  function setCardActive(card){
+    var track=rail.querySelector('.mn-card-track');if(!track||!card)return;
+    track.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.toggle('active',el===card);});
+    currentSelection=card.getAttribute('data-mn-index')!==null?'castle:'+card.getAttribute('data-mn-index'):
+      card.getAttribute('data-mn-poi')!==null?'poi:'+card.getAttribute('data-mn-poi'):'status';
+  }
+  function selectCastle(index,scroll){
+    var c=typeof castles!=='undefined'?castles[index]:null;
+    if(!c||!leafletMap)return;
+    var card=rail.querySelector('[data-mn-index="'+index+'"]');
+    if(card){setCardActive(card);if(scroll)centerCard(card,rail.querySelector('.mn-card-track'));}
+    leafletMap.stop();
+    leafletMap.setView([c.lat,c.lng],Math.max(14,leafletMap.getZoom()),{animate:true});
+    if(typeof window.showMapPanel==='function')window.showMapPanel(index);
+  }
+  function selectPoi(p,scroll){
+    if(!p||!leafletMap)return;
+    var card=rail.querySelector('[data-mn-poi="'+CSS.escape(p.name)+'"]');
+    if(card){setCardActive(card);if(scroll)centerCard(card,rail.querySelector('.mn-card-track'));}
+    if(typeof _focusPoiOnMap==='function')_focusPoiOnMap(leafletMap,p);
+    var emoji=currentCategory==='pharmacy'?'💊':'🚻';
+    if(typeof _showPoiToast==='function')_showPoiToast(leafletMap,p,emoji);
+    if(leafletMap._mnPoiPulse)leafletMap.removeLayer(leafletMap._mnPoiPulse);
+    var pulse=L.divIcon({className:'mn-poi-pulse-wrap',html:'<div class="mn-poi-pulse"></div>',iconSize:[76,76],iconAnchor:[38,38]});
+    leafletMap._mnPoiPulse=L.marker([p.lat,p.lng],{icon:pulse,interactive:false,keyboard:false,zIndexOffset:1600}).addTo(leafletMap);
+  }
+  function bindTrack(track){
+    if(track.dataset.mnBound==='1')return;track.dataset.mnBound='1';
+    track.addEventListener('click',function(e){
+      var card=e.target.closest('.mn-place-card');
+      if(!card)return;
+      if(card.hasAttribute('data-mn-poi')){
+        var list=currentCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
+        var p=list.find(function(x){return x.name===card.getAttribute('data-mn-poi');});
+        if(p)selectPoi(p,false);
+      }
+    });
+    track.addEventListener('scroll',function(){
+      clearTimeout(scrollTimer);
+      scrollTimer=setTimeout(function(){
+        var cards=Array.prototype.slice.call(track.querySelectorAll('.mn-place-card'));
+        if(!cards.length)return;
+        var mid=track.getBoundingClientRect().left+track.clientWidth/2;
+        var chosen=cards.reduce(function(best,card){
+          var r=card.getBoundingClientRect(),d=Math.abs((r.left+r.right)/2-mid);
+          return !best||d<best.d?{card:card,d:d}:best;
+        },null);
+        if(!chosen)return;
+        var key=chosen.card.getAttribute('data-mn-index')!==null?'castle:'+chosen.card.getAttribute('data-mn-index'):
+          chosen.card.getAttribute('data-mn-poi')!==null?'poi:'+chosen.card.getAttribute('data-mn-poi'):'';
+        if(!key||key===currentSelection)return;
+        if(chosen.card.hasAttribute('data-mn-index'))selectCastle(Number(chosen.card.getAttribute('data-mn-index')),false);
+        else if(chosen.card.hasAttribute('data-mn-poi')){
+          var list=currentCategory==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
+          var p=list.find(function(x){return x.name===chosen.card.getAttribute('data-mn-poi');});
+          if(p)selectPoi(p,false);
+        }
+      },180);
+    },{passive:true});
+  }
+  function renderPoiCards(cat){
+    var data=cat==='pharmacy'?POI_APOTHEKEN:POI_TOILETTEN;
+    var emoji=cat==='pharmacy'?'💊':'🚻';
+    var html=data.map(function(p){
+      return '<button type="button" class="mn-place-card" data-mn-poi="'+String(p.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"><span class="mn-poi-card-icon">'+emoji+'</span><span class="mn-place-copy"><strong>'+p.name+'</strong><small>'+p.city+'</small></span></button>';
+    }).join('');
+    rail.innerHTML=html;
+    currentSelection='';
+    prepareRail();
+  }
+  function syncCastleCard(index){
+    var card=rail.querySelector('[data-mn-index="'+index+'"]');
+    if(!card)return;
+    setCardActive(card);centerCard(card,rail.querySelector('.mn-card-track'));
+  }
+  function applyCastleMarker(index){
+    if(!leafletMap||!leafletMap._castleMarkers)return;
+    leafletMap._castleMarkers.forEach(function(marker,i){
+      if(!marker)return;
+      var c=castles[i];
+      if(marker.setStyle){
+        marker.setStyle(i===index?{radius:14,color:'#fff',weight:4,fillColor:'#FFF0B8',fillOpacity:1}:{radius:10,color:'#fff',weight:2.5,fillColor:'#8A6A34',fillOpacity:1});
+      } else {
+        var el=marker.getElement();if(el)el.classList.toggle('mn-selected-marker',i===index);
+      }
+    });
+  }
+
+  // Wrap the existing detail-panel function so marker taps and card selection stay synchronized.
+  if(typeof window.showMapPanel==='function'&&!window.showMapPanel._mnWrapped){
+    var oldShow=window.showMapPanel;
+    var wrapped=function(i){oldShow(i);applyCastleMarker(i);syncCastleCard(i);};
+    wrapped._mnWrapped=true;window.showMapPanel=wrapped;
+  }
+  // A tap on an existing POI map marker selects its matching card as well.
+  if(typeof window._showPoiToast==='function'&&!window._showPoiToast._mnWrapped){
+    var oldToast=window._showPoiToast;
+    var wrappedToast=function(mapObj,p,emoji){
+      oldToast(mapObj,p,emoji);
+      if(mapObj===leafletMap){
+        var card=rail.querySelector('[data-mn-poi="'+String(p.name).replace(/"/g,'&quot;')+'"]');
+        if(card){setCardActive(card);centerCard(card,rail.querySelector('.mn-card-track'));}
+        if(leafletMap._mnPoiPulse)leafletMap.removeLayer(leafletMap._mnPoiPulse);
+        var pulse=L.divIcon({className:'mn-poi-pulse-wrap',html:'<div class="mn-poi-pulse"></div>',iconSize:[76,76],iconAnchor:[38,38]});
+        leafletMap._mnPoiPulse=L.marker([p.lat,p.lng],{icon:pulse,interactive:false,keyboard:false,zIndexOffset:1600}).addTo(leafletMap);
+      }
+    };
+    wrappedToast._mnWrapped=true;window._showPoiToast=wrappedToast;
+  }
+
+  // Restore the detail panel before the original category handler rebuilds the carousel.
+  topRail.addEventListener('click',function(){restoreMapPanel();setTimeout(function(){
+    var active=topRail.querySelector('.mn-category.active');
+    var cat=active&&active.getAttribute('data-mn-category');
+    if(cat==='toilets'||cat==='pharmacy')renderPoiCards(cat);
+    else {currentSelection='';prepareRail();}
+    setPanelState('compact');
+  },80);},true);
+
+  var viewObserver=new MutationObserver(function(){
+    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('compact');},120);
+  });
+  viewObserver.observe(mapView,{attributes:true,attributeFilter:['class']});
+  // Existing map may already be open when this script loads.
+  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('compact');}},150);
+  document.addEventListener('click',function(e){
+    if(e.target&&e.target.id==='mapPanelClose')setPanelState('compact');
+  },true);
+})();
+</script>
+
 </body>
 </html>
