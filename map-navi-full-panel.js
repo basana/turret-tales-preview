@@ -222,7 +222,10 @@ style.textContent +=
 "@media(orientation:landscape){body.map-navi-active .mn-bottom-rail{padding-bottom:6px}body.mn-panel-quarter .mn-bottom-rail{height:30dvh!important;min-height:180px!important;max-height:30dvh!important}body.mn-panel-third .mn-bottom-rail{height:38dvh!important;min-height:220px!important;max-height:38dvh!important}body.mn-panel-half .mn-bottom-rail{height:58dvh!important;max-height:62dvh!important}}"+
 "@media(max-width:390px){body.map-navi-active .mn-category{flex-basis:76px!important;min-width:76px!important}body.map-navi-active .mn-card-track .mn-place-card{flex-basis:86vw}}";
 style.textContent +=
-"body.map-navi-active .mn-search-wrap{min-height:46px!important;height:46px!important;flex:0 0 46px!important;display:flex!important;align-items:center!important}"+
+"body.map-navi-active .mn-top-rail{flex-basis:52px!important;min-height:52px!important;height:52px!important;gap:7px!important}"+
+"body.map-navi-active .mn-category{height:50px!important;min-height:50px!important;padding:3px 7px!important;font-size:13px!important;gap:5px!important}"+
+"body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji{width:42px!important;height:42px!important;flex-basis:42px!important;font-size:36px!important}"+
+"\"body.map-navi-active .mn-search-wrap{min-height:46px!important;height:46px!important;flex:0 0 46px!important;display:flex!important;align-items:center!important}\"+"
 "body.map-navi-active .mn-search-wrap .gps-toggle-btn{display:flex!important;visibility:visible!important;opacity:1!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-height:44px!important;font-size:24px!important;border:1px solid #C9A05C!important;background:#F6EEDD!important;color:#5A4327!important;box-shadow:0 1px 4px rgba(40,25,10,.18)!important}"+
 "body.map-navi-active .mn-search-wrap .gps-toggle-btn.active{background:#94481F!important;color:#fff!important;border-color:#94481F!important}"+
 "body.map-navi-active .mn-search-wrap .gps-toggle-btn span:nth-child(2){font-size:23px!important}"+
