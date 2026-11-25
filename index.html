@@ -1472,8 +1472,10 @@ body.map-navi-active #mapDiv { width:100%; height:100%; min-height:0; border:0; 
 body.map-navi-active .map-legend { display:none !important; }
 body.map-navi-active .poi-toggle-bar { display:none !important; }
 body.map-navi-active .map-search-wrap { top:calc(env(safe-area-inset-top) + 10px); left:60px; right:102px; width:auto; max-width:none; }
-body.map-navi-active .gps-toggle-btn { top:calc(env(safe-area-inset-top) + 10px); right:12px; }
-body.map-navi-active .gps-follow-btn { top:calc(env(safe-area-inset-top) + 54px); right:12px; }
+body.map-navi-active .gps-toggle-btn { top:calc(env(safe-area-inset-top) + 10px); left:auto; right:12px; }
+body.map-navi-active .gps-follow-btn { top:calc(env(safe-area-inset-top) + 54px); left:auto; right:12px; }
+body.map-navi-active .gps-panel { top:calc(env(safe-area-inset-top) + 204px); max-width:min(88vw,300px); max-height:calc(100% - 360px); overflow:auto; }
+body.map-navi-active .nearest-toast { bottom:calc(env(safe-area-inset-bottom) + 140px); }
 body.map-navi-active .leaflet-bottom.leaflet-left { bottom:150px !important; }
 body.map-navi-active .map-panel { bottom:calc(env(safe-area-inset-bottom) + 146px); left:12px; right:12px; max-height:34%; overflow:auto; border-radius:16px; }
 .mn-floating-rail { position:absolute; z-index:1450; left:10px; right:10px; display:flex; gap:9px; pointer-events:auto; }
