@@ -222,6 +222,21 @@ style.textContent +=
 "@media(orientation:landscape){body.map-navi-active .mn-bottom-rail{padding-bottom:6px}body.mn-panel-quarter .mn-bottom-rail{height:30dvh!important;min-height:180px!important;max-height:30dvh!important}body.mn-panel-third .mn-bottom-rail{height:38dvh!important;min-height:220px!important;max-height:38dvh!important}body.mn-panel-half .mn-bottom-rail{height:58dvh!important;max-height:62dvh!important}}"+
 "@media(max-width:390px){body.map-navi-active .mn-category{flex-basis:76px!important;min-width:76px!important}body.map-navi-active .mn-card-track .mn-place-card{flex-basis:86vw}}";
 style.textContent +=
+"body.map-navi-active .mn-search-wrap{min-height:46px!important;height:46px!important;flex:0 0 46px!important;display:flex!important;align-items:center!important}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn{display:flex!important;visibility:visible!important;opacity:1!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-height:44px!important;font-size:24px!important;border:1px solid #C9A05C!important;background:#F6EEDD!important;color:#5A4327!important;box-shadow:0 1px 4px rgba(40,25,10,.18)!important}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn.active{background:#94481F!important;color:#fff!important;border-color:#94481F!important}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn span:nth-child(2){font-size:23px!important}"+
+"body.map-navi-active .mn-search-wrap .gps-toggle-btn .lock-star,body.map-navi-active .mn-search-wrap .gps-toggle-btn #gpsToggleLabel{display:none!important}"+
+"body.map-navi-active .mn-search-wrap .map-search-input{height:38px!important;min-height:38px!important}"+
+"body.map-navi-active .mn-full-gallery{align-items:center!important;min-height:0!important}"+
+"body.map-navi-active .mn-full-gallery img{display:block!important;flex:0 0 auto!important;width:auto!important;height:auto!important;max-width:min(24vw,120px)!important;max-height:min(24vw,120px)!important;object-fit:contain!important;object-position:center!important}"+
+"body.map-navi-active .mn-card-track .mn-place-card img{object-fit:contain!important;object-position:center!important;background:transparent!important}"+
+"body.map-navi-active .poi-toggle-bar{top:108px!important;right:12px!important;gap:14px!important}"+
+"body.map-navi-active .poi-toggle-btn{width:84px!important;height:84px!important;min-width:84px!important;min-height:84px!important;font-size:42px!important;border-width:3px!important;touch-action:manipulation}"+
+"body.map-navi-active .mn-status-card{width:100%;min-width:0;display:flex;align-items:center;gap:12px;padding:10px 12px;box-sizing:border-box}"+
+"body.map-navi-active .mn-status-copy{display:flex;flex-direction:column;gap:6px;min-width:0}"+
+"body.map-navi-active .mn-status-action{min-height:40px;padding:7px 14px;border-radius:20px;border:1px solid #7A1026;background:#7A1026;color:#fff;font:600 14px system-ui,sans-serif}";
+style.textContent +=
 "body.map-navi-active .mn-poi-advice{display:block;flex:0 0 auto;margin:3px 1px 12px;padding:12px 14px;border:1px solid #D6C39E;border-radius:13px;background:rgba(255,250,240,.98);color:#493A29;box-shadow:0 2px 8px rgba(50,30,15,.08)}"+
 "body.map-navi-active .mn-poi-advice h3{margin:0 0 9px;font:600 19px/1.12 'EB Garamond',serif;color:#7A1026}"+
 "body.map-navi-active .mn-poi-advice-block{margin:0 0 10px}"+
