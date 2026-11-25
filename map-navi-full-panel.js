@@ -10,6 +10,7 @@ function setState(s){
  document.body.classList.remove('mn-panel-compact','mn-panel-quarter','mn-panel-third','mn-panel-half','mn-panel-full');
  document.body.classList.add('mn-panel-'+s);
  rail.classList.toggle('mn-state-full',s==='full');
+ if(s!=='compact'&&panel.parentNode!==rail)rail.appendChild(panel);
  rail.style.removeProperty('height');rail.style.removeProperty('max-height');rail.style.removeProperty('top');
  if(typeof leafletMap!=='undefined'&&leafletMap)setTimeout(function(){leafletMap.invalidateSize();},220);
 }
