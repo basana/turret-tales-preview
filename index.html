@@ -1471,18 +1471,19 @@ body.map-navi-active .castle-map-stage { position:absolute; inset:0; width:100%;
 body.map-navi-active #mapDiv { width:100%; height:100%; min-height:0; border:0; border-radius:0; }
 body.map-navi-active .map-legend { display:none !important; }
 body.map-navi-active .poi-toggle-bar { display:none !important; }
-body.map-navi-active .map-search-wrap { top:calc(env(safe-area-inset-top) + 10px); left:12px; right:102px; width:auto; max-width:none; }
+body.map-navi-active .map-search-wrap { top:calc(env(safe-area-inset-top) + 10px); left:60px; right:102px; width:auto; max-width:none; }
 body.map-navi-active .gps-toggle-btn { top:calc(env(safe-area-inset-top) + 10px); right:12px; }
 body.map-navi-active .gps-follow-btn { top:calc(env(safe-area-inset-top) + 54px); right:12px; }
 body.map-navi-active .leaflet-bottom.leaflet-left { bottom:150px !important; }
 body.map-navi-active .map-panel { bottom:calc(env(safe-area-inset-bottom) + 146px); left:12px; right:12px; max-height:34%; overflow:auto; border-radius:16px; }
 .mn-floating-rail { position:absolute; z-index:1450; left:10px; right:10px; display:flex; gap:9px; pointer-events:auto; }
-.mn-top-rail { top:calc(env(safe-area-inset-top) + 64px); overflow-x:auto; overflow-y:hidden; padding:7px 2px 9px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.mn-top-rail { top:calc(env(safe-area-inset-top) + 104px); overflow-x:auto; overflow-y:hidden; padding:7px 2px 9px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
 .mn-top-rail::-webkit-scrollbar,.mn-bottom-rail::-webkit-scrollbar { display:none; }
 .mn-category { flex:0 0 92px; min-width:92px; min-height:86px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:7px 5px; border:1px solid rgba(201,160,92,.95); border-radius:15px; background:rgba(246,238,221,.96); color:#5A4327; box-shadow:0 3px 12px rgba(50,30,15,.2); font:600 12px/1.1 'EB Garamond',serif; cursor:pointer; }
 .mn-category img { width:42px; height:42px; object-fit:contain; display:block; }
 .mn-category .mn-emoji { width:42px; height:42px; display:grid; place-items:center; font:32px/1 sans-serif; }
 .mn-category.active { background:#7A1026; color:#FCEFDD; border-color:#C9A05C; box-shadow:0 0 0 2px rgba(122,16,38,.18),0 4px 14px rgba(50,20,15,.3); }
+.mn-back { position:absolute; z-index:1460; top:calc(env(safe-area-inset-top) + 10px); left:12px; width:40px; height:40px; border:1px solid #C9A05C; border-radius:50%; background:rgba(246,238,221,.97); color:#7A1026; font:32px/1 Georgia,serif; box-shadow:0 3px 12px rgba(50,30,15,.22); cursor:pointer; pointer-events:auto; }
 .mn-bottom-rail { bottom:calc(env(safe-area-inset-bottom) + 10px); padding:9px 9px 10px; min-height:120px; border:1px solid rgba(201,160,92,.96); border-radius:18px; background:rgba(246,238,221,.97); box-shadow:0 5px 20px rgba(50,30,15,.28); overflow-x:auto; overflow-y:hidden; align-items:stretch; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
 .mn-place-card { flex:0 0 205px; min-width:0; display:flex; align-items:center; gap:10px; padding:8px; border:1px solid #d6c39e; border-radius:13px; background:#fffaf0; color:#5A4327; text-align:left; cursor:pointer; scroll-snap-align:start; }
 .mn-place-card.active { border:2px solid #7A1026; background:#fff5f0; }
@@ -1834,6 +1835,7 @@ body.map-navi-active .map-panel { bottom:calc(env(safe-area-inset-bottom) + 146p
           </div>
         </div>
       </div>
+        <button type="button" class="mn-back" id="mnBackBtn" aria-label="Back to guide">‹</button>
         <div class="mn-floating-rail mn-top-rail" id="mnTopRail" aria-label="Map categories">
           <button type="button" class="mn-category active" data-mn-category="places"><img src="icon-castles.webp" alt=""><span>Places</span></button>
           <button type="button" class="mn-category" data-mn-category="ship"><span class="mn-emoji">⚓</span><span>My Ship</span></button>
@@ -8505,10 +8507,14 @@ if ('serviceWorker' in navigator) {
 (function(){
   'use strict';
   var currentCategory='places';
+  var labels={en:['Places','My Ship','Toilets','Pharmacy','Back to guide'],ru:['Места','Мой корабль','Туалеты','Аптека','К гиду'],de:['Orte','Mein Schiff','Toiletten','Apotheke','Zurück'],fr:['Lieux','Mon bateau','Toilettes','Pharmacie','Retour'],nl:['Plaatsen','Mijn schip','Toiletten','Apotheek','Terug']};
+  function localize(){var l=labels[typeof lang!=='undefined'?lang:'en']||labels.en;var keys=['places','ship','toilets','pharmacy'];keys.forEach(function(k,i){var b=topRail.querySelector('[data-mn-category="'+k+'"] span:last-child');if(b)b.textContent=l[i];});var back=document.getElementById('mnBackBtn');if(back)back.setAttribute('aria-label',l[4]);}
   var rail=document.getElementById('mnBottomRail');
   var topRail=document.getElementById('mnTopRail');
   var mapView=document.getElementById('view-map');
   if(!rail||!topRail||!mapView)return;
+  localize();
+  var backButton=document.getElementById('mnBackBtn');if(backButton)backButton.addEventListener('click',function(){if(typeof switchView==='function')switchView('guide');});
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function savedSpot(){try{return typeof getSavedSpot==='function'?getSavedSpot():null;}catch(e){return null;}}
   function statusCard(icon,title,detail,actionLabel,action){
@@ -8565,6 +8571,7 @@ if ('serviceWorker' in navigator) {
     document.body.classList.toggle('map-navi-active',active);
     if(active){
       if(!rail.dataset.ready){rail.dataset.ready='1';renderPlaces();}
+      localize();
       if(typeof leafletMap!=="undefined"&&leafletMap)requestAnimationFrame(function(){leafletMap.invalidateSize();});
     }
   }
