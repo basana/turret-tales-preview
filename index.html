@@ -8724,6 +8724,82 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
   body.mn-panel-expanded .mn-bottom-rail { height:48dvh; min-height:48dvh; max-height:48dvh; }
   body.mn-panel-full .mn-bottom-rail { height:82dvh; min-height:82dvh; max-height:82dvh; }
 }
+
+/* MAP NAVI: three deliberate sheet positions; carousel gestures stay horizontal. */
+body.map-navi-active .mn-bottom-rail{
+  left:8px!important;right:8px!important;bottom:calc(env(safe-area-inset-bottom) + 8px)!important;
+  top:auto;display:flex;flex-direction:column;gap:6px;box-sizing:border-box;
+  height:82px;min-height:82px;max-height:82px;padding:7px 9px 8px;
+  overflow:hidden;touch-action:pan-y;overscroll-behavior:contain;
+  transition:height .22s ease,top .22s ease,bottom .22s ease;
+}
+body.map-navi-active .mn-bottom-handle{flex:0 0 15px;min-height:15px;touch-action:none;cursor:ns-resize}
+body.map-navi-active .mn-bottom-handle:after{content:"";display:none}
+body.map-navi-active .mn-top-rail{
+  position:relative;inset:auto;top:auto;left:auto;right:auto;width:100%;flex:0 0 48px;
+  display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding:0 1px;
+  touch-action:pan-x;scrollbar-width:none;
+}
+body.map-navi-active .mn-category{
+  flex:1 0 74px;min-width:74px;max-width:none;height:48px;min-height:48px;
+  padding:4px 5px;gap:4px;flex-direction:row;justify-content:center;border-radius:11px;
+  font-size:13px;white-space:nowrap;
+}
+body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji{
+  width:32px;height:32px;font-size:27px;flex:0 0 32px;
+}
+body.map-navi-active .mn-card-track{display:none;flex:0 0 116px;min-height:116px;width:100%;gap:9px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain;scroll-snap-type:x mandatory}
+body.map-navi-active .mn-card-track .mn-place-card{
+  flex:0 0 min(88vw,360px);height:100%;min-height:0;box-sizing:border-box;gap:10px;padding:8px;
+}
+body.map-navi-active .mn-card-track .mn-place-card img{
+  flex:0 0 33%;width:33%;height:100%;max-height:100%;object-fit:cover;border-radius:9px;
+}
+body.map-navi-active .mn-place-copy{flex:1;min-width:0}
+body.map-navi-active .mn-place-copy strong{font-size:19px;line-height:1.08}
+body.map-navi-active .mn-place-copy small{font-size:13px;white-space:normal}
+body.map-navi-active .mn-bottom-rail .map-panel{display:none!important}
+body.map-navi-active .mn-bottom-rail .gps-panel{display:none!important}
+body.mn-panel-expanded .mn-bottom-rail{
+  height:43dvh;min-height:280px;max-height:52dvh;overflow:hidden;
+}
+body.mn-panel-expanded .mn-card-track{display:flex}
+body.mn-panel-expanded .mn-bottom-rail .gps-panel.show{display:flex!important}
+body.mn-panel-expanded .mn-bottom-rail .map-panel{display:none!important}
+body.mn-panel-full .mn-bottom-rail{
+  top:calc(env(safe-area-inset-top) + 8px)!important;
+  bottom:calc(env(safe-area-inset-bottom) + 8px)!important;
+  height:auto!important;min-height:0;max-height:none;overflow-x:hidden;overflow-y:auto;
+  padding-bottom:14px;touch-action:pan-y;
+}
+body.mn-panel-full .mn-card-track{display:flex;flex:0 0 116px;min-height:116px}
+body.mn-panel-full .mn-bottom-rail .map-panel{
+  display:block!important;position:relative!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+  width:100%;max-width:none;max-height:none!important;min-height:0;overflow:visible;
+  flex:0 0 auto;margin:0;border-radius:13px;box-shadow:none;
+}
+body.mn-panel-full .mn-bottom-rail .map-panel-desc{font-size:16px;line-height:1.35}
+body.mn-panel-full .mn-bottom-rail .map-panel-title{font-size:24px}
+body.mn-panel-full .mn-full-object-content{display:block;padding:12px 2px 28px}
+body.map-navi-active .mn-full-object-content h3{margin:16px 0 7px;font:600 21px/1.15 'EB Garamond',serif;color:#7A1026}
+body.map-navi-active .mn-full-object-content p{margin:0 0 13px;font:17px/1.45 'EB Garamond',serif;color:#493A29;white-space:pre-line}
+body.map-navi-active .mn-full-gallery{display:flex;gap:9px;overflow-x:auto;padding:2px 0 12px;touch-action:pan-x}
+body.map-navi-active .mn-full-gallery img{flex:0 0 78%;width:78%;height:190px;object-fit:cover;border-radius:12px}
+body.map-navi-active .mn-full-listen{width:100%;min-height:50px;margin:8px 0 14px;border:1px solid #9A773F;border-radius:12px;background:#7A1026;color:#FFF4DE;font:600 18px 'EB Garamond',serif}
+body.map-navi-active .map-panel-open-guide{display:none}
+body.mn-panel-full .mn-back{display:none}
+@media(orientation:landscape){
+ body.map-navi-active .mn-bottom-rail{left:8px!important;right:8px!important;width:auto!important}
+ body.mn-panel-expanded .mn-bottom-rail{height:52dvh;max-height:60dvh}
+ body.mn-panel-full .mn-bottom-rail{left:8px!important;right:8px!important}
+}
+@media(max-width:390px){
+ body.map-navi-active .mn-category{flex:1 0 70px;min-width:70px;padding:3px}
+ body.map-navi-active .mn-category img,body.map-navi-active .mn-category .mn-emoji{width:29px;height:29px;flex-basis:29px}
+ body.map-navi-active .mn-place-copy strong{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){body.map-navi-active .mn-bottom-rail{transition:none!important}}
+
 </style>
 <script id="map-navi-interaction-build-script">
 (function(){
@@ -8763,17 +8839,7 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
       h=document.createElement('div'); h.className='mn-bottom-handle'; h.setAttribute('role','button');
       h.setAttribute('tabindex','0'); h.setAttribute('aria-label','Expand or collapse place cards');
       rail.insertBefore(h,rail.firstChild);
-      h.addEventListener('pointerdown',function(e){pointerStartY=e.clientY;pointerDragged=false;});
-      h.addEventListener('pointerup',function(e){
-        if(pointerStartY===null)return;
-        var dy=e.clientY-pointerStartY; pointerStartY=null;
-        if(Math.abs(dy)>24){pointerDragged=true;setPanelState(dy<0?(currentState==='compact'?'expanded':'full'):(currentState==='full'?'expanded':'compact'));}
-      });
-      h.addEventListener('click',function(){
-        if(pointerDragged){pointerDragged=false;return;}
-        setPanelState(currentState==='compact'?'expanded':currentState==='expanded'?'full':'compact');
-      });
-      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();setPanelState(currentState==='compact'?'expanded':currentState==='expanded'?'full':'compact');}});
+      h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var next=currentState==='compact'?'expanded':currentState==='expanded'?'full':'compact';setPanelState(next);}});
     }
     return h;
   }
