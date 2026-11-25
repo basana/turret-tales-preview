@@ -8834,14 +8834,19 @@ body.mn-panel-full .mn-back{display:none}
     else if(next==='compact')restoreMapPanel();
     if(typeof leafletMap!=='undefined'&&leafletMap)setTimeout(function(){leafletMap.invalidateSize();},240);
   }
+  function ensureSheetTop(){
+    var top=rail.querySelector('.mn-sheet-top');
+    if(!top){top=document.createElement('div');top.className='mn-sheet-top';rail.insertBefore(top,rail.firstChild);}
+    return top;
+  }
   function addHandle(){
-    var h=rail.querySelector('.mn-bottom-handle');
+    var top=ensureSheetTop(),h=rail.querySelector('.mn-bottom-handle');
     if(!h){
       h=document.createElement('div'); h.className='mn-bottom-handle'; h.setAttribute('role','button');
       h.setAttribute('tabindex','0'); h.setAttribute('aria-label','Expand or collapse place cards');
-      rail.insertBefore(h,rail.firstChild);
       h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var order=['compact','quarter','third','half','full'],idx=order.findIndex(function(n){return document.body.classList.contains('mn-panel-'+n);});setPanelState(order[idx<0?1:(idx+1)%order.length]);}});
     }
+    if(h.parentNode!==top)top.insertBefore(h,top.firstChild);
     return h;
   }
   function ensureTrack(){
@@ -8849,14 +8854,21 @@ body.mn-panel-full .mn-back{display:none}
     if(track)return track;
     track=document.createElement('div');track.className='mn-card-track';
     Array.prototype.slice.call(rail.children).forEach(function(el){
-      if(el.classList.contains('mn-bottom-handle')||el===mapPanel||el===topRail||el.id==='gpsPanel')return;
+      if(el.classList.contains('mn-sheet-top')||el.classList.contains('mn-bottom-handle')||el===mapPanel||el===topRail||el.id==='gpsPanel')return;
       track.appendChild(el);
     });
     rail.appendChild(track);
     return track;
   }
   function prepareRail(){
+    var sheetTop=ensureSheetTop();
     addHandle();
+    var search=rail.querySelector('.mn-search-wrap')||mapView.querySelector('.map-search-wrap:not(.xmas-search)');
+    if(search){search.classList.add('mn-search-wrap');sheetTop.appendChild(search);}
+    var gpsToggle=document.getElementById('gpsToggleBtn');
+    var gpsFollow=document.getElementById('gpsFollowBtn');
+    if(search&&gpsToggle&&gpsToggle.parentNode!==search)search.appendChild(gpsToggle);
+    if(search&&gpsFollow&&gpsFollow.parentNode!==search)search.appendChild(gpsFollow);
     var track=ensureTrack();
     if(topRail)rail.insertBefore(topRail,track);
     var gps=document.getElementById('gpsPanel');
@@ -9021,11 +9033,11 @@ body.mn-panel-full .mn-back{display:none}
   },80);},true);
 
   var viewObserver=new MutationObserver(function(){
-    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('compact');},120);
+    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('quarter');},120);
   });
   viewObserver.observe(mapView,{attributes:true,attributeFilter:['class']});
   // Existing map may already be open when this script loads.
-  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('compact');}},150);
+  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('quarter');}},150);
   document.addEventListener('click',function(e){
     if(e.target&&e.target.id==='mapPanelClose')setPanelState(activeCategory==='toilets'||activeCategory==='pharmacy'?'third':'quarter');
   },true);
