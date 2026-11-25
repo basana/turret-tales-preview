@@ -8950,7 +8950,7 @@ body.mn-panel-full .mn-back{display:none}
     var hint=rail.querySelector('.mn-poi-hint');
     if(!hint){hint=document.createElement('div');hint.className='mn-poi-hint';}
     hint.textContent=lang==='ru'?'Листайте карточки — точка на карте будет перемещаться. Нажмите, чтобы выбрать.':lang==='de'?'Karten wischen — der Kartenpunkt folgt. Tippen zum Auswählen.':'Swipe cards to move the map marker. Tap to select.';
-    hint.style.cssText='flex:0 0 auto;padding:7px 4px 3px;text-align:center;font:italic 14px/1.2 EB Garamond,serif;color:#80633D';
+    hint.style.cssText='display:block;flex:0 0 auto;padding:7px 4px 3px;text-align:center;font:italic 14px/1.2 EB Garamond,serif;color:#80633D';
     var mp=rail.querySelector('#mapPanel');
     if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
   }
@@ -9001,7 +9001,16 @@ body.mn-panel-full .mn-back{display:none}
     var cat=active&&active.getAttribute('data-mn-category');
     activeCategory=cat||'places';
     if(cat==='toilets'||cat==='pharmacy')renderPoiCards(cat);
-    else {currentSelection='';prepareRail();var ph=rail.querySelector('.mn-poi-hint');if(ph)ph.remove();}
+    else {
+      currentSelection='';prepareRail();
+      var ph=rail.querySelector('.mn-poi-hint');if(ph)ph.remove();
+      if(cat==='places'||cat==='ship'){
+        var hint=document.createElement('div');hint.className='mn-sheet-hint';
+        hint.textContent=lang==='ru'?'Листайте карточки. Нажмите на место, чтобы открыть фотографии, историю и маршрут.':lang==='de'?'Karten wischen. Tippen Sie auf einen Ort für Fotos, Geschichte und Route.':'Swipe the cards. Tap a place to open photos, story and route.';
+        hint.style.cssText='flex:0 0 auto;padding:8px 4px 4px;text-align:center;font:italic 14px/1.25 EB Garamond,serif;color:#80633D';
+        var mp=rail.querySelector('#mapPanel');if(mp)rail.insertBefore(hint,mp);else rail.appendChild(hint);
+      }
+    }
     setPanelState(cat==='toilets'||cat==='pharmacy'?'third':'quarter');
   },80);},true);
 
