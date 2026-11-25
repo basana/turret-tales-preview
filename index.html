@@ -2385,6 +2385,8 @@ function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   data.forEach(p => {
     const ic = L.divIcon({ className: '', html: `<div class="poi-marker ${cssClass}">${emoji}</div>`, iconSize: [52, 52], iconAnchor: [26, 26] });
     const m = L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
+    mapObj._mnPoiMarkers = mapObj._mnPoiMarkers || {};
+    mapObj._mnPoiMarkers[p.name] = m;
     m.on('click', () => {
       _focusPoiOnMap(mapObj, p);
       _showPoiToast(mapObj, p, emoji);
@@ -8666,6 +8668,10 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
   72% { transform:scale(1.18); opacity:.36; }
   100% { transform:scale(.66); opacity:.98; }
 }
+.mn-selected-poi-marker .poi-marker {
+  background:#FFF0B8 !important; color:#5A4327 !important; border:3px solid #fff !important;
+  box-shadow:0 0 0 5px rgba(255,240,184,.48),0 3px 12px rgba(0,0,0,.58) !important;
+}
 .mn-poi-pulse-wrap { pointer-events:none; }
 .mn-poi-pulse {
   width:76px; height:76px; border-radius:50%; border:3px solid #FFF2B8;
@@ -8774,8 +8780,16 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
     leafletMap.setView([c.lat,c.lng],Math.max(14,leafletMap.getZoom()),{animate:true});
     if(typeof window.showMapPanel==='function')window.showMapPanel(index);
   }
+  function applyPoiMarker(mapObj,name){
+    if(!mapObj||!mapObj._mnPoiMarkers)return;
+    Object.keys(mapObj._mnPoiMarkers).forEach(function(key){
+      var marker=mapObj._mnPoiMarkers[key],el=marker&&marker.getElement();
+      if(el)el.classList.toggle('mn-selected-poi-marker',key===name);
+    });
+  }
   function selectPoi(p,scroll){
     if(!p||!leafletMap)return;
+    applyPoiMarker(leafletMap,p.name);
     var card=Array.prototype.slice.call(rail.querySelectorAll('[data-mn-poi]')).find(function(el){return el.getAttribute('data-mn-poi')===p.name;});
     if(card){setCardActive(card);if(scroll)centerCard(card,rail.querySelector('.mn-card-track'));}
     if(typeof _focusPoiOnMap==='function')_focusPoiOnMap(leafletMap,p);
@@ -8859,6 +8873,7 @@ body.mn-panel-full .mn-bottom-rail > .map-panel .map-panel-title { font-size:24p
     var wrappedToast=function(mapObj,p,emoji){
       oldToast(mapObj,p,emoji);
       if(mapObj===leafletMap){
+        applyPoiMarker(mapObj,p.name);
         var card=rail.querySelector('[data-mn-poi="'+String(p.name).replace(/"/g,'&quot;')+'"]');
         if(card){setCardActive(card);centerCard(card,rail.querySelector('.mn-card-track'));}
         if(leafletMap._mnPoiPulse)leafletMap.removeLayer(leafletMap._mnPoiPulse);
