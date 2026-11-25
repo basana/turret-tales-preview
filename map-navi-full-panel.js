@@ -145,6 +145,7 @@ style.textContent=
 "body.mn-panel-quarter .mn-card-track{display:flex!important}"+
 "body.mn-panel-quarter .mn-bottom-rail .map-panel{display:none!important}"+
 "body.mn-panel-third .mn-bottom-rail{height:max(34dvh,260px)!important;min-height:max(34dvh,260px)!important;max-height:max(34dvh,260px)!important}"+
+"body.mn-panel-third .mn-bottom-rail{overflow-y:auto!important}"+
 "body.mn-panel-third .mn-card-track{display:flex!important}"+
 "body.mn-panel-third .mn-bottom-rail .map-panel{display:block!important}+body.mn-panel-third .mn-bottom-rail .map-panel:not(.open){display:none!important}+body.mn-panel-third .mn-poi-selected .map-panel-title,body.mn-panel-third .mn-poi-selected .map-panel-meta,body.mn-panel-third .mn-poi-selected .map-panel-desc,body.mn-panel-third .mn-poi-selected .map-panel-actions{display:none!important}+body.mn-panel-third .mn-poi-selected .mn-full-object-content{display:block!important;padding:2px 2px 8px}"+
 "body.mn-panel-half .mn-bottom-rail{height:52dvh!important;min-height:52dvh!important;max-height:58dvh!important;overflow-y:auto!important}"+
