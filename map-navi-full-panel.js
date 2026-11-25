@@ -25,7 +25,7 @@ function speak(t){
  window.speechSynthesis.speak(u);
 }
 function castle(i){
- var c=window.castles&&window.castles[i];if(!c)return;
+ var c=typeof castles!=='undefined'&&castles[i];if(!c)return;
  var story=tr(c.sayRu||c.factsRu,c.sayDe||c.factsDe,c.say||c.facts);
  var facts=tr(c.factsRu,c.factsDe,c.facts);
  var legend=tr(c.legendRu,c.legendDe,c.legend);
