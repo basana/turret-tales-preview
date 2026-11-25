@@ -1841,7 +1841,6 @@ body.map-navi-active .map-panel { bottom:calc(env(safe-area-inset-bottom) + 146p
           <button type="button" class="mn-category" data-mn-category="pharmacy"><span class="mn-emoji">💊</span><span>Pharmacy</span></button>
         </div>
         <div class="mn-floating-rail mn-bottom-rail" id="mnBottomRail" aria-label="Places"></div>
-      </div>
       <div class="map-legend" id="mapLegend">
         <div class="map-legend-title" id="mapLegendTitle">EXCURSIONS</div>
         <div class="map-legend-filters">
@@ -8517,18 +8516,18 @@ if ('serviceWorker' in navigator) {
     var b=rail.querySelector('button');if(b)b.addEventListener('click',action);
   }
   function renderPlaces(){
-    var items=(window.castles||[]).map(function(c,i){return {c:c,i:i};}).filter(function(x){return typeof x.c.lat==='number';});
+    var items=(typeof castles!=="undefined"?castles:[]).map(function(c,i){return {c:c,i:i};}).filter(function(x){return typeof x.c.lat==='number';});
     rail.innerHTML=items.map(function(x){
       var c=x.c, img=(c.images&&c.images[0])?c.images[0]:'new-vector-castle.png';
       return '<button type="button" class="mn-place-card" data-mn-index="'+x.i+'"><img src="'+esc(img)+'" alt=""><span class="mn-place-copy"><strong>'+esc(c.name)+'</strong><small>'+esc(c.town||'')+'</small></span></button>';
     }).join('');
     rail.querySelectorAll('[data-mn-index]').forEach(function(card){
       card.addEventListener('click',function(){
-        var i=Number(card.getAttribute('data-mn-index')),c=window.castles&&window.castles[i];
-        if(!c||!window.leafletMap)return;
+        var i=Number(card.getAttribute('data-mn-index')),c=typeof castles!=="undefined"&&castles[i];
+        if(!c||typeof leafletMap==="undefined"||!leafletMap)return;
         rail.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.toggle('active',el===card);});
-        window.leafletMap.stop();window.leafletMap.setView([c.lat,c.lng],Math.max(14,window.leafletMap.getZoom()),{animate:true});
-        if(typeof window.showMapPanel==='function')window.showMapPanel(i);
+        leafletMap.stop();leafletMap.setView([c.lat,c.lng],Math.max(14,leafletMap.getZoom()),{animate:true});
+        if(typeof showMapPanel==='function')showMapPanel(i);
       });
     });
   }
@@ -8540,19 +8539,19 @@ if ('serviceWorker' in navigator) {
       var sp=savedSpot();
       if(sp){
         statusCard('⚓','My Ship',sp.label||'Saved berth','Show on map',function(){
-          if(window.leafletMap){window.leafletMap.stop();window.leafletMap.setView([sp.lat,sp.lng],17,{animate:true});}
+          if(typeof leafletMap!=="undefined"&&leafletMap){leafletMap.stop();leafletMap.setView([sp.lat,sp.lng],17,{animate:true});}
         });
       }else{
         statusCard('⚓','My Ship','Save your ship’s berth so you can find your way back.','Set up My Ship',function(){
           var gps=document.getElementById('gpsToggleBtn');
-          if(gps&&!window.gpsActive)gps.click();
-          else if(window.gpsActive){var save=document.getElementById('gpsSaveSpotBtn');if(save)save.click();}
+          if(gps&&!gpsActive)gps.click();
+          else if(gpsActive){var save=document.getElementById('gpsSaveSpotBtn');if(save)save.click();}
         });
       }
       return;
     }
     if(cat==='toilets'||cat==='pharmacy'){
-      if(typeof window.togglePoiLayer==='function')window.togglePoiLayer(cat==='toilets'?'wc':'apotheke');
+      if(typeof togglePoiLayer==='function')togglePoiLayer(cat==='toilets'?'wc':'apotheke');
       statusCard(cat==='toilets'?'🚻':'💊',cat==='toilets'?'Nearby toilets':'Nearby pharmacies',
         cat==='toilets'?'Toilet locations are shown on the map.':'Pharmacy locations are shown on the map.',
         'Back to places',function(){selectCategory('places');});
@@ -8566,7 +8565,7 @@ if ('serviceWorker' in navigator) {
     document.body.classList.toggle('map-navi-active',active);
     if(active){
       if(!rail.dataset.ready){rail.dataset.ready='1';renderPlaces();}
-      if(window.leafletMap)requestAnimationFrame(function(){window.leafletMap.invalidateSize();});
+      if(typeof leafletMap!=="undefined"&&leafletMap)requestAnimationFrame(function(){leafletMap.invalidateSize();});
     }
   }
   new MutationObserver(sync).observe(mapView,{attributes:true,attributeFilter:['class']});
