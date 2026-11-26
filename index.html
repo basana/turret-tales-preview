@@ -4362,6 +4362,19 @@ function renderFoodPromoText() {
 // Единый график окон Food & Drinks / Souvenirs (чередуются).
 // Первое окно через 2,5 минуты, дальше не чаще раза в 12 минут, не больше 4 за сессию.
 // Крестик прячет окна на 30 минут. Окно само закрывается через 20 секунд.
+// Single visibility gate: promotional windows must wait rather than cover one another.
+function canOpenManagedPopup(id) {
+  if (id !== 'emergencyPopup' && _poiEmergencyMode) return false;
+  const splash = document.getElementById('splash');
+  if (splash && !splash.classList.contains('hide')) return false;
+  if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open')) return false;
+  const ids = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','emergencyPopup','fbCard'];
+  return ids.every(other => {
+    if (other === id) return true;
+    const el = document.getElementById(other);
+    return !el || el.hidden;
+  });
+}
 const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 20000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
@@ -4373,6 +4386,7 @@ function promoTick() {
   setTimeout(() => { hideFoodPromo(); hideShopPromo(); }, PROMO.autoCloseMs);
 }
 function showFoodPromo() {
+  if (!canOpenManagedPopup('foodPromo')) return false;
   if (_poiEmergencyMode) return false;
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return false;
@@ -4455,6 +4469,7 @@ function renderShopPromoText() {
   const link = document.getElementById('shopPromoLink'); if (link) link.textContent = t.link;
 }
 function showShopPromo() {
+  if (!canOpenManagedPopup('shopPromo')) return false;
   if (_poiEmergencyMode) return false;
   const box = document.getElementById('shopPromo');
   if (!box || !box.hidden) return false;
@@ -4481,32 +4496,32 @@ setInterval(promoTick, 15000);
 
 // Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
 // Крестик и автоматическое закрытие через 30 секунд.
-const TOUR_PROMO = { intervalMs: 420000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
-const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'route'];
+const TOUR_PROMO = { intervalMs: 240000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
+const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
     de: 'Weihnachtsmarkt mit Gästeführer:\nGeschichte auf jedem Platz.',
     en: 'Christmas market with a guide:\nThe story behind every square.',
     ru: 'Рождественский рынок с гидом:\nИстория на каждой площади.',
-    link: { de: '', en: '', ru: '' }
+    link: { de: 'Tour anfragen →', en: 'Ask about a tour →', ru: 'Запросить экскурсию →' }
   },
   wine: {
     de: 'Weinprobe in Winningen:\nFührung durch die Mosel-Weingüter.',
     en: 'Wine tasting in Winningen:\nA guided walk through Moselle vineyards.',
     ru: 'Дегустация в Виннингене:\nЭкскурсия по мозельским виноградникам.',
-    link: { de: '', en: '', ru: '' }
+    link: { de: 'Tour anfragen →', en: 'Ask about a tour →', ru: 'Запросить экскурсию →' }
   },
   castles: {
     de: 'Marksburg privat:\nDie Burg, die nie erobert wurde.',
     en: 'Marksburg private tour:\nThe castle that was never conquered.',
     ru: 'Марксбург — частная экскурсия:\nЗамок, который никогда не был взят.',
-    link: { de: '', en: '', ru: '' }
+    link: { de: 'Private Führung anfragen →', en: 'Ask about a private tour →', ru: 'Запросить частную экскурсию →' }
   },
   route: {
     de: 'Rhein und Mosel mit Gästeführer:\nGruppen auf Absprache.',
     en: 'Rhine and Mosel with a guide:\nGroup tours by arrangement.',
     ru: 'Рейн и Мозель с гидом:\nГруппы по договорённости.',
-    link: { de: '', en: '', ru: '' }
+    link: { de: 'Tour anfragen →', en: 'Ask about a tour →', ru: 'Запросить экскурсию →' }
   }
 };
 let tourPromoLastAt = Date.now();
@@ -4528,6 +4543,7 @@ function hideTourPromo() {
   clearTimeout(tourPromoTimer);
 }
 function showTourPromo() {
+  if (!canOpenManagedPopup('tourPromo')) return false;
   if (_poiEmergencyMode) return false;
   const box = document.getElementById('tourPromo');
   if (!box || !box.hidden) return false;
@@ -4545,8 +4561,7 @@ function tourPromoTick() {
   if (showTourPromo()) tourPromoLastAt = Date.now();
 }
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
-// WhatsApp link temporarily disabled
-// document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
+document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
 setInterval(tourPromoTick, 15000);
 
 // ── POI-Popup «Аптека? Туалет?» ──────────────────────────────────
@@ -4577,6 +4592,7 @@ function hidePoiPopup() {
 }
 
 function showPoiPopup() {
+  if (!canOpenManagedPopup('poiPromo')) return false;
   if (_poiEmergencyMode) return false;
   // Показывать только когда включён хотя бы один POI-слой (аптеки или туалеты)
   if (!apothekenLayer && !toilettenLayer) return false;
@@ -8642,30 +8658,31 @@ if ('serviceWorker' in navigator) {
 </div>
 <script>
 (function () {
-  // Einmal pro Sitzung nach ca. 90 Sekunden. Schließt sich mit ×, keine Datenerfassung.
+  // Show once after 90 seconds. If another window is open, retry instead of losing the prompt.
   const card = document.getElementById('fbCard');
   const close = document.getElementById('fbClose');
   if (!card || !close) return;
   let shown = false;
   try { shown = sessionStorage.getItem('ttFeedbackShown') === '1'; } catch (e) {}
   if (shown) return;
-  // Sprache: Englisch für englischsprachige Geräte, sonst Deutsch
   const en = (navigator.language || 'de').toLowerCase().startsWith('en');
   if (en) {
     document.getElementById('fbTitle').textContent = 'What do you think of the navigator?';
     document.getElementById('fbText').textContent = 'Tell us briefly what you like and what is missing. We reply personally.';
-    document.getElementById('fbMail').href = 'mailto:allyearoundtour@gmail.com?subject=Turret%20Tales%20Feedback';
+    document.getElementById('fbMail').href = 'mailto:allyeararoundtour@gmail.com?subject=Turret%20Tales%20Feedback';
     document.getElementById('fbWa').href = 'https://wa.me/491772850207?text=Hello%20Anatoly%2C%20feedback%20on%20the%20Turret%20Tales%20navigator';
   }
-  setTimeout(() => {
-    // Не показывать фидбэк, если уже есть другой попап
-    const anyOpen = ['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','emergencyPopup'].some(id => {
-      const el = document.getElementById(id); return el && !el.hidden;
-    });
-    if (anyOpen) return;
+  const tryShow = () => {
+    if (shown) return;
+    if (!canOpenManagedPopup('fbCard')) {
+      setTimeout(tryShow, 15000);
+      return;
+    }
     card.hidden = false;
+    shown = true;
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
-  }, 90000);
+  };
+  setTimeout(tryShow, 90000);
   close.addEventListener('click', () => { card.hidden = true; });
 })();
 </script>
@@ -8689,8 +8706,9 @@ if ('serviceWorker' in navigator) {
     timer = setTimeout(hide, WP.autoCloseMs);
   }
   function tick() {
-    if (Date.now() - last < WP.intervalMs || !box.hidden) return;
+    if (Date.now() - last < WP.intervalMs || !box.hidden || !canOpenManagedPopup('winePromo')) return;
     if (!(currentView === 'wine' && !document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open') && document.getElementById('tourPromo').hidden && document.getElementById('foodPromo').hidden && document.getElementById('shopPromo').hidden && (!document.getElementById('splash') || document.getElementById('splash').classList.contains('hide')))) return;
+    hideAllPopups('winePromo');
     show(); last = Date.now();
   }
   document.getElementById('winePromoClose').addEventListener('click', hide);
