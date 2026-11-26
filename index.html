@@ -1484,13 +1484,13 @@
 .xmas-floating-content .xmas-gps-row.xmas-gps-nearest small{opacity:.92}
 .xmas-floating-content .xmas-gps-row.xmas-gps-nearest:active{background:#5f0b1d!important}
 .xmas-floating-static-link{width:100%;padding:11px 12px;border:1px solid #c5a98a;border-radius:11px;background:#fffaf0;color:#6b382f;font:700 13px var(--sans);text-align:left;cursor:pointer}.xmas-floating-empty{padding:12px;border-radius:12px;background:#f1e7d4;color:#654d3c;font-size:13px;line-height:1.4;margin:4px 0 10px}
-.xmas-floating-gps-prompt{display:flex;align-items:center;gap:12px;padding:13px;margin:4px 0 12px;border:1.5px solid #c8a878;border-radius:14px;background:#fffdf7;color:#54372d;box-shadow:0 2px 8px rgba(60,35,20,.10)}
+.xmas-floating-gps-prompt{display:grid;grid-template-columns:68px minmax(0,1fr);align-items:center;gap:14px;padding:18px;margin:6px 0 16px;border:2px solid #c8a878;border-radius:16px;background:#fffdf7;color:#54372d;box-shadow:0 3px 12px rgba(60,35,20,.14)}
 .xmas-floating-gps-prompt[hidden]{display:none!important}
-.xmas-floating-gps-prompt .gps-prompt-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:50%;background:#e8f1fb;color:#1769aa;font-size:23px}
-.xmas-floating-gps-prompt .gps-prompt-copy{min-width:0;flex:1;font-size:13px;line-height:1.35}
-.xmas-floating-gps-prompt .gps-prompt-copy strong{display:block;margin-bottom:3px;color:#7A1026;font-size:14px}
-.xmas-floating-gps-prompt button{flex:0 0 auto;min-height:40px;padding:8px 12px;border:0;border-radius:22px;background:#1769aa;color:#fff;font:700 12px var(--sans);cursor:pointer}
-@media(max-width:380px){.xmas-floating-gps-prompt{gap:8px;padding:10px}.xmas-floating-gps-prompt .gps-prompt-icon{width:34px;height:34px;flex-basis:34px}.xmas-floating-gps-prompt .gps-prompt-copy{font-size:12px}.xmas-floating-gps-prompt button{padding:7px 9px;font-size:11px}}
+.xmas-floating-gps-prompt .gps-prompt-icon{width:68px;height:68px;flex:0 0 68px;display:grid;place-items:center;border-radius:50%;background:#e8f1fb;color:#1769aa;font-size:38px}
+.xmas-floating-gps-prompt .gps-prompt-copy{min-width:0;flex:1;font-size:25px;line-height:1.25;font-weight:650}
+.xmas-floating-gps-prompt .gps-prompt-copy strong{display:block;margin-bottom:5px;color:#7A1026;font-size:27px;line-height:1.15}
+.xmas-floating-gps-prompt button{grid-column:1/-1;width:100%;min-height:64px;padding:13px 16px;border:0;border-radius:28px;background:#1769aa;color:#fff;font:800 22px/1.2 var(--sans);cursor:pointer;white-space:normal}
+@media(max-width:380px){.xmas-floating-gps-prompt{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:14px}.xmas-floating-gps-prompt .gps-prompt-icon{width:54px;height:54px;flex-basis:54px;font-size:31px}.xmas-floating-gps-prompt .gps-prompt-copy{font-size:21px}.xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:23px}.xmas-floating-gps-prompt button{min-height:58px;padding:11px 12px;font-size:19px}}
 
 .xmas-known-berths{margin:10px 0 4px;padding:12px;border:1px solid #c8a878;border-radius:12px;background:#fffaf0;color:#5A4327;font-family:var(--sans)}.xmas-known-berths[hidden]{display:none}.xmas-known-berths h3{margin:0 0 9px;color:#7A1026;font:700 15px/1.25 var(--sans)}.xmas-known-berth{padding:8px 2px;border-bottom:1px dashed #c8a878}.xmas-known-berth strong{display:block;font-size:13px}.xmas-known-berth small{display:block;margin-top:3px;font-size:11px;line-height:1.3;color:#6b5a48}.xmas-known-berths p{margin:9px 0 0;font-size:11px;line-height:1.35;color:#6b5a48}
 .xmas-floating-hint{padding:0 12px 7px;color:#7A1026;font-size:11px;font-weight:700;text-align:center}
@@ -8744,11 +8744,14 @@ if ('serviceWorker' in navigator) {
     document.getElementById('fbWa').href = 'https://wa.me/491772850207?text=Hello%20Anatoly%2C%20feedback%20on%20the%20Turret%20Tales%20navigator';
   }
   const tryShow = () => {
-    if (shown) return;
+    // In the temporary screenshot rotation, this card must be repeatable.
+    if (shown && !window._ttPanelScreenshotMode) return false;
     if (!canOpenManagedPopup('fbCard')) return false;
     showTopBanner('fbCard');
-    shown = true;
-    try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
+    if (!window._ttPanelScreenshotMode) {
+      shown = true;
+      try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
+    }
     return true;
   };
   window._ttTryShowFeedback = tryShow;
@@ -8949,8 +8952,9 @@ if ('serviceWorker' in navigator) {
   const ids=['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','fbCard'];
   ids.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('tt-ios-banner');});
   window.showTopBanner=function(id){
-    const el=document.getElementById(id);if(!el)return;
+    const el=document.getElementById(id);if(!el)return false;
     el.classList.remove('tt-banner-out');el.hidden=false;void el.offsetWidth;
+    return true;
   };
   window.hideTopBanner=function(id){
     const el=document.getElementById(id);if(!el||el.hidden)return;
@@ -8958,27 +8962,31 @@ if ('serviceWorker' in navigator) {
     el._ttBannerHideTimer=setTimeout(()=>{el.hidden=true;el.classList.remove('tt-banner-out');},290);
   };
 })();
-
-<script id="tt-all-topic-panel-rotation-v1">
+</script>
+<script id="tt-all-topic-panel-rotation-v2">
 (function(){
-  // One queue for every promotional/utility panel. A panel stays for 15s,
-  // then the screen is clear for 10s before the next topic is attempted.
-  const SHOW_MS=15000, GAP_MS=10000, FIRST_DELAY_MS=30000, RETRY_MS=3000;
+  // Temporary screenshot mode: first panel 5s after the map is entered,
+  // each panel stays for 15s, followed by a 5s clear interval.
+  window._ttPanelScreenshotMode=true;
+  const SHOW_MS=15000, GAP_MS=5000, FIRST_DELAY_MS=5000, RETRY_MS=500;
   const topics=[
     {id:'foodPromo',show:()=>showFoodPromo(),hide:()=>hideFoodPromo()},
     {id:'shopPromo',show:()=>showShopPromo(),hide:()=>hideShopPromo()},
     {id:'tourPromo',show:()=>showTourPromo(),hide:()=>hideTourPromo()},
     {id:'poiPromo',show:()=>showPoiPopup(),hide:()=>hidePoiPopup()},
     {id:'winePromo',show:()=>window._ttShowWinePromo&&window._ttShowWinePromo(),hide:()=>window._ttHideWinePromo&&window._ttHideWinePromo()},
-    {id:'fbCard',show:()=>window._ttTryShowFeedback&&window._ttTryShowFeedback(),hide:()=>hideTopBanner('fbCard'),available:()=>Date.now()-startedAt>=90000}
+    {id:'fbCard',show:()=>window._ttTryShowFeedback&&window._ttTryShowFeedback(),hide:()=>hideTopBanner('fbCard')}
   ];
-  const startedAt=Date.now();
-  let index=0, active=null, timer=null, nextAt=startedAt+FIRST_DELAY_MS;
+  let index=0, active=null, timer=null, nextAt=0, started=false;
   function closeActive(){
     if(!active)return;
     const item=active;active=null;
     try{item.hide();}catch(e){}
     nextAt=Date.now()+GAP_MS;
+  }
+  function splashVisible(){
+    const splash=document.getElementById('splash');
+    return !!(splash&&!splash.classList.contains('hide')&&getComputedStyle(splash).display!=='none');
   }
   function step(){
     if(active){
@@ -8987,35 +8995,38 @@ if ('serviceWorker' in navigator) {
       else return;
     }
     if(Date.now()<nextAt){timer=setTimeout(step,Math.min(RETRY_MS,nextAt-Date.now()));return;}
-    // Modal, emergency alert, splash or user interaction has priority.
     if(_poiEmergencyMode || document.querySelector('.xmas-return-warning:not([hidden])') ||
-       document.querySelector('.modal.open,.premium-popup.open,.more-menu.open,.mv-overlay.open') ||
-       (document.getElementById('splash')&&!document.getElementById('splash').classList.contains('hide'))){
+       document.querySelector('.modal.open,.premium-popup.open,.more-menu.open,.mv-overlay.open') || splashVisible()){
       timer=setTimeout(step,RETRY_MS);return;
     }
     for(let n=0;n<topics.length;n++){
       const item=topics[index%topics.length];index=(index+1)%topics.length;
-      if(item.available&&!item.available())continue;
-      let ok=false;try{ok=!!item.show();}catch(e){ok=false;}
-      if(ok){
+      let ok=false;
+      try{ok=!!item.show();}catch(e){ok=false;}
+      const el=document.getElementById(item.id);
+      if(ok&&el&&!el.hidden){
         active=item;
         timer=setTimeout(()=>{
-          if(active===item){closeActive();}
+          if(active===item)closeActive();
           step();
         },SHOW_MS);
         return;
       }
     }
-    // If a topic cannot be shown in the current state, retry soon without
-    // consuming the ten-second interval or blocking the remaining topics.
     timer=setTimeout(step,RETRY_MS);
   }
-  // Start the shared rotation once all panel modules have initialized.
-  timer=setTimeout(step,FIRST_DELAY_MS);
-  window._ttPanelRotation={stop:()=>{clearTimeout(timer);closeActive();},state:()=>({active:active&&active.id,nextIndex:index})};
+  function waitForMapStart(){
+    if(splashVisible()){timer=setTimeout(waitForMapStart,RETRY_MS);return;}
+    if(!started){started=true;nextAt=Date.now()+FIRST_DELAY_MS;}
+    timer=setTimeout(step,FIRST_DELAY_MS);
+  }
+  // Wait until the visitor enters the map, then begin the 5-second countdown.
+  timer=setTimeout(waitForMapStart,RETRY_MS);
+  window._ttPanelRotation={
+    stop:()=>{clearTimeout(timer);closeActive();},
+    state:()=>({active:active&&active.id,nextIndex:index,started})
+  };
 })();
-</script>
-
 </script>
 
 </body>
