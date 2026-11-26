@@ -1487,10 +1487,10 @@
 .xmas-floating-gps-prompt{display:grid;grid-template-columns:68px minmax(0,1fr);align-items:center;gap:14px;padding:18px;margin:6px 0 16px;border:2px solid #c8a878;border-radius:16px;background:#fffdf7;color:#54372d;box-shadow:0 3px 12px rgba(60,35,20,.14)}
 .xmas-floating-gps-prompt[hidden]{display:none!important}
 .xmas-floating-gps-prompt .gps-prompt-icon{width:68px;height:68px;flex:0 0 68px;display:grid;place-items:center;border-radius:50%;background:#e8f1fb;color:#1769aa;font-size:38px}
-.xmas-floating-gps-prompt .gps-prompt-copy{min-width:0;flex:1;font-size:13px;line-height:1.22;font-weight:650}
-.xmas-floating-gps-prompt .gps-prompt-copy strong{display:block;margin-bottom:5px;color:#7A1026;font-size:15px;line-height:1.15}
+.xmas-floating-gps-prompt .gps-prompt-copy{min-width:0;flex:1;font-size:15px;line-height:1.22;font-weight:650}
+.xmas-floating-gps-prompt .gps-prompt-copy strong{display:block;margin-bottom:5px;color:#7A1026;font-size:17px;line-height:1.15}
 .xmas-floating-gps-prompt button{grid-column:1/-1;width:100%;min-height:64px;padding:13px 16px;border:0;border-radius:28px;background:#1769aa;color:#fff;font:800 22px/1.2 var(--sans);cursor:pointer;white-space:normal}
-@media(max-width:380px){.xmas-floating-gps-prompt{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:14px}.xmas-floating-gps-prompt .gps-prompt-icon{width:54px;height:54px;flex-basis:54px;font-size:31px}.xmas-floating-gps-prompt .gps-prompt-copy{font-size:13px;line-height:1.22}.xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:15px;line-height:1.15}.xmas-floating-gps-prompt button{min-height:58px;padding:11px 12px;font-size:19px}}
+@media(max-width:380px){.xmas-floating-gps-prompt{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:14px}.xmas-floating-gps-prompt .gps-prompt-icon{width:54px;height:54px;flex-basis:54px;font-size:31px}.xmas-floating-gps-prompt .gps-prompt-copy{font-size:15px;line-height:1.22}.xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:17px;line-height:1.15}.xmas-floating-gps-prompt button{min-height:58px;padding:11px 12px;font-size:15px}}
 
 .xmas-known-berths{margin:10px 0 4px;padding:12px;border:1px solid #c8a878;border-radius:12px;background:#fffaf0;color:#5A4327;font-family:var(--sans)}.xmas-known-berths[hidden]{display:none}.xmas-known-berths h3{margin:0 0 9px;color:#7A1026;font:700 15px/1.25 var(--sans)}.xmas-known-berth{padding:8px 2px;border-bottom:1px dashed #c8a878}.xmas-known-berth strong{display:block;font-size:13px}.xmas-known-berth small{display:block;margin-top:3px;font-size:11px;line-height:1.3;color:#6b5a48}.xmas-known-berths p{margin:9px 0 0;font-size:11px;line-height:1.35;color:#6b5a48}
 .xmas-floating-hint{padding:0 12px 7px;color:#7A1026;font-size:11px;font-weight:700;text-align:center}
@@ -9074,8 +9074,8 @@ if ('serviceWorker' in navigator) {
   /* GPS prompt copy: heading 15px, supporting line 13px. Button unchanged.
      Button typography and dimensions remain unchanged. */
   @media(max-width:480px){
-    .xmas-floating-gps-prompt .gps-prompt-copy{font-size:13px!important;line-height:1.22!important}
-    .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:15px!important;line-height:1.15!important}
+    .xmas-floating-gps-prompt .gps-prompt-copy{font-size:15px!important;line-height:1.22!important}
+    .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:17px!important;line-height:1.15!important}
     .xmas-floating-gps-prompt button{
       display:flex!important;align-items:center!important;justify-content:center!important;
       width:100%!important;height:auto!important;min-height:68px!important;
@@ -9092,9 +9092,9 @@ if ('serviceWorker' in navigator) {
     .xmas-known-berths .xmas-scheduled-call-link:active{background:rgba(122,16,38,.08)}
   }
   @media(max-width:380px){
-    .xmas-floating-gps-prompt .gps-prompt-copy{font-size:13px!important}
-    .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:15px!important}
-    .xmas-floating-gps-prompt button{min-height:68px!important;padding:12px 10px!important;font-size:19px!important}
+    .xmas-floating-gps-prompt .gps-prompt-copy{font-size:15px!important}
+    .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:17px!important}
+    .xmas-floating-gps-prompt button{min-height:68px!important;padding:12px 10px!important;font-size:15px!important}
   }
   .xmas-return-warning-kicker{letter-spacing:calc(.2em - 1px)!important}
 </style>
@@ -9102,12 +9102,12 @@ if ('serviceWorker' in navigator) {
 <style id="tt-explore-gps-prompt-final-override-v10">
   /* Final mobile override: stronger selector than legacy prompt sizing rules. */
   @media (max-width:480px){
-    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy{font-size:13px!important;line-height:1.22!important}
-    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:15px!important;line-height:1.15!important}
+    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy{font-size:15px!important;line-height:1.22!important}
+    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:17px!important;line-height:1.15!important}
   }
   @media (max-width:380px){
-    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy{font-size:13px!important}
-    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:15px!important}
+    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy{font-size:15px!important}
+    .xmas-floating-nav .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:17px!important}
   }
 </style>
 </body>
