@@ -1135,7 +1135,7 @@
   }
   .saved-spot-marker { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45)); line-height: 1; }
   .xmas-ship-anchor { width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:2px solid #7A1026;border-radius:50%;background:#fffaf0;color:#7A1026;font:800 25px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
-  .xmas-berth-marker { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:26px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42);flex:0 0 42px; }.xmas-berth-marker-row{display:flex;align-items:center;gap:7px;width:max-content;white-space:nowrap}.xmas-berth-marker-label{padding:6px 9px;border:1px solid #174A70;border-radius:8px;background:#fffaf0;color:#174A70;font:700 13px/1.1 var(--sans);box-shadow:0 2px 8px rgba(0,0,0,.35)}
+  .xmas-berth-marker { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:26px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42);flex:0 0 42px; }.xmas-berth-marker-row{display:flex;align-items:center;gap:7px;width:max-content;white-space:nowrap;position:relative;z-index:1000;background:#fffaf0;border-radius:24px;padding:2px}.xmas-berth-marker-label{padding:6px 9px;border:1px solid #174A70;border-radius:8px;background:#fffaf0;color:#174A70;font:700 13px/1.1 var(--sans);box-shadow:0 2px 8px rgba(0,0,0,.35);position:relative;z-index:2}
   .poi-marker {
     width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center; font-size: 13px;
@@ -3386,11 +3386,10 @@ function renderTabs() {
     addTab(UI[lang].tabs[2], 'castles', '', currentView === 'castles', () => switchView('castles'));
     [3, 4, 5].forEach(i => addTab(UI[lang].tabs[i], tabKeys[i], '', currentView === tabKeys[i], () => switchView(tabKeys[i])));
     addTab(UI[lang].tabs[7], 'about', '', false, () => openInfoPopup('guideInfo'));
-    addTab(LINKS_TAB[lang] || LINKS_TAB.en, 'links', '', currentView === 'links', () => switchView('links'));
   } else {
     // Klassische Navigation: Map direkt nach Castles; Food & Drinks / Winemakers waren
     // bisher nur im Christmas-Modus erreichbar (Buta Cafe etc. unsichtbar in Classic!)
-    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about', 'tours', 'links'];
+    const classicOrder = ['guide', 'castles', 'map', 'food', 'wine', 'legends', 'info', 'route', 'about', 'tours'];
     classicOrder.forEach((key) => {
       const label = key === 'food' ? (XMAS_FOOD_TAB[lang] || XMAS_FOOD_TAB.en)
         : key === 'wine' ? (XMAS_WINE_TAB[lang] || XMAS_WINE_TAB.en)
@@ -4825,6 +4824,9 @@ function xmasDrawMap(opts) {
   // If GPS already has a fix, preserve the map view chosen by the visitor.
   // GPS may recenter only on its first fix, not every time a city/overview map is rebuilt.
   xmasMapObj._xmasGpsFitDone = !!xmasGpsPos;
+  const berthPane = xmasMapObj.createPane('xmasBerthPane');
+  berthPane.style.zIndex = '760';
+  berthPane.style.pointerEvents = 'auto';
   const targetPane = xmasMapObj.createPane('xmasGpsTargetPane');
   targetPane.style.zIndex = '700';
   targetPane.style.pointerEvents = 'auto';
@@ -4841,6 +4843,7 @@ function xmasDrawMap(opts) {
   xmasMapObj._xmasKnownBerthMarkers = {};
   berthSpecs.forEach(b => {
     const marker = L.marker([b.lat,b.lng], {
+      pane:'xmasBerthPane',
       icon:L.divIcon({className:'',html:b.id==='viking'?'<div class="xmas-berth-marker-row"><div class="xmas-berth-marker" aria-hidden="true">🚢</div><span class="xmas-berth-marker-label">Viking</span></div>':'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:b.id==='viking'?[116,42]:[42,42],iconAnchor:b.id==='viking'?[21,21]:[21,21]}),
       zIndexOffset:650
     });
