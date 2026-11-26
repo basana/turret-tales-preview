@@ -4254,7 +4254,7 @@ const XMAS_PHOTOS = {
   'koblenz-am-plan': ['https://raw.githubusercontent.com/basana/turret-tales-christmas/main/markt-foto-4.jpg'],
   'koblenz-goerresplatz': ['koblenz-goerresplatz-1.webp','koblenz-goerresplatz-2.webp'],
   'koblenz-muenzplatz': ['koblenz-muenzplatz-1.webp','koblenz-muenzplatz-2.webp'],
-  'koblenz-zentralplatz': ["https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7759.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7762.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7763.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7764.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7766.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7767.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7768.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7770.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7771.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7772.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7773.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7774.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7775.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7776.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7777.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7778.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7779.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7780.jpeg"],
+  'koblenz-zentralplatz': [,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7762.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7763.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7766.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7768.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7770.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7771.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7772.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7773.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7774.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7775.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7777.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7778.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7779.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7780.jpeg"],
   'koblenz-liebfrauen': ['koblenz-liebfrauen-1.webp','markt-foto-3.jpg'],
   'koblenz-festung': ['ehrenbreitstein-xmas-1.webp','christmas-garden-purple.webp','ehrenbreitstein-xmas-3.webp','ehrenbreitstein-xmas-4.webp','ehrenbreitstein-xmas-5.webp','ehrenbreitstein-xmas-6.webp'],
   'lahnstein-markt': ['lahnstein-markt-1.webp','lahnstein-markt-3.webp'],
@@ -5741,11 +5741,10 @@ const XMAS_FOOD_INTRO = {
   he: 'בתי קפה, מסעדות וברי יין בעיר העתיקה. כאן יוצגו השותפים. הנקודות האדומות מראות את המיקומים על המפה.',
 };
 const XMAS_FOOD_PLACES = [
+  // Only confirmed partner locations with real information are shown.
   { ll: [50.36000, 7.60203], mia: true },
   { ll: [50.36177, 7.59643], buta: true },
-  { ll: [50.359953, 7.595844], stoa: true }, { ll: [50.36133, 7.59590] }, { ll: [50.36106, 7.59460] },
-  { ll: [50.36178, 7.59470] }, { ll: [50.36070, 7.59684] }, { ll: [50.36183, 7.59597] },
-  { ll: [50.36144, 7.60450] },
+  { ll: [50.359953, 7.595844], stoa: true },
 ];
 // STOA Café: griechische Feinkost, Kaffee, Kuchen. Adresse folgt, Fotos: stoa-main.webp / stoa-1.webp (Platzhalter, werden ersetzt)
 const STOA_CARD = {
@@ -5808,7 +5807,6 @@ function renderFood() {
         `<div class="food-mia-text"><h3 class="buta-name">${STOA_CARD.title}</h3>` +
         `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${STOA_CARD.place}</p><p style="margin:0">${st}</p></div></div></div>`;
     }
-    if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
     const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон', zh: '领取优惠券', he: 'קבלת קופון' }[xmasLang] || 'Get voucher';
     const couponLink = `<button type="button" class="food-coupon" data-mia-voucher>${couponLbl}</button>`;
