@@ -5114,7 +5114,7 @@ function updateXmasFloatingNavContent(){
   gpsPrompt.hidden=cat!=='explore'||gpsOn;
   const msg=gpsPrompt.querySelector('.gps-prompt-message');if(msg)msg.textContent=xmasFloatingText('gps');
   const title=gpsPrompt.querySelector('strong');if(title)title.textContent=({de:'Standort aktivieren',en:'Turn on location',fr:'Activer la localisation',nl:'Locatie inschakelen',ru:'Включите GPS',zh:'开启定位',he:'הפעלת מיקום'}[xmasLang]||'Turn on location');
-  const btn=gpsPrompt.querySelector('button');if(btn){btn.textContent=xmasFloatingText('enableGps')||xmasFloatingText('gpsButton')||({de:'GPS aktivieren',en:'Enable GPS',fr:'Activer GPS',nl:'GPS inschakelen',ru:'Включить GPS',zh:'开启 GPS',he:'הפעלת GPS'}[xmasLang]||'Enable GPS');}
+  const btn=gpsPrompt.querySelector('button');if(btn){btn.textContent=({de:'GPS aktivieren',en:'Enable GPS',fr:'Activer GPS',nl:'GPS inschakelen',ru:'Включить GPS',zh:'开启 GPS',he:'הפעלת GPS'}[xmasLang]||'Enable GPS');}
  }
  if(empty){if(cat==='ship'){empty.hidden=!!saved;empty.textContent=xmasFloatingText('noShip');}else{empty.hidden=true;}}
  const staticSaved=nav.querySelector('.xmas-floating-static-saved');
@@ -5500,6 +5500,7 @@ function xmasUpdateGpsPanel() {
   if (!panel) return;
   if (!xmasGpsPos) {
     panel.innerHTML = '';
+    if(typeof updateXmasFloatingNavContent==='function')updateXmasFloatingNavContent();
     const saveButton = document.getElementById('xmasSaveLocationBtn');
     if (saveButton) saveButton.hidden = true;
     setXmasGpsTargetMarker(null);
@@ -5566,6 +5567,7 @@ function xmasUpdateGpsPanel() {
 
   const previousClear=document.querySelector('.xmas-floating-nav .xmas-gps-clear');if(previousClear)previousClear.remove();
   panel.innerHTML = html;
+  if(typeof updateXmasFloatingNavContent==='function')updateXmasFloatingNavContent();
   const shipActions=document.querySelector('.xmas-floating-nav .xmas-ship-actions');
   const newClear=panel.querySelector('.xmas-gps-clear');if(newClear&&shipActions)shipActions.appendChild(newClear);
   // Клик на строку — центрировать карту на этой точке
