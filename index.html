@@ -2511,8 +2511,22 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
   if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
   else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
   else {
-    // No GPS — show hint, don't zoom to random location
+    // Without a GPS fix, still show the POI network instead of leaving
+    // every marker outside the current viewport. A later GPS fix will
+    // replace this overview with the nearest individual destination.
     _showGpsHint(mapObj);
+    const valid = poiList.filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lng));
+    mapObj._poiGpsZoomed = false;
+    mapObj._poiFocusActive = false;
+    mapObj.stop();
+    if (valid.length > 1) {
+      mapObj.fitBounds(L.latLngBounds(valid.map(p => [p.lat, p.lng])), {
+        paddingTopLeft: [28, 92], paddingBottomRight: [28, 132],
+        maxZoom: 12, animate: true
+      });
+    } else if (valid.length === 1) {
+      _focusPoiOnMap(mapObj, valid[0]);
+    }
     return;
   }
   _hideGpsHint(mapObj);
@@ -9092,11 +9106,12 @@ body.mn-panel-full .mn-back{display:none}
   },80);},true);
 
   var viewObserver=new MutationObserver(function(){
-    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('compact');},120);
+    if(mapView.classList.contains('active'))setTimeout(function(){prepareRail();setPanelState('third');},120);
   });
   viewObserver.observe(mapView,{attributes:true,attributeFilter:['class']});
-  // Existing map may already be open when this script loads.
-  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('compact');}},150);
+  // Keep the approved compact carousel visible when the map first opens.
+  // "compact" intentionally hides the card track, so it must not be used here.
+  setTimeout(function(){if(mapView.classList.contains('active')){prepareRail();setPanelState('third');}},150);
   document.addEventListener('click',function(e){
     if(e.target&&e.target.id==='mapPanelClose')setPanelState('third');
   },true);
@@ -9116,6 +9131,6 @@ body.map-navi-active .mn-bottom-rail .mn-poi-advice{display:block!important;flex
 body.map-navi-active .mn-bottom-rail .mn-poi-hint{display:block!important;flex:0 0 auto!important;}
 body.map-navi-active .leaflet-marker-pane .poi-marker{visibility:visible!important;opacity:1!important;}
 </style>
-<script src="https://basana.github.io/turret-tales-experimental-preview/map-navi-full-panel.js?v=20261126-categories1"></script>
+<script src="https://basana.github.io/turret-tales-experimental-preview/map-navi-full-panel.js?v=20261126-categories2"></script>
 </body>
 </html>
