@@ -4365,6 +4365,7 @@ function renderFoodPromoText() {
 // Single visibility gate: promotional windows must wait rather than cover one another.
 function canOpenManagedPopup(id) {
   if (id !== 'emergencyPopup' && _poiEmergencyMode) return false;
+  if (id !== 'emergencyPopup' && document.querySelector('.xmas-return-warning:not([hidden])')) return false;
   const splash = document.getElementById('splash');
   if (splash && !splash.classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open')) return false;
@@ -4375,7 +4376,7 @@ function canOpenManagedPopup(id) {
     return !el || el.hidden;
   });
 }
-const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 20000 };
+const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 7000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
   if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
@@ -4482,21 +4483,21 @@ function showShopPromo() {
   box.hidden = false;
   return true;
 }
-function hideShopPromo() { const box = document.getElementById('shopPromo'); if (box) box.hidden = true; }
+function hideShopPromo() { hideTopBanner('shopPromo'); }
 document.getElementById('shopPromoClose').addEventListener('click', () => { hideShopPromo(); promoNextAt = Date.now() + PROMO.dismissMs; });
 document.getElementById('shopPromoLink').addEventListener('click', () => { hideShopPromo(); window.location.href = 'partner-map.html'; });
 // Смена языка (шапка, заставка, рождественские кнопки) сразу меняет текст окна
 document.addEventListener('click', e => {
   if (e.target.closest && e.target.closest('[data-lang], [data-xl], [data-xh]')) setTimeout(() => { renderFoodPromoText(); renderShopPromoText(); }, 0);
 });
-function hideFoodPromo() { const box = document.getElementById('foodPromo'); if (box) box.hidden = true; }
+function hideFoodPromo() { hideTopBanner('foodPromo'); }
 document.getElementById('foodPromoClose').addEventListener('click', () => { hideFoodPromo(); promoNextAt = Date.now() + PROMO.dismissMs; });
 document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });
 setInterval(promoTick, 15000);
 
 // Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
 // Крестик и автоматическое закрытие через 30 секунд.
-const TOUR_PROMO = { intervalMs: 240000, autoCloseMs: 30000, whatsapp: 'https://wa.me/491772850207' };
+const TOUR_PROMO = { intervalMs: 240000, autoCloseMs: 7000, whatsapp: 'https://wa.me/491772850207' };
 const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
@@ -4539,8 +4540,7 @@ function renderTourPromo() {
   if (link) { link.textContent = (t.link[l] || t.link.en); link.hidden = false; }
 }
 function hideTourPromo() {
-  const box = document.getElementById('tourPromo');
-  if (box) box.hidden = true;
+  hideTopBanner('tourPromo');
   clearTimeout(tourPromoTimer);
 }
 function showTourPromo() {
@@ -4566,7 +4566,7 @@ document.getElementById('tourPromoLink').addEventListener('click', () => { hideT
 setInterval(tourPromoTick, 15000);
 
 // ── POI-Popup «Аптека? Туалет?» ──────────────────────────────────
-const POI_POPUP = { firstDelayMs: 30000, intervalMs: 120000, autoCloseMs: 15000 };
+const POI_POPUP = { firstDelayMs: 30000, intervalMs: 120000, autoCloseMs: 7000 };
 const POI_POPUP_TEXT = {
   de: { q: 'Brauchen Sie eine Apotheke\noder eine Toilette?', hint: 'Tippen Sie auf das Symbol' },
   en: { q: 'Need a pharmacy\nor a restroom?', hint: 'Tap the icon' },
@@ -4587,8 +4587,7 @@ function poiPopupLang() {
 }
 
 function hidePoiPopup() {
-  const box = document.getElementById('poiPromo');
-  if (box) box.hidden = true;
+  hideTopBanner('poiPromo');
   clearTimeout(poiPopupTimer);
 }
 
@@ -8681,18 +8680,19 @@ if ('serviceWorker' in navigator) {
       setTimeout(tryShow, 15000);
       return;
     }
-    card.hidden = false;
+    showTopBanner('fbCard');
     shown = true;
+    setTimeout(() => hideTopBanner('fbCard'), 7000);
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
   };
   setTimeout(tryShow, 90000);
-  close.addEventListener('click', () => { card.hidden = true; });
+  close.addEventListener('click', () => { hideTopBanner('fbCard'); });
 })();
 </script>
 <script>
 // Окно с винными пробами (эмблема в центре). Раз в 4 минуты, пока открыт раздел с винодельнями.
 (function () {
-  const WP = { intervalMs: 240000, autoCloseMs: 30000 };
+  const WP = { intervalMs: 240000, autoCloseMs: 7000 };
   const TXT = {
     de: ['Weinproben bei den Winzern in Winningen. Weingut Kröber: sechs Weine mit Brot, 200 € bis 10 Personen. Weinberg-Wanderung mit Probe, Mai bis Oktober, 40 € pro Person.', 'Anmeldung →'],
     en: ['Wine tastings at the Winningen estates. Weingut Kröber: six wines with bread, €200 for up to 10 people. Vineyard hike with tasting, May to October, €40 per person.', 'Book →'],
@@ -8700,7 +8700,7 @@ if ('serviceWorker' in navigator) {
   };
   const box = document.getElementById('winePromo');
   let last = Date.now(), timer = null;
-  function hide() { box.hidden = true; clearTimeout(timer); }
+  function hide() { hideTopBanner('winePromo'); clearTimeout(timer); }
   function show() {
     const l = (typeof lang !== 'undefined' && TXT[lang]) ? lang : 'en';
     document.getElementById('winePromoQ').textContent = TXT[l][0];
@@ -8781,5 +8781,86 @@ if ('serviceWorker' in navigator) {
   /* Move the three quick controls 15px upward, closer to the Follow control. */
   .poi-toggle-bar { transform: translateY(calc(-50% - 15px)) !important; }
 </style>
+
+<style id="tt-ios-top-banners-v1">
+  /* iOS-style notification banners: slide from the physical top edge, stay 7s, slide away. */
+  #foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,
+  #poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner {
+    position:fixed!important; top:calc(env(safe-area-inset-top) + 8px)!important;
+    left:8px!important; right:8px!important; bottom:auto!important;
+    width:auto!important; max-width:560px!important; min-height:0!important;
+    max-height:min(34vh,190px)!important; margin:0 auto!important;
+    aspect-ratio:auto!important; transform:translateY(0)!important;
+    box-sizing:border-box!important; overflow:hidden!important;
+    border:1px solid rgba(201,160,92,.9)!important; border-radius:18px!important;
+    padding:12px 48px 12px 14px!important;
+    display:flex!important; flex-direction:row!important; align-items:center!important;
+    justify-content:flex-start!important; gap:12px!important;
+    text-align:left!important; box-shadow:0 8px 28px rgba(0,0,0,.28)!important;
+    animation:ttBannerDrop .38s cubic-bezier(.2,.85,.25,1) both!important;
+    z-index:4900!important;
+  }
+  #foodPromo.tt-ios-banner[hidden],#shopPromo.tt-ios-banner[hidden],
+  #tourPromo.tt-ios-banner[hidden],#poiPromo.tt-ios-banner[hidden],
+  #winePromo.tt-ios-banner[hidden],#fbCard.tt-ios-banner[hidden] {display:none!important}
+  #foodPromo.tt-ios-banner.tt-banner-out,#shopPromo.tt-ios-banner.tt-banner-out,
+  #tourPromo.tt-ios-banner.tt-banner-out,#poiPromo.tt-ios-banner.tt-banner-out,
+  #winePromo.tt-ios-banner.tt-banner-out,#fbCard.tt-ios-banner.tt-banner-out {
+    animation:ttBannerLift .28s ease-in both!important;
+  }
+  #foodPromo.tt-ios-banner .food-promo-q,#shopPromo.tt-ios-banner .food-promo-q,
+  #tourPromo.tt-ios-banner .food-promo-q,#poiPromo.tt-ios-banner .food-promo-q,
+  #winePromo.tt-ios-banner .wine-promo-q {
+    flex:1 1 auto!important; min-width:0!important; padding:0!important;
+    margin:0!important; font:600 15px/1.25 system-ui,-apple-system,sans-serif!important;
+    text-align:left!important; align-self:center!important;
+  }
+  #foodPromo.tt-ios-banner .food-promo-badge {width:54px!important;height:54px!important;flex:0 0 54px!important}
+  #foodPromo.tt-ios-banner .food-promo-icon {width:54px!important;height:54px!important}
+  #tourPromo.tt-ios-banner .tour-promo-img,#winePromo.tt-ios-banner .wine-promo-img {
+    width:54px!important;height:54px!important;max-width:54px!important;max-height:54px!important;
+    flex:0 0 54px!important;object-fit:contain!important;margin:0!important;
+  }
+  #poiPromo.tt-ios-banner > div[style*="display:flex"] {gap:6px!important;margin:0!important;flex:0 0 auto}
+  #poiPromo.tt-ios-banner .poi-promo-btn {width:46px!important;height:46px!important;
+    min-width:46px!important;min-height:46px!important;font-size:28px!important;border-radius:12px!important}
+  #foodPromo.tt-ios-banner .food-promo-link,#shopPromo.tt-ios-banner .food-promo-link,
+  #tourPromo.tt-ios-banner .food-promo-link,#winePromo.tt-ios-banner .wine-promo-link {
+    flex:0 0 auto!important; margin:0!important; font:700 13px/1.2 system-ui,-apple-system,sans-serif!important;
+    white-space:nowrap!important; max-width:34%; overflow:hidden; text-overflow:ellipsis;
+  }
+  #foodPromo.tt-ios-banner .food-promo-close,#shopPromo.tt-ios-banner .food-promo-close,
+  #tourPromo.tt-ios-banner .food-promo-close,#poiPromo.tt-ios-banner .food-promo-close,
+  #winePromo.tt-ios-banner .wine-promo-close {
+    top:2px!important;right:2px!important;min-width:38px!important;min-height:38px!important;
+    width:38px!important;height:38px!important;font-size:24px!important;padding:4px!important;
+    background:transparent!important;
+  }
+  #fbCard.tt-ios-banner {font-family:system-ui,-apple-system,sans-serif!important}
+  #fbCard.tt-ios-banner h4 {font-size:14px!important;margin:0 0 3px!important}
+  #fbCard.tt-ios-banner p {font-size:12px!important;margin:0!important;flex:1 1 auto}
+  #fbCard.tt-ios-banner .fb-row {display:flex!important;gap:5px!important;flex:0 0 auto!important}
+  #fbCard.tt-ios-banner .fb-btn {font-size:11px!important;padding:6px 8px!important}
+  #fbCard.tt-ios-banner .fb-close {top:2px!important;right:2px!important}
+  @keyframes ttBannerDrop {from{opacity:0;transform:translateY(calc(-100% - 16px))!important}to{opacity:1;transform:translateY(0)!important}}
+  @keyframes ttBannerLift {from{opacity:1;transform:translateY(0)!important}to{opacity:0;transform:translateY(calc(-100% - 16px))!important}}
+  @media(prefers-reduced-motion:reduce){#foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,#poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner{animation:none!important}}
+</style>
+<script id="tt-ios-top-banners-v1-js">
+(function(){
+  const ids=['foodPromo','shopPromo','tourPromo','poiPromo','winePromo','fbCard'];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('tt-ios-banner');});
+  window.showTopBanner=function(id){
+    const el=document.getElementById(id);if(!el)return;
+    el.classList.remove('tt-banner-out');el.hidden=false;void el.offsetWidth;
+  };
+  window.hideTopBanner=function(id){
+    const el=document.getElementById(id);if(!el||el.hidden)return;
+    el.classList.add('tt-banner-out');clearTimeout(el._ttBannerHideTimer);
+    el._ttBannerHideTimer=setTimeout(()=>{el.hidden=true;el.classList.remove('tt-banner-out');},290);
+  };
+})();
+</script>
+
 </body>
 </html>
