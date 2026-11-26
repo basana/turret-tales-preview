@@ -2390,6 +2390,27 @@ function _focusPoiOnMap(mapObj, poi) {
     mapObj.panBy([Math.min(44, Math.round(size.x * 0.08)), 0], { animate: true });
   });
 }
+function _getPoiUserPosition(mapObj) {
+  if (mapObj === xmasMapObj && typeof xmasGpsPos !== 'undefined' && xmasGpsPos) return [xmasGpsPos.lat, xmasGpsPos.lng];
+  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null && typeof gpsLastLng !== 'undefined' && gpsLastLng !== null) return [gpsLastLat, gpsLastLng];
+  if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) return [xmasGpsPos.lat, xmasGpsPos.lng];
+  return null;
+}
+function _showPoiRoute(mapObj, poi) {
+  if (!mapObj || !poi) return false;
+  const userPos = _getPoiUserPosition(mapObj);
+  if (!userPos) { _showGpsHint(mapObj); return false; }
+  if (mapObj._poiRouteLine) mapObj.removeLayer(mapObj._poiRouteLine);
+  mapObj._poiRouteTarget = poi;
+  mapObj._poiRouteLine = L.polyline([userPos, [poi.lat, poi.lng]], {
+    color: '#C0202A', weight: 4, opacity: 0.9, dashArray: '8 8', lineCap: 'round', interactive: false
+  }).addTo(mapObj);
+  mapObj._poiFocusActive = true;
+  mapObj.fitBounds(L.latLngBounds([userPos, [poi.lat, poi.lng]]), {
+    paddingTopLeft: [44, 105], paddingBottomRight: [44, 78], maxZoom: 16, animate: true
+  });
+  return true;
+}
 function _buildPoiLayer(mapObj, data, emoji, cssClass) {
   const lg = L.layerGroup();
   data.forEach(p => {
@@ -2397,6 +2418,7 @@ function _buildPoiLayer(mapObj, data, emoji, cssClass) {
     const m = L.marker([p.lat, p.lng], { icon: ic, zIndexOffset: 500 }).bindTooltip(`${p.name} · ${p.city}`).addTo(lg);
     m.on('click', () => {
       _focusPoiOnMap(mapObj, p);
+      _showPoiRoute(mapObj, p);
       _showPoiToast(mapObj, p, emoji);
     });
   });
@@ -2413,18 +2435,19 @@ function _showPoiToast(mapObj, poi, emoji) {
     toast.className = 'nearest-toast poi-info-toast';
     mapObj.getContainer().appendChild(toast);
   }
-  let userPos = null;
-  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) userPos = [gpsLastLat, gpsLastLng];
-  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) userPos = [xmasGpsPos.lat, xmasGpsPos.lng];
+  const userPos = _getPoiUserPosition(mapObj);
   if (userPos) {
     const d = distanceMeters(userPos[0], userPos[1], poi.lat, poi.lng);
     const walkMin = Math.ceil(d * 1.3 / 75);
-    toast.innerHTML = `${emoji} ${poi.name}<br><span class="toast-dist">≈ ${formatDistance(d)} · ${walkMin} min 🚶</span>`;
+    const routeHint = ({de:'Tippen für gestrichelte Route',en:'Tap for dashed route',ru:'Нажмите, чтобы показать пунктирный путь',fr:'Appuyez pour afficher le trajet',nl:'Tik voor stippellijn',zh:'点击显示虚线路线',he:'לחצו להצגת מסלול מקווקו'}[poiPopupLang()] || 'Tap for dashed route');
+    toast.innerHTML = `${emoji} ${poi.name}<br><span class="toast-dist">≈ ${formatDistance(d)} · ${walkMin} min 🚶</span><br><span class="toast-route-hint">${routeHint}</span>`;
   } else {
     toast.innerHTML = `${emoji} ${poi.name} · ${poi.city}`;
   }
   toast.classList.add('show');
-  toast.onclick = () => { _focusPoiOnMap(mapObj, poi); };
+  toast.setAttribute('role', 'button');
+  toast.setAttribute('tabindex', '0');
+  toast.onclick = () => { _focusPoiOnMap(mapObj, poi); _showPoiRoute(mapObj, poi); };
   clearTimeout(toast._hideTimer);
   if (mapObj !== xmasMapObj) toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
@@ -2538,6 +2561,8 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
 }
 function clearMainPoiMode() {
   if (leafletMap) {
+    if (leafletMap._poiRouteLine) { leafletMap.removeLayer(leafletMap._poiRouteLine); leafletMap._poiRouteLine = null; }
+    leafletMap._poiRouteTarget = null;
     if (apothekenLayer) { leafletMap.removeLayer(apothekenLayer); apothekenLayer = null; }
     if (toilettenLayer) { leafletMap.removeLayer(toilettenLayer); toilettenLayer = null; }
     leafletMap._poiGpsZoomed = false; leafletMap._poiFocusActive = false;
@@ -2569,6 +2594,8 @@ function _hidePoiToasts(mapObj) {
 }
 function clearXmasPoiMode() {
   if (xmasMapObj) {
+    if (xmasMapObj._poiRouteLine) { xmasMapObj.removeLayer(xmasMapObj._poiRouteLine); xmasMapObj._poiRouteLine = null; }
+    xmasMapObj._poiRouteTarget = null;
     if (xmasApoLayer) { xmasMapObj.removeLayer(xmasApoLayer); xmasApoLayer = null; }
     if (xmasWcLayer) { xmasMapObj.removeLayer(xmasWcLayer); xmasWcLayer = null; }
     xmasMapObj._poiGpsZoomed = false; xmasMapObj._poiFocusActive = false;
