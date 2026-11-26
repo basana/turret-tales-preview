@@ -4730,6 +4730,14 @@ function xmasSearchEntries() {
     {id:'kd-rheinanlagen',label:'KD · Rheinanlagen',aliases:['KD Rheinanlagen','Rheinanlagen Anleger','Rhein Anleger'],ll:[50.348845,7.598990]},
     {id:'viking',label:'Viking · Brücke 1, Konrad-Adenauer-Ufer',aliases:['Viking 1','Viking Brücke 1','Viking Berth 1','Viking Anleger 1','Konrad-Adenauer-Ufer'],ll:[50.363360010510355,7.6062045007751475]}
   ];
+  // Upcoming cruise calls are searchable even when the exact berth is not confirmed.
+  const koblenzCenter = (XMAS_GEO.koblenz && XMAS_GEO.koblenz.center) || [50.359,7.598];
+  [
+    {label:'27 Nov · Great Rail Journeys · MS Cara on MS Amadeus Riva',aliases:['Great Rail Journeys','MS Cara','MS Amadeus Riva','27 Nov','27 November','2026-11-27','RLM2702'],ll:[50.360863,7.605562],key:'koblenz',berthId:'kd4'},
+    {label:'28 Nov · EMERALD · Emerald Star on Luna',aliases:['Emerald Star','Luna','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
+    {label:'28 Nov · EMERALD · Emerald Destiny on Astra',aliases:['Emerald Destiny','Astra','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
+    {label:'30 Nov · Trafalgar River Cruises · ship not specified',aliases:['Trafalgar','Trafalgar River Cruises','30 Nov','30 November','2026-11-30'],ll:koblenzCenter,key:'koblenz'}
+  ].forEach(c=>out.push({...c,callId:true}));
   berths.forEach(b=>out.push({label:b.label,key:xmasTown,ll:b.ll,berthId:b.id,aliases:b.aliases}));
   return out;
 }
@@ -4791,7 +4799,10 @@ function xmasSearchChoose(entry) {
   const input=document.getElementById('xmasSearch');
   if(input){input.value='';input.blur();}
   xmasSearchHideResults();
-  if(entry.berthId){
+  if(entry.callId && !entry.berthId){
+    if(xmasTown!=='koblenz'){xmasPendingFocus=entry.ll;xmasOpen('koblenz');}
+    else if(xmasMapObj)xmasMapObj.setView(entry.ll,14,{animate:true});
+  } else if(entry.berthId){
     if(xmasTown!==entry.key){xmasPendingFocus=entry.ll;xmasOpen(entry.key);}
     else if(xmasMapObj){
       xmasMapObj.setView(entry.ll,17,{animate:true});
@@ -5098,17 +5109,18 @@ function updateXmasFloatingNavContent(){
   knownBerths.hidden=cat!=='ship';
 
   knownBerths.innerHTML='<h3>'+kt.title+'</h3>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
    '<div class="xmas-scheduled-calls" style="margin-top:10px;padding-top:9px;border-top:1px solid #c8a878">'+
    '<strong style="display:block;margin-bottom:6px">Upcoming calls · 27–30 Nov 2026</strong>'+
    '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></div>'+
    '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Mosel (KO) · exact berth not specified</small></div>'+
    '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Mosel (KO) · exact berth not specified</small></div>'+
    '<div style="padding:6px 0"><b>30 Nov · Trafalgar River Cruises</b><br><small>Koblenz · ship and exact berth not specified</small></div>'+
-   '</div><p>'+kt.note+'</p>'
+   '</div>'+'<p>'+kt.note+'</p>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
+
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
@@ -8814,7 +8826,7 @@ if ('serviceWorker' in navigator) {
     position:fixed!important; top:calc(env(safe-area-inset-top) + 8px)!important;
     left:8px!important; right:8px!important; bottom:auto!important;
     width:auto!important; max-width:560px!important; min-height:0!important;
-    max-height:min(34vh,190px)!important; margin:0 auto!important;
+    max-height:min(32vh,260px)!important; margin:0 auto!important;
     aspect-ratio:auto!important; transform:translateY(0);
     box-sizing:border-box!important; overflow:hidden!important;
     border:1px solid rgba(201,160,92,.9)!important; border-radius:18px!important;
@@ -8840,8 +8852,8 @@ if ('serviceWorker' in navigator) {
     margin:0!important; font:600 15px/1.25 system-ui,-apple-system,sans-serif!important;
     text-align:left!important; align-self:center!important;
   }
-  #foodPromo.tt-ios-banner .food-promo-badge {width:54px!important;height:54px!important;flex:0 0 54px!important}
-  #foodPromo.tt-ios-banner .food-promo-icon {width:54px!important;height:54px!important}
+  #foodPromo.tt-ios-banner .food-promo-badge {width:88px!important;height:88px!important;flex:0 0 88px!important}
+  #foodPromo.tt-ios-banner .food-promo-icon {width:88px!important;height:88px!important}
   #tourPromo.tt-ios-banner .tour-promo-img,#winePromo.tt-ios-banner .wine-promo-img {
     width:54px!important;height:54px!important;max-width:54px!important;max-height:54px!important;
     flex:0 0 54px!important;object-fit:contain!important;margin:0!important;
@@ -8870,6 +8882,31 @@ if ('serviceWorker' in navigator) {
   @keyframes ttBannerDrop {from{opacity:0;transform:translateY(calc(-100% - 16px))}to{opacity:1;transform:translateY(0)}}
   @keyframes ttBannerLift {from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(calc(-100% - 16px))}}
   @media(prefers-reduced-motion:reduce){#foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,#poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner{animation:none!important}}
+
+  /* Image-led banners use the larger iOS Maps-style sheet; short notices stay compact. */
+  #foodPromo.tt-ios-banner:has(img),#shopPromo.tt-ios-banner:has(img),
+  #tourPromo.tt-ios-banner:has(img),#winePromo.tt-ios-banner:has(img) {
+    min-height:min(30.25vh,240px)!important; max-height:min(32vh,260px)!important;
+    padding:14px 52px 14px 16px!important; gap:16px!important;
+  }
+  #foodPromo.tt-ios-banner:has(img) .food-promo-q,
+  #shopPromo.tt-ios-banner:has(img) .food-promo-q,
+  #tourPromo.tt-ios-banner:has(img) .food-promo-q,
+  #winePromo.tt-ios-banner:has(img) .wine-promo-q {
+    font-size:clamp(15px,4vw,18px)!important; line-height:1.3!important;
+  }
+  #foodPromo.tt-ios-banner:has(img) .food-promo-link,
+  #shopPromo.tt-ios-banner:has(img) .food-promo-link,
+  #tourPromo.tt-ios-banner:has(img) .food-promo-link,
+  #winePromo.tt-ios-banner:has(img) .wine-promo-link {
+    max-width:38%!important; white-space:normal!important; text-align:center;
+  }
+  @media(max-height:600px) {
+    #foodPromo.tt-ios-banner:has(img),#shopPromo.tt-ios-banner:has(img),
+    #tourPromo.tt-ios-banner:has(img),#winePromo.tt-ios-banner:has(img) {
+      min-height:0!important; max-height:38vh!important;
+    }
+  }
 </style>
 <script id="tt-ios-top-banners-v1-js">
 (function(){
