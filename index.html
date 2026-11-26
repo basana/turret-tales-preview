@@ -8790,7 +8790,7 @@ if ('serviceWorker' in navigator) {
     left:8px!important; right:8px!important; bottom:auto!important;
     width:auto!important; max-width:560px!important; min-height:0!important;
     max-height:min(34vh,190px)!important; margin:0 auto!important;
-    aspect-ratio:auto!important; transform:translateY(0)!important;
+    aspect-ratio:auto!important; transform:translateY(0);
     box-sizing:border-box!important; overflow:hidden!important;
     border:1px solid rgba(201,160,92,.9)!important; border-radius:18px!important;
     padding:12px 48px 12px 14px!important;
@@ -8842,8 +8842,8 @@ if ('serviceWorker' in navigator) {
   #fbCard.tt-ios-banner .fb-row {display:flex!important;gap:5px!important;flex:0 0 auto!important}
   #fbCard.tt-ios-banner .fb-btn {font-size:11px!important;padding:6px 8px!important}
   #fbCard.tt-ios-banner .fb-close {top:2px!important;right:2px!important}
-  @keyframes ttBannerDrop {from{opacity:0;transform:translateY(calc(-100% - 16px))!important}to{opacity:1;transform:translateY(0)!important}}
-  @keyframes ttBannerLift {from{opacity:1;transform:translateY(0)!important}to{opacity:0;transform:translateY(calc(-100% - 16px))!important}}
+  @keyframes ttBannerDrop {from{opacity:0;transform:translateY(calc(-100% - 16px))}to{opacity:1;transform:translateY(0)}}
+  @keyframes ttBannerLift {from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(calc(-100% - 16px))}}
   @media(prefers-reduced-motion:reduce){#foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,#poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner{animation:none!important}}
 </style>
 <script id="tt-ios-top-banners-v1-js">
