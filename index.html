@@ -8585,6 +8585,9 @@ if ('serviceWorker' in navigator) {
       if(typeof window.MNSetActiveCategory==='function')window.MNSetActiveCategory(cat);
       var already=cat==='toilets'?!!toilettenLayer:!!apothekenLayer;
       if(!already&&typeof togglePoiLayer==='function')togglePoiLayer(cat==='toilets'?'wc':'apotheke');
+      var activeLayer=cat==='toilets'?toilettenLayer:apothekenLayer;
+      if(activeLayer&&leafletMap&&!leafletMap.hasLayer(activeLayer))activeLayer.addTo(leafletMap);
+      if(activeLayer&&activeLayer.eachLayer)activeLayer.eachLayer(function(marker){if(marker&&marker.setZIndexOffset)marker.setZIndexOffset(1200);});
       if(typeof window.MNRenderPoiCards==='function')window.MNRenderPoiCards(cat);
       setPanelState('third');
     }
