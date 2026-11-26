@@ -5138,7 +5138,7 @@ function updateXmasFloatingNavContent(){
 
    '<div class="xmas-scheduled-calls" style="margin-top:10px;padding-top:9px;border-top:1px solid #c8a878">'+
    '<strong style="display:block;margin-bottom:6px">Upcoming calls · 27–30 Nov 2026</strong>'+
-   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></div>'+
+   '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.360863" data-berth-lng="7.605562"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></button>'+
    '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Mosel (KO) · exact berth not specified</small></div>'+
    '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Mosel (KO) · exact berth not specified</small></div>'+
    '<div style="padding:6px 0"><b>30 Nov · Trafalgar River Cruises</b><br><small>Koblenz · ship and exact berth not specified</small></div>'+
@@ -9068,6 +9068,35 @@ if ('serviceWorker' in navigator) {
     .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:23px!important}
     .xmas-floating-gps-prompt button{min-height:68px!important;font-size:19px!important;padding:12px 10px!important}
   }
+</style>
+
+<style id="tt-explore-gps-prompt-correct-size-v4">
+  /* Reduce prompt copy by exactly 2px from its original mobile sizing.
+     Keep the action button fully visible without enlarging its text. */
+  @media(max-width:480px){
+    .xmas-floating-gps-prompt .gps-prompt-copy{font-size:23px!important;line-height:1.22!important}
+    .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:25px!important;line-height:1.15!important}
+    .xmas-floating-gps-prompt button{
+      display:flex!important;align-items:center!important;justify-content:center!important;
+      width:100%!important;height:auto!important;min-height:58px!important;
+      padding:10px 12px!important;font-size:20px!important;line-height:1.2!important;
+      white-space:normal!important;overflow:visible!important;box-sizing:border-box!important;
+    }
+    .xmas-known-berths .xmas-scheduled-call-link{
+      display:block;width:100%;margin:0;padding:8px 0;text-align:left;
+      border:0;border-bottom:1px dashed #d8c8aa;background:transparent;
+      color:inherit;font:inherit;line-height:1.35;cursor:pointer;
+      -webkit-appearance:none;appearance:none;
+    }
+    .xmas-known-berths .xmas-scheduled-call-link small{display:inline;color:#6b5a48}
+    .xmas-known-berths .xmas-scheduled-call-link:active{background:rgba(122,16,38,.08)}
+  }
+  @media(max-width:380px){
+    .xmas-floating-gps-prompt .gps-prompt-copy{font-size:19px!important}
+    .xmas-floating-gps-prompt .gps-prompt-copy strong{font-size:21px!important}
+    .xmas-floating-gps-prompt button{min-height:54px!important;padding:9px 10px!important;font-size:17px!important}
+  }
+  .xmas-return-warning-kicker{letter-spacing:calc(.2em - 1px)!important}
 </style>
 </body>
 </html>
