@@ -8987,15 +8987,13 @@ if ('serviceWorker' in navigator) {
 </script>
 <script id="tt-all-topic-panel-rotation-v2">
 (function(){
-  // Temporary screenshot mode: first panel 5s after the map is entered,
-  // each panel stays for 15s, followed by a 5s clear interval.
-  window._ttPanelScreenshotMode=true;
-  const SHOW_MS=15000, GAP_MS=5000, FIRST_DELAY_MS=5000, RETRY_MS=500;
+  // Normal visitor mode: one quiet sequence per session, not a repeating carousel.
+  window._ttPanelScreenshotMode=false;
+  const SHOW_MS=10000, GAP_MS=180000, FIRST_DELAY_MS=60000, RETRY_MS=5000;
   const topics=[
     {id:'foodPromo',show:()=>showFoodPromo(),hide:()=>hideFoodPromo()},
     {id:'shopPromo',show:()=>showShopPromo(),hide:()=>hideShopPromo()},
-    // The Christmas-market guided-tour offer is temporarily paused; keep its content and code intact.
-    {id:'poiPromo',show:()=>showPoiPopup(),hide:()=>hidePoiPopup()},
+    // Pharmacy/restroom remains available from the map controls; no unsolicited popup.
     {id:'winePromo',show:()=>window._ttShowWinePromo&&window._ttShowWinePromo(),hide:()=>window._ttHideWinePromo&&window._ttHideWinePromo()},
     {id:'fbCard',show:()=>window._ttTryShowFeedback&&window._ttTryShowFeedback(),hide:()=>hideTopBanner('fbCard')}
   ];
@@ -9021,8 +9019,9 @@ if ('serviceWorker' in navigator) {
        document.querySelector('.modal.open,.premium-popup.open,.more-menu.open,.mv-overlay.open') || splashVisible()){
       timer=setTimeout(step,RETRY_MS);return;
     }
-    for(let n=0;n<topics.length;n++){
-      const item=topics[index%topics.length];index=(index+1)%topics.length;
+    if(index>=topics.length) return; // all eligible panels have had their single session appearance
+    for(let n=0;n<topics.length-index;n++){
+      const item=topics[index++];
       let ok=false;
       try{ok=!!item.show();}catch(e){ok=false;}
       const el=document.getElementById(item.id);
@@ -9042,7 +9041,7 @@ if ('serviceWorker' in navigator) {
     if(!started){started=true;nextAt=Date.now()+FIRST_DELAY_MS;}
     timer=setTimeout(step,FIRST_DELAY_MS);
   }
-  // Wait until the visitor enters the map, then begin the 5-second countdown.
+  // Wait until the visitor enters the map, then begin the 60-second countdown.
   timer=setTimeout(waitForMapStart,RETRY_MS);
   window._ttPanelRotation={
     stop:()=>{clearTimeout(timer);closeActive();},
