@@ -5086,7 +5086,13 @@ function updateXmasFloatingNavContent(){
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
-   '<p>'+kt.note+'</p>';
+   '<div class="xmas-scheduled-calls" style="margin-top:10px;padding-top:9px;border-top:1px solid #c8a878">'+
+   '<strong style="display:block;margin-bottom:6px">Upcoming calls · 27–30 Nov 2026</strong>'+
+   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></div>'+
+   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Mosel (KO) · exact berth not specified</small></div>'+
+   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Mosel (KO) · exact berth not specified</small></div>'+
+   '<div style="padding:6px 0"><b>30 Nov · Trafalgar River Cruises</b><br><small>Koblenz · ship and exact berth not specified</small></div>'+
+   '</div><p>'+kt.note+'</p>'
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
