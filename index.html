@@ -2439,7 +2439,7 @@ function _showPoiToast(mapObj, poi, emoji) {
   if (userPos) {
     const d = distanceMeters(userPos[0], userPos[1], poi.lat, poi.lng);
     const walkMin = Math.ceil(d * 1.3 / 75);
-    const routeHint = ({de:'Tippen für gestrichelte Route',en:'Tap for dashed route',ru:'Нажмите, чтобы показать пунктирный путь',fr:'Appuyez pour afficher le trajet',nl:'Tik voor stippellijn',zh:'点击显示虚线路线',he:'לחצו להצגת מסלול מקווקו'}[poiPopupLang()] || 'Tap for dashed route');
+    const routeHint = ({de:'Tippen für gestrichelte Linie',en:'Tap for dashed line',ru:'Нажмите, чтобы показать пунктирную линию',fr:'Appuyez pour afficher la ligne pointillée',nl:'Tik voor stippellijn',zh:'点击显示虚线',he:'לחצו להצגת קו מקווקו'}[poiPopupLang()] || 'Tap for dashed route');
     toast.innerHTML = `${emoji} ${poi.name}<br><span class="toast-dist">≈ ${formatDistance(d)} · ${walkMin} min 🚶</span><br><span class="toast-route-hint">${routeHint}</span>`;
   } else {
     toast.innerHTML = `${emoji} ${poi.name} · ${poi.city}`;
@@ -5379,6 +5379,7 @@ function xmasStartGps() {
   xmasSetGpsLabel(xmasG('locating'), true);
   xmasGpsWatch = navigator.geolocation.watchPosition(pos => {
     xmasGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    if (xmasMapObj && xmasMapObj._poiRouteTarget && xmasMapObj._poiRouteLine) xmasMapObj._poiRouteLine.setLatLngs([[xmasGpsPos.lat, xmasGpsPos.lng], [xmasMapObj._poiRouteTarget.lat, xmasMapObj._poiRouteTarget.lng]]);
     const followButton = document.getElementById('xmasGpsFollowBtn'); if (followButton) followButton.classList.add('show');
     xmasSetGpsLabel('GPS ON', true);
     if (xmasMapObj) {
@@ -8361,6 +8362,7 @@ function startGps() {
       }
 
       gpsLastLat = latitude; gpsLastLng = longitude;
+      if (leafletMap && leafletMap._poiRouteTarget && leafletMap._poiRouteLine) leafletMap._poiRouteLine.setLatLngs([[latitude, longitude], [leafletMap._poiRouteTarget.lat, leafletMap._poiRouteTarget.lng]]);
       // If POI mode was activated before the first GPS fix, focus it now.
       if (!leafletMap._poiGpsZoomed && (apothekenLayer || toilettenLayer)) {
         leafletMap._poiGpsZoomed = true;
