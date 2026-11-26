@@ -5016,7 +5016,8 @@ function updateXmasFloatingNavContent(){
    const berthLayer=xmasMapObj._xmasKnownBerthLayerGroup;
    berthLayer.clearLayers();
    xmasMapObj._xmasKnownBerthMarkers={};
-   if(cat==='ship')berthSpecs.forEach(b=>{
+   // All passenger berths stay visible on the map in every category; My Ship only exposes the berth list and navigation shortcuts.
+   berthSpecs.forEach(b=>{
     const marker=L.marker([b.lat,b.lng],{icon:L.divIcon({className:'',html:'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:[42,42],iconAnchor:[21,21]})});
     marker.bindPopup('<strong>'+b.label+'</strong>');
     marker.addTo(berthLayer);
