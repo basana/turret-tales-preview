@@ -5131,7 +5131,7 @@ function updateXmasFloatingNavContent(){
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>'+xmasBerthLabel('kd4')+'</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>'+xmasBerthLabel('kd5')+'</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>'+xmasBerthLabel('kdR')+'</strong><small>'+kt.confirmed+'</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>'+xmasBerthLabel('viking')+'</strong><small>'+kt.viking+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>'+xmasBerthLabel('viking')+'</strong><small>'+kt.viking+'</small></button>';
 
   const setupBtn=knownBerths.querySelector('[data-open-ship-setup]');if(setupBtn)setupBtn.addEventListener('click',()=>xmasShowShipSetupDialog());
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
