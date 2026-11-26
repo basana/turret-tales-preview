@@ -290,15 +290,15 @@
   .xmas-town-text .castle-name { margin-top: 1px; }
   body:not(.xmas-on) .xmas-hero, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
   body.xmas-on .xmas-where, body.xmas-on .xmas-hero-label { display: none !important; }
-  .xmas-home { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
+  .xmas-home { display: flex; flex-direction: row; align-items: stretch; gap: 10px; margin: 0 0 16px; }
   .xmas-home-langs { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
   .xmas-home-langs button { padding: 3px 9px; border-radius: 14px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .xmas-home-langs button.active { background: #7A1026; color: #fff; }
   body:not(.xmas-on) .splash-lang-xmas { display: none !important; }
-  .xmas-home-title, .xmas-home-koblenz { width: 100%; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 14px 12px; }
-  .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 17px; }
+  .xmas-home-title, .xmas-home-koblenz { flex: 1 1 0; min-width: 0; width: auto; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 15px; line-height: 1.25; }
   .xmas-home-sub { display: block; font-size: 13px; font-weight: 400; opacity: 0.9; margin-top: 4px; }
-  .xmas-home-koblenz { border: 1px solid #7A1026; background: #fff; color: #7A1026; font-size: 15px; }
+  .xmas-home-koblenz { border: 1px solid #7A1026; background: #fff; color: #7A1026; font-size: 14px; line-height: 1.25; }
   body.station-open #view-guide .photo { display: block !important; }
   body.station-open #view-guide .station-title { display: block !important; }
   body.station-open #view-guide .stats { display: flex !important; }
@@ -1135,7 +1135,7 @@
   }
   .saved-spot-marker { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45)); line-height: 1; }
   .xmas-ship-anchor { width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:2px solid #7A1026;border-radius:50%;background:#fffaf0;color:#7A1026;font:800 25px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
-  .xmas-berth-marker { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:26px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
+  .xmas-berth-marker { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:26px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42);flex:0 0 42px; }.xmas-berth-marker-row{display:flex;align-items:center;gap:7px;width:max-content;white-space:nowrap}.xmas-berth-marker-label{padding:6px 9px;border:1px solid #174A70;border-radius:8px;background:#fffaf0;color:#174A70;font:700 13px/1.1 var(--sans);box-shadow:0 2px 8px rgba(0,0,0,.35)}
   .poi-marker {
     width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center; font-size: 13px;
@@ -4794,7 +4794,7 @@ function xmasDrawMap(opts) {
   xmasMapObj._xmasKnownBerthMarkers = {};
   berthSpecs.forEach(b => {
     const marker = L.marker([b.lat,b.lng], {
-      icon:L.divIcon({className:'',html:'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:[42,42],iconAnchor:[21,21]}),
+      icon:L.divIcon({className:'',html:b.id==='viking'?'<div class="xmas-berth-marker-row"><div class="xmas-berth-marker" aria-hidden="true">🚢</div><span class="xmas-berth-marker-label">Viking</span></div>':'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:b.id==='viking'?[116,42]:[42,42],iconAnchor:b.id==='viking'?[21,21]:[21,21]}),
       zIndexOffset:650
     });
     marker.bindPopup('<strong>'+b.label+'</strong>');
