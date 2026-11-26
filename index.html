@@ -8565,8 +8565,8 @@ if ('serviceWorker' in navigator) {
   function selectCategory(cat){
     currentCategory=cat;
     topRail.querySelectorAll('[data-mn-category]').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-mn-category')===cat);});
-    if(cat==='places'){if(typeof clearMainPoiMode==='function')clearMainPoiMode();renderPlaces();return;}
-    if(cat==='ship'){if(typeof clearMainPoiMode==='function')clearMainPoiMode();
+    if(cat==='places'){if(typeof window.MNSetActiveCategory==='function')window.MNSetActiveCategory(cat);if(typeof clearMainPoiMode==='function')clearMainPoiMode();renderPlaces();return;}
+    if(cat==='ship'){if(typeof window.MNSetActiveCategory==='function')window.MNSetActiveCategory(cat);if(typeof clearMainPoiMode==='function')clearMainPoiMode();
       var sp=savedSpot();
       if(sp){
         statusCard('⚓','My Ship',sp.label||'Saved berth','Show on map',function(){
@@ -8582,8 +8582,10 @@ if ('serviceWorker' in navigator) {
       return;
     }
     if(cat==='toilets'||cat==='pharmacy'){
+      if(typeof window.MNSetActiveCategory==='function')window.MNSetActiveCategory(cat);
       var already=cat==='toilets'?!!toilettenLayer:!!apothekenLayer;
       if(!already&&typeof togglePoiLayer==='function')togglePoiLayer(cat==='toilets'?'wc':'apotheke');
+      if(typeof window.MNRenderPoiCards==='function')window.MNRenderPoiCards(cat);
       setPanelState('third');
     }
   }
@@ -8601,6 +8603,8 @@ if ('serviceWorker' in navigator) {
   }
   new MutationObserver(sync).observe(mapView,{attributes:true,attributeFilter:['class']});
   sync();
+  window.MNSetActiveCategory=function(cat){activeCategory=cat;};
+  window.MNRenderPoiCards=function(cat){activeCategory=cat;renderPoiCards(cat);};
   document.addEventListener('click',function(e){
     if(e.target&&e.target.id==='mapPanelClose'){
       rail.querySelectorAll('.mn-place-card').forEach(function(el){el.classList.remove('active');});
@@ -9096,6 +9100,19 @@ body.mn-panel-full .mn-back{display:none}
 })();
 </script>
 
-<script src="https://basana.github.io/turret-tales-experimental-preview/map-navi-full-panel.js?v=20261125-guidance3"></script>
+<style id="map-navi-functional-visibility-fix">
+/* Final cascade: keep the category carousel visible in every expanded panel. */
+body.map-navi-active .mn-card-track{display:flex!important;flex:0 0 112px!important;min-height:112px!important;width:100%;overflow-x:auto!important;overflow-y:hidden!important;touch-action:pan-x!important;scroll-snap-type:x mandatory!important;-webkit-overflow-scrolling:touch!important;}
+body.map-navi-active.mn-panel-compact .mn-card-track{display:none!important;}
+body.map-navi-active.mn-panel-third .mn-card-track,body.map-navi-active.mn-panel-full .mn-card-track{display:flex!important;}
+body.map-navi-active .mn-card-track .mn-place-card{display:flex!important;flex:0 0 min(84vw,360px)!important;height:104px!important;min-height:104px!important;box-sizing:border-box!important;align-items:center!important;scroll-snap-align:center!important;}
+body.map-navi-active .mn-bottom-rail{overflow-x:hidden!important;}
+body.map-navi-active.mn-panel-third .mn-bottom-rail{overflow-y:auto!important;}
+body.map-navi-active .mn-bottom-rail .gps-panel.show{display:flex!important;}
+body.map-navi-active .mn-bottom-rail .mn-poi-advice{display:block!important;flex:0 0 auto!important;}
+body.map-navi-active .mn-bottom-rail .mn-poi-hint{display:block!important;flex:0 0 auto!important;}
+body.map-navi-active .leaflet-marker-pane .poi-marker{visibility:visible!important;opacity:1!important;}
+</style>
+<script src="https://basana.github.io/turret-tales-experimental-preview/map-navi-full-panel.js?v=20261126-categories1"></script>
 </body>
 </html>
