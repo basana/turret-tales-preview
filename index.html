@@ -4875,7 +4875,7 @@ const XMAS_COMPANY_STYLE = {
 function xmasCompanyStyle(co) {
   return XMAS_COMPANY_STYLE[co] || { bg: '#555555', letter: (co || '?').charAt(0).toUpperCase() };
 }
-const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer', ll: [50.35975, 7.60466] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
+const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer', ll: [50.363278, 7.606472] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
   de: {backAt:'Sie sind wieder bei {name}', btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Rückkehrpunkt speichern', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
@@ -4995,11 +4995,11 @@ function updateXmasFloatingNavContent(){
  const knownBerths=nav.querySelector('#xmasKnownKoblenzBerths');
  if(knownBerths){
   const KBT={
-   de:{title:'Bekannte Fahrgastschiffsanleger · Koblenz',confirmed:'Vom Betreiber bestätigt · genaue Kartenposition folgt',viking:'Bisheriger Karteneintrag · Betreiber-/Liegeplatzzuordnung noch zu prüfen',note:'Liegeplätze können sich ändern. Bitte beachten Sie stets die aktuellen Angaben Ihres Schiffes oder Veranstalters.'},
-   en:{title:'Known passenger-ship berths · Koblenz',confirmed:'Operator-confirmed · exact map position pending',viking:'Existing map entry · operator/berth assignment still to be reverified',note:'Berth assignments can change. Always follow the current ship or operator information.'},
+   de:{title:'Bekannte Fahrgastschiffsanleger · Koblenz',confirmed:'Vom Betreiber bestätigt · genaue Kartenposition folgt',viking:'Viking · Brücke 1 am Deutschen Eck',note:'Liegeplätze können sich ändern. Bitte beachten Sie stets die aktuellen Angaben Ihres Schiffes oder Veranstalters.'},
+   en:{title:'Known passenger-ship berths · Koblenz',confirmed:'Operator-confirmed · exact map position pending',viking:'Viking · Berth 1 at Deutsches Eck',note:'Berth assignments can change. Always follow the current ship or operator information.'},
    fr:{title:'Débarcadères connus · Coblence',confirmed:'Confirmé par l’opérateur · position exacte à ajouter',viking:'Entrée cartographique existante · attribution à vérifier',note:'Les emplacements peuvent changer. Suivez toujours les informations actuelles de votre bateau ou opérateur.'},
    nl:{title:'Bekende aanlegplaatsen · Koblenz',confirmed:'Door exploitant bevestigd · exacte kaartpositie volgt',viking:'Bestaande kaartvermelding · toewijzing nog te controleren',note:'Aanlegplaatsen kunnen wijzigen. Volg altijd de actuele informatie van uw schip of rederij.'},
-   ru:{title:'Известные пассажирские причалы · Кобленц',confirmed:'Подтверждено оператором · точная позиция на карте будет добавлена',viking:'Существующая точка карты · принадлежность и назначение ещё проверяются',note:'Места стоянки могут меняться. Всегда сверяйтесь с актуальной информацией вашего судна или компании.'},
+   ru:{title:'Известные пассажирские причалы · Кобленц',confirmed:'Подтверждено оператором · точная позиция на карте будет добавлена',viking:'Viking · причал № 1 у Deutsches Eck',note:'Места стоянки могут меняться. Всегда сверяйтесь с актуальной информацией вашего судна или компании.'},
    zh:{title:'已知客船码头 · 科布伦茨',confirmed:'运营方已确认 · 地图精确位置待补充',viking:'现有地图条目 · 运营方及泊位归属仍待核实',note:'停靠位置可能变化，请始终以船只或运营方的最新信息为准。'},
    he:{title:'רציפי נוסעים ידועים · קובלנץ',confirmed:'אושר על ידי המפעיל · מיקום מדויק במפה יתווסף',viking:'רישום קיים במפה · שיוך הרציף עדיין בבדיקה',note:'מקומות העגינה עשויים להשתנות. יש לפעול לפי המידע העדכני של הספינה או המפעיל.'}
   };
@@ -5010,7 +5010,7 @@ function updateXmasFloatingNavContent(){
     {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4'},
     {id:'kd5',lat:50.359770,lng:7.605171,label:'KD · Landebrücke Nr. 5'},
     {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:'KD · Rheinanlagen'},
-    {id:'viking',lat:50.359750,lng:7.604660,label:'Viking · Konrad-Adenauer-Ufer'}
+    {id:'viking',lat:50.363278,lng:7.606472,label:'Viking · Brücke 1, Konrad-Adenauer-Ufer'}
    ];
    if(!xmasMapObj._xmasKnownBerthLayerGroup)xmasMapObj._xmasKnownBerthLayerGroup=L.layerGroup().addTo(xmasMapObj);
    const berthLayer=xmasMapObj._xmasKnownBerthLayerGroup;
@@ -5027,12 +5027,12 @@ function updateXmasFloatingNavContent(){
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.359750" data-berth-lng="7.604660"><strong>Viking · Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363278" data-berth-lng="7.606472"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
    '<p>'+kt.note+'</p>';
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
-   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
+   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363278'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
    xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();const marker=xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[berthId];if(marker)marker.openPopup();},280);
   }));
  }
