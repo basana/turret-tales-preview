@@ -4783,6 +4783,25 @@ function xmasDrawMap(opts) {
   targetPane.style.pointerEvents = 'auto';
   L.control.zoom({ position: 'bottomleft' }).addTo(xmasMapObj);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
+  // Permanent layer: every Koblenz passenger berth is visible from the first map render.
+  const berthSpecs = [
+    {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4'},
+    {id:'kd5',lat:50.359770,lng:7.605171,label:'KD · Landebrücke Nr. 5'},
+    {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:'KD · Rheinanlagen'},
+    {id:'viking',lat:50.363360010510355,lng:7.6062045007751475,label:'Viking · Brücke 1, Konrad-Adenauer-Ufer'}
+  ];
+  xmasMapObj._xmasKnownBerthLayerGroup = L.layerGroup().addTo(xmasMapObj);
+  xmasMapObj._xmasKnownBerthMarkers = {};
+  berthSpecs.forEach(b => {
+    const marker = L.marker([b.lat,b.lng], {
+      icon:L.divIcon({className:'',html:'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:[42,42],iconAnchor:[21,21]}),
+      zIndexOffset:650
+    });
+    marker.bindPopup('<strong>'+b.label+'</strong>');
+    marker.addTo(xmasMapObj._xmasKnownBerthLayerGroup);
+    xmasMapObj._xmasKnownBerthMarkers[b.id] = marker;
+  });
+
   // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
      if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
   else if (opts.pins && opts.pins.length > 1) {
@@ -4875,7 +4894,7 @@ const XMAS_COMPANY_STYLE = {
 function xmasCompanyStyle(co) {
   return XMAS_COMPANY_STYLE[co] || { bg: '#555555', letter: (co || '?').charAt(0).toUpperCase() };
 }
-const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer', ll: [50.363278, 7.606472] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
+const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer · Brücke 1', ll: [50.363360010510355, 7.6062045007751475] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
   de: {backAt:'Sie sind wieder bei {name}', btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Rückkehrpunkt speichern', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
@@ -5005,35 +5024,17 @@ function updateXmasFloatingNavContent(){
   };
   const kt=KBT[xmasLang]||KBT.en;
   knownBerths.hidden=cat!=='ship';
-  if(xmasMapObj){
-   const berthSpecs=[
-    {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4'},
-    {id:'kd5',lat:50.359770,lng:7.605171,label:'KD · Landebrücke Nr. 5'},
-    {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:'KD · Rheinanlagen'},
-    {id:'viking',lat:50.363278,lng:7.606472,label:'Viking · Brücke 1, Konrad-Adenauer-Ufer'}
-   ];
-   if(!xmasMapObj._xmasKnownBerthLayerGroup)xmasMapObj._xmasKnownBerthLayerGroup=L.layerGroup().addTo(xmasMapObj);
-   const berthLayer=xmasMapObj._xmasKnownBerthLayerGroup;
-   berthLayer.clearLayers();
-   xmasMapObj._xmasKnownBerthMarkers={};
-   // All passenger berths stay visible on the map in every category; My Ship only exposes the berth list and navigation shortcuts.
-   berthSpecs.forEach(b=>{
-    const marker=L.marker([b.lat,b.lng],{icon:L.divIcon({className:'',html:'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:[42,42],iconAnchor:[21,21]})});
-    marker.bindPopup('<strong>'+b.label+'</strong>');
-    marker.addTo(berthLayer);
-    xmasMapObj._xmasKnownBerthMarkers[b.id]=marker;
-   });
-  }
+
   knownBerths.innerHTML='<h3>'+kt.title+'</h3>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363278" data-berth-lng="7.606472"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
    '<p>'+kt.note+'</p>';
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
-   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363278'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
+   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363360010510355'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
    xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();const marker=xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[berthId];if(marker)marker.openPopup();},280);
   }));
  }
