@@ -4375,7 +4375,7 @@ function canOpenManagedPopup(id) {
     return !el || el.hidden;
   });
 }
-const PROMO = { firstDelayMs: 30000, cooldownMs: 25000, maxPerSession: 999, dismissMs: 30000, autoCloseMs: 15000 };
+const PROMO = { firstDelayMs: 30000, cooldownMs: 25000, maxPerSession: 999, dismissMs: 0, autoCloseMs: 15000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
   if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
@@ -4533,7 +4533,7 @@ function tourPromoLang() {
 }
 function renderTourPromo() {
   const l = tourPromoLang();
-  const t = TOUR_PROMO_TEXT[currentView];
+  const t = TOUR_PROMO_TEXT[currentView] || TOUR_PROMO_TEXT.christmas;
   document.getElementById('tourPromoQ').textContent = t[l] || t.en;
   const link = document.getElementById('tourPromoLink');
   if (link) { link.textContent = (t.link[l] || t.link.en); link.hidden = false; }
@@ -8725,23 +8725,20 @@ if ('serviceWorker' in navigator) {
   }
   const tryShow = () => {
     if (shown) return;
-    if (!canOpenManagedPopup('fbCard')) {
-      setTimeout(tryShow, 15000);
-      return;
-    }
+    if (!canOpenManagedPopup('fbCard')) return false;
     showTopBanner('fbCard');
     shown = true;
-    setTimeout(() => hideTopBanner('fbCard'), 7000);
     try { sessionStorage.setItem('ttFeedbackShown', '1'); } catch (e) {}
+    return true;
   };
-  setTimeout(tryShow, 90000);
+  window._ttTryShowFeedback = tryShow;
   close.addEventListener('click', () => { hideTopBanner('fbCard'); });
 })();
 </script>
 <script>
 // Окно с винными пробами (эмблема в центре). Раз в 4 минуты, пока открыт раздел с винодельнями.
 (function () {
-  const WP = { intervalMs: 240000, autoCloseMs: 7000 };
+  const WP = { intervalMs: 25000, autoCloseMs: 15000 };
   const TXT = {
     de: ['Weinproben bei den Winzern in Winningen. Weingut Kröber: sechs Weine mit Brot, 200 € bis 10 Personen. Weinberg-Wanderung mit Probe, Mai bis Oktober, 40 € pro Person.', 'Anmeldung →'],
     en: ['Wine tastings at the Winningen estates. Weingut Kröber: six wines with bread, €200 for up to 10 people. Vineyard hike with tasting, May to October, €40 per person.', 'Book →'],
@@ -8755,17 +8752,19 @@ if ('serviceWorker' in navigator) {
     document.getElementById('winePromoQ').textContent = TXT[l][0];
     document.getElementById('winePromoLink').textContent = TXT[l][1];
     box.hidden = false;
-    timer = setTimeout(hide, WP.autoCloseMs);
+    return true;
   }
   function tick() {
-    if (Date.now() - last < WP.intervalMs || !box.hidden || !canOpenManagedPopup('winePromo')) return;
-    if (!(currentView === 'wine' && !document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open') && document.getElementById('tourPromo').hidden && document.getElementById('foodPromo').hidden && document.getElementById('shopPromo').hidden && (!document.getElementById('splash') || document.getElementById('splash').classList.contains('hide')))) return;
+    if (!box.hidden || !canOpenManagedPopup('winePromo')) return false;
     hideAllPopups('winePromo');
-    show(); last = Date.now();
+    last = Date.now();
+    return show();
   }
+  window._ttShowWinePromo = tick;
+  window._ttHideWinePromo = hide;
   document.getElementById('winePromoClose').addEventListener('click', hide);
   document.getElementById('winePromoLink').addEventListener('click', hide);
-  setInterval(tick, 15000);
+  // Wine tasting is scheduled by the single all-topic rotation below.
 })();
 </script>
 
@@ -8939,6 +8938,64 @@ if ('serviceWorker' in navigator) {
     el._ttBannerHideTimer=setTimeout(()=>{el.hidden=true;el.classList.remove('tt-banner-out');},290);
   };
 })();
+
+<script id="tt-all-topic-panel-rotation-v1">
+(function(){
+  // One queue for every promotional/utility panel. A panel stays for 15s,
+  // then the screen is clear for 10s before the next topic is attempted.
+  const SHOW_MS=15000, GAP_MS=10000, FIRST_DELAY_MS=30000, RETRY_MS=3000;
+  const topics=[
+    {id:'foodPromo',show:()=>showFoodPromo(),hide:()=>hideFoodPromo()},
+    {id:'shopPromo',show:()=>showShopPromo(),hide:()=>hideShopPromo()},
+    {id:'tourPromo',show:()=>showTourPromo(),hide:()=>hideTourPromo()},
+    {id:'poiPromo',show:()=>showPoiPopup(),hide:()=>hidePoiPopup()},
+    {id:'winePromo',show:()=>window._ttShowWinePromo&&window._ttShowWinePromo(),hide:()=>window._ttHideWinePromo&&window._ttHideWinePromo()},
+    {id:'fbCard',show:()=>window._ttTryShowFeedback&&window._ttTryShowFeedback(),hide:()=>hideTopBanner('fbCard'),available:()=>Date.now()-startedAt>=90000}
+  ];
+  const startedAt=Date.now();
+  let index=0, active=null, timer=null, nextAt=startedAt+FIRST_DELAY_MS;
+  function closeActive(){
+    if(!active)return;
+    const item=active;active=null;
+    try{item.hide();}catch(e){}
+    nextAt=Date.now()+GAP_MS;
+  }
+  function step(){
+    if(active){
+      const el=document.getElementById(active.id);
+      if(!el||el.hidden){active=null;nextAt=Date.now()+GAP_MS;}
+      else return;
+    }
+    if(Date.now()<nextAt){timer=setTimeout(step,Math.min(RETRY_MS,nextAt-Date.now()));return;}
+    // Modal, emergency alert, splash or user interaction has priority.
+    if(_poiEmergencyMode || document.querySelector('.xmas-return-warning:not([hidden])') ||
+       document.querySelector('.modal.open,.premium-popup.open,.more-menu.open,.mv-overlay.open') ||
+       (document.getElementById('splash')&&!document.getElementById('splash').classList.contains('hide'))){
+      timer=setTimeout(step,RETRY_MS);return;
+    }
+    for(let n=0;n<topics.length;n++){
+      const item=topics[index%topics.length];index=(index+1)%topics.length;
+      if(item.available&&!item.available())continue;
+      let ok=false;try{ok=!!item.show();}catch(e){ok=false;}
+      if(ok){
+        active=item;
+        timer=setTimeout(()=>{
+          if(active===item){closeActive();}
+          step();
+        },SHOW_MS);
+        return;
+      }
+    }
+    // If a topic cannot be shown in the current state, retry soon without
+    // consuming the ten-second interval or blocking the remaining topics.
+    timer=setTimeout(step,RETRY_MS);
+  }
+  // Start the shared rotation once all panel modules have initialized.
+  timer=setTimeout(step,FIRST_DELAY_MS);
+  window._ttPanelRotation={stop:()=>{clearTimeout(timer);closeActive();},state:()=>({active:active&&active.id,nextIndex:index})};
+})();
+</script>
+
 </script>
 
 </body>
