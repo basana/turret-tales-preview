@@ -4375,7 +4375,7 @@ function canOpenManagedPopup(id) {
     return !el || el.hidden;
   });
 }
-const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 12000 };
+const PROMO = { firstDelayMs: 30000, cooldownMs: 25000, maxPerSession: 999, dismissMs: 30000, autoCloseMs: 15000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
   if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
@@ -4390,7 +4390,7 @@ function showFoodPromo() {
   if (_poiEmergencyMode) return false;
   const box = document.getElementById('foodPromo');
   if (!box || !box.hidden) return false;
-  if (currentView === 'food' || currentView === 'wine') return false; // im Bereich Food & Drinks / Weingüter nicht anzeigen
+  // Global rotation: promotional topics may appear on every map/page.
   if (!document.getElementById('shopPromo').hidden) return false; // nicht zwei Fenster übereinander
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return false;
@@ -4474,7 +4474,7 @@ function showShopPromo() {
   const box = document.getElementById('shopPromo');
   if (!box || !box.hidden) return false;
   if (!document.getElementById('foodPromo').hidden) return false;
-  if (currentView === 'food' || currentView === 'wine') return false; // не показывать поверх собственной страницы Food/Winemakers
+  // Global rotation: do not suppress this topic based on the current section.
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open')) return false;
   hideAllPopups('shopPromo');
@@ -4492,11 +4492,11 @@ document.addEventListener('click', e => {
 function hideFoodPromo() { hideTopBanner('foodPromo'); }
 document.getElementById('foodPromoClose').addEventListener('click', () => { hideFoodPromo(); promoNextAt = Date.now() + PROMO.dismissMs; });
 document.getElementById('foodPromoLink').addEventListener('click', () => { hideFoodPromo(); switchView('food'); });
-setInterval(promoTick, 15000);
+// Food and shop are now scheduled by the single all-topic rotation below.
 
 // Окно с экскурсиями: в разделах Weihnachtsorte, Weingüter, Burgen и Route — не чаще раза в 4 минуты.
 // Крестик и автоматическое закрытие через 30 секунд.
-const TOUR_PROMO = { intervalMs: 240000, autoCloseMs: 7000, whatsapp: 'https://wa.me/491772850207' };
+const TOUR_PROMO = { intervalMs: 25000, autoCloseMs: 15000, whatsapp: 'https://wa.me/491772850207' };
 const TOUR_PROMO_VIEWS = ['christmas', 'wine', 'castles', 'route'];
 const TOUR_PROMO_TEXT = {
   christmas: {
@@ -4547,7 +4547,7 @@ function showTourPromo() {
   if (_poiEmergencyMode) return false;
   const box = document.getElementById('tourPromo');
   if (!box || !box.hidden) return false;
-  if (!TOUR_PROMO_VIEWS.includes(currentView)) return false;
+  // Tour invitation participates in the global rotation on every section.
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
   if (document.querySelector('.modal.open, .premium-popup.open, .more-menu.open, .mv-overlay.open')) return false;
   hideAllPopups('tourPromo');
@@ -4562,10 +4562,10 @@ function tourPromoTick() {
 }
 document.getElementById('tourPromoClose').addEventListener('click', hideTourPromo);
 document.getElementById('tourPromoLink').addEventListener('click', () => { hideTourPromo(); window.open(TOUR_PROMO.whatsapp, '_blank', 'noopener'); });
-setInterval(tourPromoTick, 15000);
+// Tour invitation is scheduled by the single all-topic rotation below.
 
 // ── POI-Popup «Аптека? Туалет?» ──────────────────────────────────
-const POI_POPUP = { firstDelayMs: 30000, intervalMs: 120000, autoCloseMs: 7000 };
+const POI_POPUP = { firstDelayMs: 30000, intervalMs: 25000, autoCloseMs: 15000 };
 const POI_POPUP_TEXT = {
   de: { q: 'Brauchen Sie eine Apotheke\noder eine Toilette?', hint: 'Tippen Sie auf das Symbol' },
   en: { q: 'Need a pharmacy\nor a restroom?', hint: 'Tap the icon' },
@@ -4593,8 +4593,7 @@ function hidePoiPopup() {
 function showPoiPopup() {
   if (!canOpenManagedPopup('poiPromo')) return false;
   if (_poiEmergencyMode) return false;
-  // Показывать только когда включён хотя бы один POI-слой (аптеки или туалеты)
-  if (!apothekenLayer && !toilettenLayer) return false;
+  // Offer pharmacy/restroom discovery even before the visitor enables either POI layer.
   const box = document.getElementById('poiPromo');
   if (!box || !box.hidden) return false;
   if (document.getElementById('splash') && !document.getElementById('splash').classList.contains('hide')) return false;
@@ -4630,7 +4629,7 @@ document.getElementById('poiPromoWc').addEventListener('click', () => {
   const btn = document.querySelector('.poi-toggle-btn.wc');
   if (btn && !btn.classList.contains('active')) btn.click();
 });
-setInterval(poiPopupTick, 5000);
+// Pharmacy/restroom prompt is scheduled by the single all-topic rotation below.
 
 // ── Единый диспетчер: скрыть все попапы кроме указанного ──────────
 function hideAllPopups(except) {
