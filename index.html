@@ -4834,7 +4834,7 @@ function xmasDrawMap(opts) {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
   // Permanent layer: every Koblenz passenger berth is visible from the first map render.
   const berthSpecs = [
-    {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4'},
+    {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4',detail:'Great Rail Journeys · MS Cara on MS Amadeus Riva · 27 Nov 2026'},
     {id:'kd5',lat:50.359770,lng:7.605171,label:'KD · Landebrücke Nr. 5'},
     {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:'KD · Rheinanlagen'},
     {id:'viking',lat:50.363360010510355,lng:7.6062045007751475,label:'Viking · Brücke 1, Konrad-Adenauer-Ufer'}
@@ -4847,7 +4847,7 @@ function xmasDrawMap(opts) {
       icon:L.divIcon({className:'',html:b.id==='viking'?'<div class="xmas-berth-marker-row"><div class="xmas-berth-marker" aria-hidden="true">🚢</div><span class="xmas-berth-marker-label">Viking</span></div>':'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:b.id==='viking'?[116,42]:[42,42],iconAnchor:b.id==='viking'?[21,21]:[21,21]}),
       zIndexOffset:650
     });
-    marker.bindPopup('<strong>'+b.label+'</strong>');
+    marker.bindPopup('<strong>'+b.label+'</strong>'+(b.detail?'<br><span style="display:block;margin-top:6px;max-width:240px;line-height:1.35">'+b.detail+'</span>':''));
     marker.addTo(xmasMapObj._xmasKnownBerthLayerGroup);
     xmasMapObj._xmasKnownBerthMarkers[b.id] = marker;
   });
@@ -5082,7 +5082,7 @@ function updateXmasFloatingNavContent(){
   knownBerths.hidden=cat!=='ship';
 
   knownBerths.innerHTML='<h3>'+kt.title+'</h3>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
