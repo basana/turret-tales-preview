@@ -4721,6 +4721,16 @@ function xmasSearchEntries() {
       if (t) out.push({ label: t, key: k, ll: ll });
     });
   });
+  // Passenger berths: searchable by official number, short ID, quay name,
+  // operator and (where confirmed) ship/call aliases. Coordinates are only
+  // included for berths already represented by a map marker.
+  const berths = [
+    {id:'kd4',label:'KD · Landebrücke Nr. 4',aliases:['KD4','KD 4','KD-4','Landebrücke 4','KD Landebrücke Nummer 4','Great Rail Journeys','MS Cara','MS Amadeus Riva'],ll:[50.360863,7.605562]},
+    {id:'kd5',label:'KD · Landebrücke Nr. 5',aliases:['KD5','KD 5','KD-5','Landebrücke 5','KD Landebrücke Nummer 5'],ll:[50.359770,7.605171]},
+    {id:'kd-rheinanlagen',label:'KD · Rheinanlagen',aliases:['KD Rheinanlagen','Rheinanlagen Anleger','Rhein Anleger'],ll:[50.348845,7.598990]},
+    {id:'viking',label:'Viking · Brücke 1, Konrad-Adenauer-Ufer',aliases:['Viking 1','Viking Brücke 1','Viking Berth 1','Viking Anleger 1','Konrad-Adenauer-Ufer'],ll:[50.363360010510355,7.6062045007751475]}
+  ];
+  berths.forEach(b=>out.push({label:b.label,key:xmasTown,ll:b.ll,berthId:b.id,aliases:b.aliases}));
   return out;
 }
 function xmasSearchHtml() {
@@ -4766,9 +4776,9 @@ function xmasSearchMatches(value) {
   const q=xmasNormalizeSearch(value);
   if(q.length<3)return [];
   const seen=new Set();
-  return xmasSearchEntries().map(e=>({...e,n:xmasNormalizeSearch(e.label)}))
-    .filter(e=>e.n.includes(q))
-    .sort((a,b)=>(a.n.startsWith(q)?0:1)-(b.n.startsWith(q)?0:1))
+  return xmasSearchEntries().map(e=>({...e,n:xmasNormalizeSearch(e.label),terms:[e.label,...(e.aliases||[])].map(xmasNormalizeSearch)}))
+    .filter(e=>e.terms.some(term=>term.includes(q)))
+    .sort((a,b)=>(a.terms.some(n=>n.startsWith(q))?0:1)-(b.terms.some(n=>n.startsWith(q))?0:1))
     .filter(e=>{const id=e.key+'|'+e.label;if(seen.has(id))return false;seen.add(id);return true;})
     .slice(0,7);
 }
@@ -4781,7 +4791,13 @@ function xmasSearchChoose(entry) {
   const input=document.getElementById('xmasSearch');
   if(input){input.value='';input.blur();}
   xmasSearchHideResults();
-  if(xmasTown!==entry.key){xmasPendingFocus=entry.ll;xmasOpen(entry.key);}
+  if(entry.berthId){
+    if(xmasTown!==entry.key){xmasPendingFocus=entry.ll;xmasOpen(entry.key);}
+    else if(xmasMapObj){
+      xmasMapObj.setView(entry.ll,17,{animate:true});
+      setTimeout(()=>{const m=xmasMapObj&&xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[entry.berthId];if(m)m.openPopup();},350);
+    }
+  } else if(xmasTown!==entry.key){xmasPendingFocus=entry.ll;xmasOpen(entry.key);}
   else if(xmasMapObj)xmasMapObj.setView(entry.ll,17,{animate:true});
   return true;
 }
