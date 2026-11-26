@@ -4375,7 +4375,7 @@ function canOpenManagedPopup(id) {
     return !el || el.hidden;
   });
 }
-const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 7000 };
+const PROMO = { firstDelayMs: 150000, cooldownMs: 720000, maxPerSession: 4, dismissMs: 1800000, autoCloseMs: 12000 };
 let promoShown = 0, promoNextAt = Date.now() + PROMO.firstDelayMs;
 function promoTick() {
   if (Date.now() < promoNextAt || promoShown >= PROMO.maxPerSession) return;
@@ -8832,93 +8832,98 @@ if ('serviceWorker' in navigator) {
   .poi-toggle-bar { transform: translateY(calc(-50% - 15px)) !important; }
 </style>
 
-<style id="tt-ios-top-banners-v1">
-  /* iOS-style notification banners: slide from the physical top edge, stay 7s, slide away. */
+<style id="tt-ios-top-banners-v2">
+  /* MAP NAVI: redesigned top cards — white surface, visible frame, readable responsive layout. */
   #foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,
   #poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner {
-    position:fixed!important; top:calc(env(safe-area-inset-top) + 8px)!important;
-    left:8px!important; right:8px!important; bottom:auto!important;
-    width:auto!important; max-width:560px!important; min-height:0!important;
-    max-height:min(32vh,260px)!important; margin:0 auto!important;
-    aspect-ratio:auto!important; transform:translateY(0);
-    box-sizing:border-box!important; overflow:hidden!important;
-    border:1px solid rgba(201,160,92,.9)!important; border-radius:18px!important;
-    padding:12px 48px 12px 14px!important;
-    display:flex!important; flex-direction:row!important; align-items:center!important;
-    justify-content:flex-start!important; gap:12px!important;
-    text-align:left!important; box-shadow:0 8px 28px rgba(0,0,0,.28)!important;
-    animation:ttBannerDrop .38s cubic-bezier(.2,.85,.25,1) both!important;
-    z-index:4900!important;
+    position:fixed!important; top:calc(env(safe-area-inset-top,0px) + 10px)!important;
+    left:12px!important; right:12px!important; bottom:auto!important;
+    width:auto!important; max-width:680px!important; min-width:0!important;
+    min-height:0!important; max-height:min(46vh,360px)!important;
+    margin:0 auto!important; box-sizing:border-box!important;
+    background:#fff!important; color:#30271f!important;
+    border:2px solid #c9a05c!important; border-radius:20px!important;
+    box-shadow:inset 0 0 0 4px #f5ecdc,0 10px 30px rgba(28,20,12,.30)!important;
+    padding:16px 58px 16px 18px!important; overflow-x:hidden!important; overflow-y:auto!important;
+    text-align:left!important; font-family:system-ui,-apple-system,sans-serif!important;
+    z-index:4900!important; animation:ttBannerDrop .38s cubic-bezier(.2,.85,.25,1) both!important;
+    gap:8px 16px!important; align-items:center!important; justify-content:center!important;
+  }
+  #foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner {display:grid!important;grid-template-columns:minmax(0,1fr) clamp(88px,25vw,128px)!important}
+  #foodPromo.tt-ios-banner {grid-template-areas:"copy image" "tail image" "action image"!important}
+  #foodPromo.tt-ios-banner #foodPromoQ {grid-area:copy!important}
+  #foodPromo.tt-ios-banner .food-promo-badge {grid-area:image!important;width:clamp(88px,25vw,128px)!important;height:clamp(88px,25vw,128px)!important;margin:0!important;flex:none!important}
+  #foodPromo.tt-ios-banner #foodPromoTail {grid-area:tail!important}
+  #foodPromo.tt-ios-banner #foodPromoLink {grid-area:action!important;justify-self:start!important}
+  #shopPromo.tt-ios-banner {grid-template-areas:"copy image" "action image"!important}
+  #shopPromo.tt-ios-banner #shopPromoQ {grid-area:copy!important}
+  #shopPromo.tt-ios-banner .food-promo-badge {grid-area:image!important;width:clamp(88px,25vw,128px)!important;height:clamp(88px,25vw,128px)!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  #shopPromo.tt-ios-banner #shopPromoIcon {width:100%!important;height:100%!important;max-width:128px!important;max-height:128px!important;object-fit:contain!important}
+  #shopPromo.tt-ios-banner #shopPromoLink {grid-area:action!important;justify-self:start!important}
+  #tourPromo.tt-ios-banner,#winePromo.tt-ios-banner {display:grid!important;grid-template-columns:clamp(88px,25vw,128px) minmax(0,1fr)!important;grid-template-areas:"image copy" "image action"!important}
+  #tourPromo.tt-ios-banner .tour-promo-img,#winePromo.tt-ios-banner .wine-promo-img {grid-area:image!important;width:clamp(88px,25vw,128px)!important;height:clamp(88px,25vw,128px)!important;max-width:128px!important;max-height:128px!important;object-fit:contain!important;margin:0!important;flex:none!important;border-radius:14px!important}
+  #tourPromo.tt-ios-banner #tourPromoQ,#winePromo.tt-ios-banner #winePromoQ {grid-area:copy!important}
+  #tourPromo.tt-ios-banner #tourPromoLink,#winePromo.tt-ios-banner #winePromoLink {grid-area:action!important;justify-self:start!important}
+  #poiPromo.tt-ios-banner {display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-areas:"copy copy" "ph wc" "hint hint"!important;gap:10px!important}
+  #poiPromo.tt-ios-banner #poiPromoQ {grid-area:copy!important;text-align:center!important}
+  #poiPromo.tt-ios-banner > div[style*="display:flex"] {grid-area:ph / 1 / auto / -1!important;display:flex!important;gap:12px!important;justify-content:center!important;margin:0!important;width:100%!important}
+  #poiPromo.tt-ios-banner .poi-promo-btn {width:clamp(64px,19vw,96px)!important;height:clamp(58px,16vw,76px)!important;min-width:0!important;min-height:0!important;font-size:clamp(30px,9vw,44px)!important;border-radius:14px!important;background:#fff!important;border:1.5px solid #c9a05c!important}
+  #poiPromo.tt-ios-banner #poiPromoHint {grid-area:hint!important;text-align:center!important;font-size:13px!important;margin:0!important}
+  #foodPromo.tt-ios-banner .food-promo-q,#shopPromo.tt-ios-banner .food-promo-q,
+  #tourPromo.tt-ios-banner .food-promo-q,#poiPromo.tt-ios-banner .food-promo-q,
+  #winePromo.tt-ios-banner .wine-promo-q {
+    min-width:0!important;max-width:100%!important;padding:0!important;margin:0!important;
+    align-self:center!important;white-space:pre-line!important;overflow-wrap:anywhere!important;
+    word-break:normal!important;text-align:left!important;
+    font:650 clamp(15px,4.2vw,19px)/1.3 system-ui,-apple-system,sans-serif!important;color:#30271f!important;
+  }
+  #foodPromo.tt-ios-banner .food-promo-link,#shopPromo.tt-ios-banner .food-promo-link,
+  #tourPromo.tt-ios-banner .food-promo-link,#winePromo.tt-ios-banner .wine-promo-link {
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:fit-content!important;max-width:100%!important;min-height:38px!important;
+    margin:0!important;padding:8px 13px!important;border:0!important;border-radius:999px!important;
+    background:#7a1026!important;color:#fff!important;text-decoration:none!important;
+    font:700 13px/1.2 system-ui,-apple-system,sans-serif!important;
+    white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;
+  }
+  #foodPromo.tt-ios-banner .food-promo-icon {width:100%!important;height:100%!important;object-fit:contain!important;border:1px solid #ead9bb!important;background:#fff!important;padding:5px!important}
+  #foodPromo.tt-ios-banner .food-promo-arc {display:none!important}
+  #foodPromo.tt-ios-banner .food-promo-close,#shopPromo.tt-ios-banner .food-promo-close,
+  #tourPromo.tt-ios-banner .food-promo-close,#poiPromo.tt-ios-banner .food-promo-close,
+  #winePromo.tt-ios-banner .wine-promo-close {
+    position:absolute!important;top:5px!important;right:5px!important;z-index:2!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+    padding:0!important;border:1px solid #d8c5a5!important;border-radius:50%!important;
+    background:#fff!important;color:#7a1026!important;font:400 25px/1 system-ui,sans-serif!important;
   }
   #foodPromo.tt-ios-banner[hidden],#shopPromo.tt-ios-banner[hidden],
   #tourPromo.tt-ios-banner[hidden],#poiPromo.tt-ios-banner[hidden],
   #winePromo.tt-ios-banner[hidden],#fbCard.tt-ios-banner[hidden] {display:none!important}
   #foodPromo.tt-ios-banner.tt-banner-out,#shopPromo.tt-ios-banner.tt-banner-out,
   #tourPromo.tt-ios-banner.tt-banner-out,#poiPromo.tt-ios-banner.tt-banner-out,
-  #winePromo.tt-ios-banner.tt-banner-out,#fbCard.tt-ios-banner.tt-banner-out {
-    animation:ttBannerLift .28s ease-in both!important;
+  #winePromo.tt-ios-banner.tt-banner-out,#fbCard.tt-ios-banner.tt-banner-out {animation:ttBannerLift .28s ease-in both!important}
+  #fbCard.tt-ios-banner {display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+  #fbCard.tt-ios-banner h4 {font-size:15px!important;margin:0!important}
+  #fbCard.tt-ios-banner p {font-size:13px!important;margin:0!important;min-width:0!important;overflow-wrap:anywhere!important}
+  #fbCard.tt-ios-banner .fb-row {display:flex!important;gap:6px!important;flex-wrap:wrap!important}
+  #fbCard.tt-ios-banner .fb-btn {font-size:12px!important;padding:8px 10px!important}
+  #fbCard.tt-ios-banner .fb-close {top:5px!important;right:5px!important}
+  @keyframes ttBannerDrop {from{opacity:0;transform:translateY(calc(-100% - 18px))}to{opacity:1;transform:translateY(0)}}
+  @keyframes ttBannerLift {from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(calc(-100% - 18px))}}
+  @media(max-width:380px) {
+    #foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,#winePromo.tt-ios-banner {padding:13px 48px 13px 13px!important;gap:7px 10px!important}
+    #foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner {grid-template-columns:minmax(0,1fr) 84px!important}
+    #foodPromo.tt-ios-banner .food-promo-badge,#shopPromo.tt-ios-banner .food-promo-badge,
+    #shopPromo.tt-ios-banner #shopPromoIcon {width:84px!important;height:84px!important}
+    #tourPromo.tt-ios-banner,#winePromo.tt-ios-banner {grid-template-columns:84px minmax(0,1fr)!important}
+    #tourPromo.tt-ios-banner .tour-promo-img,#winePromo.tt-ios-banner .wine-promo-img {width:84px!important;height:84px!important}
+    #foodPromo.tt-ios-banner .food-promo-q,#shopPromo.tt-ios-banner .food-promo-q,
+    #tourPromo.tt-ios-banner .food-promo-q,#winePromo.tt-ios-banner .wine-promo-q {font-size:15px!important}
   }
-  #foodPromo.tt-ios-banner .food-promo-q,#shopPromo.tt-ios-banner .food-promo-q,
-  #tourPromo.tt-ios-banner .food-promo-q,#poiPromo.tt-ios-banner .food-promo-q,
-  #winePromo.tt-ios-banner .wine-promo-q {
-    flex:1 1 auto!important; min-width:0!important; padding:0!important;
-    margin:0!important; font:600 15px/1.25 system-ui,-apple-system,sans-serif!important;
-    text-align:left!important; align-self:center!important;
-  }
-  #foodPromo.tt-ios-banner .food-promo-badge {width:88px!important;height:88px!important;flex:0 0 88px!important}
-  #foodPromo.tt-ios-banner .food-promo-icon {width:88px!important;height:88px!important}
-  #tourPromo.tt-ios-banner .tour-promo-img,#winePromo.tt-ios-banner .wine-promo-img {
-    width:54px!important;height:54px!important;max-width:54px!important;max-height:54px!important;
-    flex:0 0 54px!important;object-fit:contain!important;margin:0!important;
-  }
-  #poiPromo.tt-ios-banner > div[style*="display:flex"] {gap:6px!important;margin:0!important;flex:0 0 auto}
-  #poiPromo.tt-ios-banner .poi-promo-btn {width:46px!important;height:46px!important;
-    min-width:46px!important;min-height:46px!important;font-size:28px!important;border-radius:12px!important}
-  #foodPromo.tt-ios-banner .food-promo-link,#shopPromo.tt-ios-banner .food-promo-link,
-  #tourPromo.tt-ios-banner .food-promo-link,#winePromo.tt-ios-banner .wine-promo-link {
-    flex:0 0 auto!important; margin:0!important; font:700 13px/1.2 system-ui,-apple-system,sans-serif!important;
-    white-space:nowrap!important; max-width:34%; overflow:hidden; text-overflow:ellipsis;
-  }
-  #foodPromo.tt-ios-banner .food-promo-close,#shopPromo.tt-ios-banner .food-promo-close,
-  #tourPromo.tt-ios-banner .food-promo-close,#poiPromo.tt-ios-banner .food-promo-close,
-  #winePromo.tt-ios-banner .wine-promo-close {
-    top:2px!important;right:2px!important;min-width:38px!important;min-height:38px!important;
-    width:38px!important;height:38px!important;font-size:24px!important;padding:4px!important;
-    background:transparent!important;
-  }
-  #fbCard.tt-ios-banner {font-family:system-ui,-apple-system,sans-serif!important}
-  #fbCard.tt-ios-banner h4 {font-size:14px!important;margin:0 0 3px!important}
-  #fbCard.tt-ios-banner p {font-size:12px!important;margin:0!important;flex:1 1 auto}
-  #fbCard.tt-ios-banner .fb-row {display:flex!important;gap:5px!important;flex:0 0 auto!important}
-  #fbCard.tt-ios-banner .fb-btn {font-size:11px!important;padding:6px 8px!important}
-  #fbCard.tt-ios-banner .fb-close {top:2px!important;right:2px!important}
-  @keyframes ttBannerDrop {from{opacity:0;transform:translateY(calc(-100% - 16px))}to{opacity:1;transform:translateY(0)}}
-  @keyframes ttBannerLift {from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(calc(-100% - 16px))}}
-  @media(prefers-reduced-motion:reduce){#foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,#poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner{animation:none!important}}
-
-  /* Image-led banners use the larger iOS Maps-style sheet; short notices stay compact. */
-  #foodPromo.tt-ios-banner:has(img),#shopPromo.tt-ios-banner:has(img),
-  #tourPromo.tt-ios-banner:has(img),#winePromo.tt-ios-banner:has(img) {
-    min-height:min(30.25vh,240px)!important; max-height:min(32vh,260px)!important;
-    padding:14px 52px 14px 16px!important; gap:16px!important;
-  }
-  #foodPromo.tt-ios-banner:has(img) .food-promo-q,
-  #shopPromo.tt-ios-banner:has(img) .food-promo-q,
-  #tourPromo.tt-ios-banner:has(img) .food-promo-q,
-  #winePromo.tt-ios-banner:has(img) .wine-promo-q {
-    font-size:clamp(15px,4vw,18px)!important; line-height:1.3!important;
-  }
-  #foodPromo.tt-ios-banner:has(img) .food-promo-link,
-  #shopPromo.tt-ios-banner:has(img) .food-promo-link,
-  #tourPromo.tt-ios-banner:has(img) .food-promo-link,
-  #winePromo.tt-ios-banner:has(img) .wine-promo-link {
-    max-width:38%!important; white-space:normal!important; text-align:center;
-  }
-  @media(max-height:600px) {
-    #foodPromo.tt-ios-banner:has(img),#shopPromo.tt-ios-banner:has(img),
-    #tourPromo.tt-ios-banner:has(img),#winePromo.tt-ios-banner:has(img) {
-      min-height:0!important; max-height:38vh!important;
-    }
+  @media(prefers-reduced-motion:reduce) {
+    #foodPromo.tt-ios-banner,#shopPromo.tt-ios-banner,#tourPromo.tt-ios-banner,
+    #poiPromo.tt-ios-banner,#winePromo.tt-ios-banner,#fbCard.tt-ios-banner {animation:none!important}
   }
 </style>
 <script id="tt-ios-top-banners-v1-js">
