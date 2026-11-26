@@ -1,4 +1,4 @@
-const CACHE = 'tt-gps-preview-v18';
+const CACHE = 'tt-gps-preview-v19';
 const CACHE_PREFIX = 'tt-gps-preview-';
 const ASSETS = ['./index.html', './manifest.json'];
 
