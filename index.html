@@ -4535,7 +4535,8 @@ function renderTourPromo() {
   const l = tourPromoLang();
   const t = TOUR_PROMO_TEXT[currentView];
   document.getElementById('tourPromoQ').textContent = t[l] || t.en;
-  document.getElementById('tourPromoLink').textContent = (t.link[l] || t.link.en);
+  const link = document.getElementById('tourPromoLink');
+  if (link) { link.textContent = (t.link[l] || t.link.en); link.hidden = false; }
 }
 function hideTourPromo() {
   const box = document.getElementById('tourPromo');
