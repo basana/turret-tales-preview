@@ -178,6 +178,10 @@
   .xmas-gps-time.late { background: #f6e0dc; border: 2px solid #b33a2b; color: #8d2118; box-shadow: 0 2px 8px rgba(141,33,24,.14); }
   .xmas-return-countdown{position:absolute;z-index:1550;left:50%;top:50%;transform:translate(-50%,-50%);min-width:168px;padding:15px 22px;border:3px solid #fff;border-radius:18px;background:rgba(141,33,24,.96);color:#fff;text-align:center;font:900 clamp(23px,6vw,34px)/1.05 var(--sans);letter-spacing:.02em;text-shadow:0 2px 3px rgba(0,0,0,.35);box-shadow:0 0 0 3px #b33a2b,0 8px 28px rgba(0,0,0,.4);pointer-events:none;animation:xmasReturnPulse 1.35s ease-in-out infinite}
   .xmas-return-countdown[hidden]{display:none}
+  /* Keep the red countdown in the visible map area when the drawer is open. */
+  .xmas-map-stage.xmas-sheet-open .xmas-return-countdown{top:23%}
+  .xmas-map-stage.xmas-sheet-expanded .xmas-return-countdown{display:none!important}
+  .xmas-return-warning,.xmas-return-warning *{writing-mode:horizontal-tb!important;text-orientation:mixed!important;}
   .xmas-return-countdown small{display:block;margin-top:6px;font:800 11px/1.2 var(--sans);letter-spacing:.13em;text-transform:uppercase}
   @keyframes xmasReturnPulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 3px #b33a2b,0 8px 28px rgba(0,0,0,.4)}50%{transform:translate(-50%,-50%) scale(1.07);box-shadow:0 0 0 9px rgba(179,58,43,.28),0 10px 34px rgba(0,0,0,.48)}}
   .xmas-return-warning{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(28,15,12,.72);font-family:var(--sans)}
@@ -193,6 +197,11 @@
   .xmas-gps-clear { border: 1px solid #8eafd0; background: #e7f0f9; color: #285b88; }
   .xmas-gps-depart { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
   .xmas-gps-depart input { font: 16px/1.2 var(--sans) !important; min-height: 44px; width: 116px; box-sizing: border-box; touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+.xmas-ship-walk-time{margin-left:auto;color:#2786C5;font:800 12px/1.2 var(--sans);white-space:nowrap;text-align:right}
+.xmas-ship-actions{display:flex;align-items:center;gap:8px;margin:2px 0 7px}
+.xmas-ship-actions[hidden]{display:none}
+.xmas-ship-actions .xmas-save-location-btn,.xmas-ship-actions .xmas-gps-clear{position:static;display:inline-flex;align-items:center;justify-content:center;flex:1 1 0;min-width:0;min-height:40px;margin:0;padding:8px 10px;font-size:12px;white-space:normal;text-align:center}
+.xmas-ship-actions .xmas-save-location-btn[hidden],.xmas-ship-actions .xmas-gps-clear[hidden]{display:none}
   .xmas-lock { color: var(--terracotta); font-size: 11px; }
   .xmas-berth { display: flex; align-items: center; gap: 6px; background: #fff; color: #222; border: 2px solid var(--bc, #1F4E79); border-radius: 999px; padding: 2px 9px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.35); transform: translate(-50%, -50%); }
   .xmas-berth-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--bc, #1F4E79); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex: 0 0 auto; }
@@ -208,7 +217,7 @@
   .xmas-cell-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
   .xmas-cell-img figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; background: #7A1026; color: #fff; font-family: 'EB Garamond', serif; font-size: 16px; font-weight: 700; text-align: center; }
   .xmas-hero { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #7A1026; color: #F5ECD6; cursor: pointer; }
-  .xmas-hero img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
+  .xmas-hero img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; clip-path: inset(0 0 7px 0); margin-bottom: -7px; }
   .xmas-hero { pointer-events: auto; }
   .buta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   .buta-frame { display: block; width: 100%; height: auto; border-radius: 10px; }
@@ -281,15 +290,15 @@
   .xmas-town-text .castle-name { margin-top: 1px; }
   body:not(.xmas-on) .xmas-hero, body:not(.xmas-on) .xmas-home, body:not(.xmas-on) .xmas-where { display: none !important; }
   body.xmas-on .xmas-where, body.xmas-on .xmas-hero-label { display: none !important; }
-  .xmas-home { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
+  .xmas-home { display: flex; flex-direction: row; align-items: stretch; gap: 10px; margin: 0 0 16px; }
   .xmas-home-langs { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
   .xmas-home-langs button { padding: 3px 9px; border-radius: 14px; border: 1px solid #7A1026; background: #fff; color: #7A1026; font-family: var(--sans); font-size: 10.5px; font-weight: 700; cursor: pointer; }
   .xmas-home-langs button.active { background: #7A1026; color: #fff; }
   body:not(.xmas-on) .splash-lang-xmas { display: none !important; }
-  .xmas-home-title, .xmas-home-koblenz { width: 100%; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 14px 12px; }
-  .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 17px; }
+  .xmas-home-title, .xmas-home-koblenz { flex: 1 1 0; min-width: 0; width: auto; border-radius: 12px; cursor: pointer; font-family: var(--sans); font-weight: 700; text-align: center; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .xmas-home-title { border: 0; background: #7A1026; color: #F4EAD5; font-size: 15px; line-height: 1.25; }
   .xmas-home-sub { display: block; font-size: 13px; font-weight: 400; opacity: 0.9; margin-top: 4px; }
-  .xmas-home-koblenz { border: 1px solid #7A1026; background: #fff; color: #7A1026; font-size: 15px; }
+  .xmas-home-koblenz { border: 1px solid #7A1026; background: #fff; color: #7A1026; font-size: 14px; line-height: 1.25; }
   body.station-open #view-guide .photo { display: block !important; }
   body.station-open #view-guide .station-title { display: block !important; }
   body.station-open #view-guide .stats { display: flex !important; }
@@ -334,8 +343,8 @@
   /* GPS target is identified by its pulse and number, never by a text label. */
   .gps-target-label-mode .leaflet-tooltip.gps-base-label { display: none !important; }
   .xmas-hero-caption {
-    position: absolute; right: 0; top: auto; bottom: 12%; z-index: 2; background: #7A1026; color: #fff;
-    font-family: var(--sans); font-size: 13px; font-weight: 400; line-height: 1.2;
+    position: absolute; right: 0; top: auto; bottom: 12%; z-index: 2; background: #fff; color: #7A1026;
+    font-family: var(--sans); font-size: 13px; font-weight: 700; line-height: 1.2;
     padding: 4px 9px; border-radius: 6px 0 0 0; text-align: right; max-width: 85%;
   }
   /* Значок ангела (schaengel-angel.svg) для Schängelbar: вместо 🎄 на обзорной карте и вместо номера в городе */
@@ -1125,6 +1134,8 @@
     background: transparent; border: none; font-size: 20px; width: 24px; height: 24px;
   }
   .saved-spot-marker { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45)); line-height: 1; }
+  .xmas-ship-anchor { width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:2px solid #7A1026;border-radius:50%;background:#fffaf0;color:#7A1026;font:800 25px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42); }
+  .xmas-berth-marker { width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:2px solid #174A70;border-radius:50%;background:#fffaf0;color:#174A70;font:26px/1 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.42);flex:0 0 42px; }.xmas-berth-marker-row{display:flex;align-items:center;gap:7px;width:max-content;white-space:nowrap}.xmas-berth-marker-label{padding:6px 9px;border:1px solid #174A70;border-radius:8px;background:#fffaf0;color:#174A70;font:700 13px/1.1 var(--sans);box-shadow:0 2px 8px rgba(0,0,0,.35)}
   .poi-marker {
     width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center; font-size: 13px;
@@ -1176,12 +1187,12 @@
   .poi-toggle-btn.map-reset-btn:active { background: var(--gold); }
   .gps-user-halo {
     width: 66px; height: 66px; border-radius: 50%;
-    background: rgba(181,96,46,0.35); display: flex; align-items: center; justify-content: center;
+    background: rgba(22,119,210,0.24); display: flex; align-items: center; justify-content: center;
     animation: gpsHaloPulse 1.8s ease-in-out infinite;
   }
   .gps-user-halo::after {
     content: ''; width: 30px; height: 30px; border-radius: 50%;
-    background: var(--terracotta); border: 6px solid #fff; box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    background: #1677D2; border: 6px solid #fff; box-shadow: 0 0 12px rgba(0,0,0,0.4);
   }
   /* Selected/nearest destination: unmistakable marker, visually distinct from the user's GPS dot. */
   .gps-target-pulse {
@@ -1428,16 +1439,37 @@
 .xmas-floating-close{margin-left:auto;width:30px;height:30px;border:0;border-radius:50%;background:#eadfca;color:#563b31;font-size:20px;cursor:pointer}
 .xmas-floating-content{overflow:auto;overscroll-behavior:contain;padding:0 14px 14px;min-height:0;flex:1 1 auto}
  .xmas-floating-content .xmas-gps-panel{gap:5px;padding-top:0}
- .xmas-floating-content .xmas-gps-depart{margin:0 0 4px}
+ .xmas-floating-content .xmas-gps-depart{margin:0 0 4px;flex-wrap:wrap;width:100%}
+.xmas-floating-content .xmas-ship-walk-time{margin-left:auto}
  .xmas-floating-content .xmas-gps-time{margin:2px 0 5px;padding:7px 9px}
-.xmas-floating-content .xmas-save-location-btn{position:static;display:inline-flex;margin:2px 0 9px;min-height:40px;font-size:13px}.xmas-floating-content .xmas-save-location-btn[hidden]{display:none}
+.xmas-floating-content .xmas-save-location-btn{position:static;display:inline-flex;margin:0;min-height:40px;font-size:13px}.xmas-floating-content .xmas-save-location-btn[hidden]{display:none}
 .xmas-floating-content .xmas-gps-panel{margin:0;display:flex;flex-direction:column;gap:7px;overflow:visible;padding:2px 1px 9px}
 .xmas-floating-content .xmas-gps-panel>*{scroll-snap-align:start}
 .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%;min-height:68px;align-items:center;padding:10px 11px;margin:0;border:1px solid #d3c2a6;border-radius:12px;background:#fffdf7;box-sizing:border-box}
+.xmas-floating-content .xmas-gps-row[hidden],.xmas-floating-content .xmas-gps-depart[hidden],.xmas-floating-content .xmas-gps-time[hidden],.xmas-floating-content .xmas-town-list[hidden]{display:none!important}
 .xmas-floating-content .xmas-gps-row>span{font-size:13px;line-height:1.25;font-weight:700}.xmas-floating-content .xmas-gps-row b{display:block;color:#7A1026;font-size:15px;white-space:nowrap}.xmas-floating-content .xmas-gps-row small{display:block;margin:2px 0 0;font-size:11px;white-space:nowrap}
 .xmas-floating-content .xmas-gps-depart,.xmas-floating-content .xmas-gps-time{flex:0 0 100%}
 .xmas-floating-content .xmas-gps-ship{border-color:#9c6a75;background:#fff7f6}
 .xmas-floating-content .xmas-town-list{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 8px;margin:8px 0 0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.xmas-floating-content .xmas-town-list[hidden]{display:none!important}
+.xmas-map-stage #xmasNearestToast{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;transform:none!important;max-width:none;text-align:left}
+/* Nearest-place address belongs to the moving drawer, never floats above it. */
+.xmas-floating-content #xmasNearestToast{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;transform:none!important;width:auto!important;max-width:none!important;box-sizing:border-box;margin:0 0 10px;z-index:auto!important;}
+.xmas-floating-content #xmasNearestToast.show{display:block!important}
+.xmas-floating-content #xmasNearestToast:not(.show),.xmas-floating-content #xmasNearestToast.show:empty{display:none!important}
+.xmas-map-stage #xmasNearestToast *{writing-mode:horizontal-tb!important;text-orientation:mixed!important;word-break:normal!important}
+/* Keep every red ship-return alert horizontal, including the map countdown and screen badge. */
+.xmas-map-stage #xmasReturnCountdown,
+#xmasReturnCountdownScreen,
+.xmas-return-countdown,
+.xmas-return-countdown-screen{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;}
+.xmas-map-stage #xmasReturnCountdown small,
+#xmasReturnCountdownScreen small,
+.xmas-return-countdown small,
+.xmas-return-countdown-screen small{writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:nowrap!important;word-break:normal!important;}
+.xmas-known-berth{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px dashed #c8a878;padding:9px 2px;color:inherit;cursor:pointer;font:inherit}
+.xmas-known-berth:active{background:#f1e7d4}
+.xmas-known-berth:focus-visible{outline:2px solid #397BC4;outline-offset:2px}
 .xmas-floating-content .xmas-town-card{flex:0 0 190px;scroll-snap-align:start;min-height:78px;padding:8px}.xmas-floating-content .xmas-town-card img{width:58px;height:58px;min-width:58px}
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-panel{flex-direction:column;overflow:visible}
 .xmas-floating-nav.expanded .xmas-floating-content .xmas-gps-row{flex:0 0 auto;width:100%}
@@ -1451,12 +1483,53 @@
 .xmas-floating-content .xmas-gps-row.xmas-gps-nearest>span,.xmas-floating-content .xmas-gps-row.xmas-gps-nearest b,.xmas-floating-content .xmas-gps-row.xmas-gps-nearest small{color:#fff!important}
 .xmas-floating-content .xmas-gps-row.xmas-gps-nearest small{opacity:.92}
 .xmas-floating-content .xmas-gps-row.xmas-gps-nearest:active{background:#5f0b1d!important}
-.xmas-floating-static-link{width:100%;padding:11px 12px;border:1px solid #c5a98a;border-radius:11px;background:#fffaf0;color:#6b382f;font:700 13px var(--sans);text-align:left;cursor:pointer}.xmas-floating-empty{padding:12px;border-radius:12px;background:#f1e7d4;color:#654d3c;font-size:13px;line-height:1.4;margin:4px 0 10px}
+.xmas-floating-static-link{width:100%;padding:11px 12px;border:1px solid #c5a98a;border-radius:11px;background:#fffaf0;color:#6b382f;font:700 13px var(--sans);text-align:left;cursor:pointer}.xmas-floating-empty{padding:12px;border-radius:12px;background:#f1e7d4;color:#654d3c;font-size:13px;line-height:1.4;margin:4px 0 10px}.xmas-enable-gps{display:block;width:100%;min-height:42px;margin:10px 0 0;padding:9px 12px;border:0;border-radius:10px;background:#7A1026;color:#fff;font:700 13px var(--sans);cursor:pointer;touch-action:manipulation}.xmas-enable-gps:active{background:#5f0b1d}
+.xmas-known-berths{margin:10px 0 4px;padding:12px;border:1px solid #c8a878;border-radius:12px;background:#fffaf0;color:#5A4327;font-family:var(--sans)}.xmas-known-berths[hidden]{display:none}.xmas-known-berths h3{margin:0 0 9px;color:#7A1026;font:700 15px/1.25 var(--sans)}.xmas-known-berth{padding:8px 2px;border-bottom:1px dashed #c8a878}.xmas-known-berth strong{display:block;font-size:13px}.xmas-known-berth small{display:block;margin-top:3px;font-size:11px;line-height:1.3;color:#6b5a48}.xmas-known-berths p{margin:9px 0 0;font-size:11px;line-height:1.35;color:#6b5a48}
 .xmas-floating-hint{padding:0 12px 7px;color:#7A1026;font-size:11px;font-weight:700;text-align:center}
 .xmas-floating-nav.hint-bounce .xmas-floating-sheet{animation:xmasSheetNudge 1.35s ease-in-out 1}
 @keyframes xmasSheetNudge{0%,100%{transform:translateY(0)}35%{transform:translateY(-13px)}65%{transform:translateY(0)}}
 @media(max-width:380px){.xmas-floating-shortcut{padding:8px;gap:7px;min-height:54px}.xmas-floating-shortcut strong{font-size:13px}.xmas-floating-shortcut small{font-size:10px}.xmas-floating-content .xmas-gps-row{flex-basis:205px}}
 </style>
+
+<style id="map-navi-viewport-balance-v1">
+  /* MAP NAVI: all map canvases share a viewport 10% shorter than the former 62dvh.
+     No fixed minimum height: short screens must not force vertical page scrolling. */
+  #mapDiv,
+  .xmas-map,
+  .xmas-map-big {
+    height: 56dvh !important;
+    min-height: 0 !important;
+    max-height: 56dvh !important;
+    box-sizing: border-box;
+  }
+
+  /* Keep geographic coordinates untouched; reduce only the visual footprint
+     of map markers/emblems so their spacing remains balanced in the shorter map. */
+  #view-map .castle-marker,
+  #view-map .poi-marker,
+  #view-map .gps-user-halo,
+  #view-map .gps-target-pulse,
+  #view-map .saved-spot-marker,
+  #view-map .castle-selection-pulse,
+  #view-map .gps-target-town-dot,
+  #view-map .gps-target-castle-icon,
+  .xmas-map-stage .xmas-dot,
+  .xmas-map-stage .xmas-dot-angel,
+  .xmas-map-stage .xmas-pin,
+  .xmas-map-stage .xmas-pin-angel,
+  .xmas-map-stage .xmas-pin-town,
+  .xmas-map-stage .xmas-overview-market,
+  .xmas-map-stage .xmas-overview-tree,
+  .xmas-map-stage .xmas-berth,
+  .xmas-map-stage .gps-user-halo,
+  .xmas-map-stage .gps-target-pulse,
+  .xmas-map-stage .saved-spot-marker,
+  #view-food .food-pin,
+  #view-wine .wine-pin {
+    zoom: 0.9;
+  }
+</style>
+
 </head>
 <body>
 
@@ -1646,7 +1719,7 @@
         <div class="guide-note-photo" id="guideNotePhoto"><img src="guide-photo.webp" alt="Anatoly Basin"></div>
         <p class="guide-note-text" id="guideNoteText"></p>
       </div>
-      <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="Rahmen%20KO%20kurz.webp" alt="Christmas market Koblenz framed illustration"><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
+      <button class="xmas-hero" id="qlChristmas"><span class="xmas-hero-pic"><img src="https://basana.github.io/turret-tales-experimental-preview/Rahmen%20KO%20kurz.webp" alt="Christmas market Koblenz framed illustration"><span class="xmas-hero-caption">Weihnachtsmarkt Koblenz, Zentralplatz</span><span class="xmas-hero-strip"></span></span><span class="xmas-hero-label" id="qlChristmasLabel">Christmas markets</span></button>
       <div class="xmas-home" id="xmasHome">
         <button class="xmas-home-title" id="xmasHomeMap"><span id="xmasHomeTitle">Christmas markets Middle Rhine</span><span class="xmas-home-sub" id="xmasHomeSub">Map of all markets →</span></button>
         <button class="xmas-home-koblenz" id="xmasHomeKoblenz"><span id="xmasHomeKoblenzLabel">Christmas market Koblenz →</span></button>
@@ -2506,17 +2579,26 @@ function clearXmasPoiMode() {
 }
 function toggleXmasPoiLayer(type) {
   if (!xmasMapObj) return;
-  const key = type === 'apotheke' ? 'apotheke' : 'wc';
-  const btn = xmasMapObj.getContainer().querySelector('.poi-toggle-btn.' + key);
-  const already = type === 'apotheke' ? !!xmasApoLayer : !!xmasWcLayer;
+  const isApo = type === 'apotheke';
+  const currentLayer = isApo ? xmasApoLayer : xmasWcLayer;
+  const data = isApo ? POI_APOTHEKEN : POI_TOILETTEN;
+  const emoji = isApo ? '💊' : '🚻';
+  const cssClass = isApo ? 'poi-apotheke' : 'poi-wc';
+
+  // One urgent destination at a time. Tapping the active category switches it off.
   clearXmasPoiMode();
-  if (already) return;
-  if (type === 'apotheke') xmasApoLayer = _buildPoiLayer(xmasMapObj, POI_APOTHEKEN, '💊', 'poi-apotheke');
-  else xmasWcLayer = _buildPoiLayer(xmasMapObj, POI_TOILETTEN, '🚻', 'poi-wc');
-  if (btn) btn.classList.add('active');
-  _zoomToNearestPoi(xmasMapObj, type === 'apotheke' ? POI_APOTHEKEN : POI_TOILETTEN, type === 'apotheke' ? '💊' : '🚻');
-  _startPoiEmergency();
-  const xt = document.getElementById('xmasNearestToast'); if (xt) xt.classList.remove('show');
+  if (!currentLayer) {
+    const layer = _buildPoiLayer(xmasMapObj, data, emoji, cssClass);
+    if (isApo) xmasApoLayer = layer;
+    else xmasWcLayer = layer;
+    const btn = xmasMapObj.getContainer().querySelector(isApo ? '.poi-toggle-btn.apotheke' : '.poi-toggle-btn.wc');
+    if (btn) btn.classList.add('active');
+    _zoomToNearestPoi(xmasMapObj, data, emoji);
+    _startPoiEmergency();
+  }
+
+  const xt = document.getElementById('xmasNearestToast');
+  if (xt) xt.classList.remove('show');
 }
 
 function renderPois() {
@@ -2865,7 +2947,7 @@ const UI = {
     helpBubbleTextGps: 'Live GPS distance to the nearest castle is part of the bonus edition.',
     helpBubbleShowGps: 'Learn more',
     qlTours: 'Tours', qlContact: 'Contact', qlAbout: 'About me',
-    guideNoteText: 'This page isn’t a complete archive or an exhaustive guidebook to the region. I’ve gathered here what cruise guests ask me about most often — what’s where, what’s worth seeing, and what this wonderful region has to offer. I hope it helps you get your bearings and enjoy your trip.',
+    guideNoteText: 'This isn’t a complete archive or guidebook to the region. I’ve gathered what cruise guests ask me most often: where things are, what’s worth seeing, and what makes this region special. I hope it helps you find your way and enjoy your trip.',
     guideNoteSig: 'Anatoly Basin, certified tour guide',
     mapSearchPlaceholder: 'Find a town or castle…',
     mapSearchNotFound: 'Not found. Try another name.',
@@ -4166,13 +4248,13 @@ document.querySelectorAll('[data-xh]').forEach(b => b.addEventListener('click', 
 }));
 const XMAS_OVERVIEW = {de:'Wählen Sie einen Markt.', fr:'Choisissez un marché.', nl:'Kies een markt.', en:'Choose a market.', ru:'Выберите рынок.', zh:'请选择一个市集。', he:'בחרו שוק.'};
 const XMAS_PHOTOS = {
-  'koblenz-hoerter': ['koblenz-hoerter-1.webp','koblenz-hoerter-2.webp','koblenz-hoerter-3.webp'],
+  'koblenz-hoerter': ["https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/schaengelbar_7750.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/schaengelbar_7752.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/schaengelbar_7753.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/schaengelbar_7754.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/schaengelbar_7755.jpeg"],
   'mia-gelateria': ['mia-gelateria-main.webp','mia-gelateria-1.webp'],
-  'koblenz-jesuitenplatz': ['koblenz-jesuitenplatz-1.webp','markt-foto-6.jpg'],
-  'koblenz-am-plan': ['markt-foto-4.jpg'],
+  'koblenz-jesuitenplatz': ["https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7737.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7740.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7741.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7743.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7744.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7746.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7748.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7749.jpeg"],
+  'koblenz-am-plan': ['https://raw.githubusercontent.com/basana/turret-tales-christmas/main/markt-foto-4.jpg'],
   'koblenz-goerresplatz': ['koblenz-goerresplatz-1.webp','koblenz-goerresplatz-2.webp'],
   'koblenz-muenzplatz': ['koblenz-muenzplatz-1.webp','koblenz-muenzplatz-2.webp'],
-  'koblenz-zentralplatz': ['koblenz-zentralplatz-1.webp','koblenz-zentralplatz-2.webp','markt-foto-2.jpg'],
+  'koblenz-zentralplatz': [,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7762.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7763.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7766.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7768.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7770.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7771.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7772.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7773.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7774.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7775.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7777.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7778.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7779.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7780.jpeg"],
   'koblenz-liebfrauen': ['koblenz-liebfrauen-1.webp','markt-foto-3.jpg'],
   'koblenz-festung': ['ehrenbreitstein-xmas-1.webp','christmas-garden-purple.webp','ehrenbreitstein-xmas-3.webp','ehrenbreitstein-xmas-4.webp','ehrenbreitstein-xmas-5.webp','ehrenbreitstein-xmas-6.webp'],
   'lahnstein-markt': ['lahnstein-markt-1.webp','lahnstein-markt-3.webp'],
@@ -4215,7 +4297,8 @@ function xmasTownFromStation() {
 }
 
 let xmasListOnly = false; // true = только список рынков (кнопка «Рождественские локации»)
-function xmasOpen(townKey) { xmasTown = townKey; xmasListOnly = false; switchView('christmas'); }
+let xmasPendingCardPhotoKey = null; // optional deep-link from the framed Koblenz/Zentralplatz home button
+function xmasOpen(townKey, cardPhotoKey = null) { xmasTown = townKey; xmasListOnly = false; xmasPendingCardPhotoKey = cardPhotoKey; switchView('christmas'); }
 function xmasOpenList() { xmasTown = null; xmasListOnly = true; switchView('christmas'); }
 // Экран 2 в двух режимах: «станция» (фото, текст — из раздела Locations/карты) и «главный» (кнопки Christmas)
 function openStation(i) { index = i; document.body.classList.add('station-open'); switchView('guide'); renderGuide(); }
@@ -4565,7 +4648,7 @@ const XMAS_BACK = { de: '← Zurück zur Startseite', fr: '← Retour à l’acc
 // Koordinaten: Stadtmitte und Marktplätze. ANNÄHERUNG, vor Veröffentlichung auf der Karte prüfen.
 const XMAS_ORDER = ['koblenz', 'lahnstein', 'boppard', 'oberwesel', 'bacharach', 'ruedesheim'];
 const XMAS_GEO = {
-  koblenz:   {center:[50.36020,7.59850], zoom:16, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.35991,7.59612],[50.35879,7.59651],[50.36111,7.59537],[50.3653,7.6156]]},
+  koblenz:   {center:[50.36020,7.59850], zoom:16, pins:[[50.36011,7.59836],[50.360611,7.598306],[50.36041,7.59506],[50.35988,7.60123],[50.361473,7.594316],[50.35879,7.59651],[50.36111,7.59537],[50.3653,7.6156]]},
   oberwesel: {center:[50.1065,7.7273], zoom:16, pins:[[50.1065,7.7273]]},
   boppard:   {center:[50.23232,7.59165], zoom:16, pins:[[50.23232,7.59165]]},
   bacharach: {center:[50.0583,7.7686], zoom:16, pins:[[50.0583,7.7686]]},
@@ -4700,8 +4783,30 @@ function xmasDrawMap(opts) {
   targetPane.style.pointerEvents = 'auto';
   L.control.zoom({ position: 'bottomleft' }).addTo(xmasMapObj);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
-  // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
-     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
+  // Permanent layer: every Koblenz passenger berth is visible from the first map render.
+  const berthSpecs = [
+    {id:'kd4',lat:50.360863,lng:7.605562,label:'KD · Landebrücke Nr. 4'},
+    {id:'kd5',lat:50.359770,lng:7.605171,label:'KD · Landebrücke Nr. 5'},
+    {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:'KD · Rheinanlagen'},
+    {id:'viking',lat:50.363360010510355,lng:7.6062045007751475,label:'Viking · Brücke 1, Konrad-Adenauer-Ufer'}
+  ];
+  xmasMapObj._xmasKnownBerthLayerGroup = L.layerGroup().addTo(xmasMapObj);
+  xmasMapObj._xmasKnownBerthMarkers = {};
+  berthSpecs.forEach(b => {
+    const marker = L.marker([b.lat,b.lng], {
+      icon:L.divIcon({className:'',html:b.id==='viking'?'<div class="xmas-berth-marker-row"><div class="xmas-berth-marker" aria-hidden="true">🚢</div><span class="xmas-berth-marker-label">Viking</span></div>':'<div class="xmas-berth-marker" aria-label="Passenger ship berth">🚢</div>',iconSize:b.id==='viking'?[116,42]:[42,42],iconAnchor:b.id==='viking'?[21,21]:[21,21]}),
+      zIndexOffset:650
+    });
+    marker.bindPopup('<strong>'+b.label+'</strong>');
+    marker.addTo(xmasMapObj._xmasKnownBerthLayerGroup);
+    xmasMapObj._xmasKnownBerthMarkers[b.id] = marker;
+  });
+
+  // For Koblenz, include every passenger berth in the initial camera bounds as well as the market pins.
+  if (xmasTown === 'koblenz' && opts.pins && opts.pins.length) {
+    const koblenzPoints = opts.pins.map(p => p.ll).concat(berthSpecs.map(b => [b.lat,b.lng]));
+    xmasMapObj.fitBounds(L.latLngBounds(koblenzPoints), { padding: [76, 76], maxZoom: 13, animate: false });
+  } else if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
   else if (opts.pins && opts.pins.length > 1) {
     // Все точки города сразу видны, с запасом по краям (подписи и маркеры не обрезаются)
     const pb = L.latLngBounds(opts.pins.map(p => p.ll));
@@ -4713,8 +4818,8 @@ function xmasDrawMap(opts) {
   const xPoiBar = document.createElement('div');
   xPoiBar.className = 'poi-toggle-bar';
   // Reset button inside the same bar for uniform layout
-  const xResetHtml = '<button class="poi-toggle-btn" style="background:rgba(246,238,221,0.95);border-color:var(--gold,#c8a878)" id="xResetBtn" title="Full map / Gesamte Karte" aria-label="Show full map">⤢</button>';
-  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC">🚻</button>';
+  const xResetHtml = '<button class="poi-toggle-btn map-reset-btn" id="xResetBtn" title="Full map / Gesamte Karte" aria-label="Show full map"><span class="poi-toggle-face">⤢</span></button>';
+  xPoiBar.innerHTML = xResetHtml + '<button class="poi-toggle-btn apotheke" onclick="toggleXmasPoiLayer(\'apotheke\')" title="Apotheken" aria-label="Apotheken"><span class="poi-toggle-face">💊</span></button><button class="poi-toggle-btn wc" onclick="toggleXmasPoiLayer(\'wc\')" title="WC" aria-label="WC"><span class="poi-toggle-face">🚻</span></button>';
   xmasMapObj.getContainer().appendChild(xPoiBar);
   if (L.DomEvent) { L.DomEvent.disableClickPropagation(xPoiBar); L.DomEvent.disableScrollPropagation(xPoiBar); }
   const resetMarketMapView = () => {
@@ -4723,7 +4828,10 @@ function xmasDrawMap(opts) {
     // A deliberate reset is the user's camera choice, even while GPS is running.
     xmasMapObj._xmasGpsFitDone = true;
     xmasMapObj._poiGpsZoomed = true;
-    if (opts.bounds) {
+    if (xmasTown === 'koblenz' && opts.pins && opts.pins.length) {
+      const koblenzPoints = opts.pins.map(p => p.ll).concat(berthSpecs.map(b => [b.lat,b.lng]));
+      xmasMapObj.fitBounds(L.latLngBounds(koblenzPoints), { padding: [76, 76], maxZoom: 13, animate: false });
+    } else if (opts.bounds) {
       xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12, animate: false });
     } else if (opts.pins && opts.pins.length > 1) {
       xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [76, 76], maxZoom: opts.zoom || 15, animate: false });
@@ -4734,10 +4842,7 @@ function xmasDrawMap(opts) {
     }
     xmasMapObj.invalidateSize(true);
   };
-  xmasMapObj.getContainer().addEventListener('pointerdown', e => {
-    if (e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc')) return;
-    if (xmasApoLayer || xmasWcLayer) clearXmasPoiMode();
-  }, true);
+  // POI layers stay visible while visitors pan or zoom; the toggle or Reset clears them.
   const resetBtn = xmasMapObj.getContainer().querySelector('#xResetBtn');
   if (resetBtn) resetBtn.addEventListener('click', e => {
     e.preventDefault(); e.stopPropagation(); clearXmasPoiMode();
@@ -4795,7 +4900,7 @@ const XMAS_COMPANY_STYLE = {
 function xmasCompanyStyle(co) {
   return XMAS_COMPANY_STYLE[co] || { bg: '#555555', letter: (co || '?').charAt(0).toUpperCase() };
 }
-const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer', ll: [50.35975, 7.60466] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
+const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer · Brücke 1', ll: [50.363360010510355, 7.6062045007751475] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
   de: {backAt:'Sie sind wieder bei {name}', btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Rückkehrpunkt speichern', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
@@ -4807,6 +4912,23 @@ const XG = {
   he: {backAt:'חזרתם אל {name}', btn:'GPS', locating:'מאתר מיקום…', err:'GPS לא זמין', ship:'הספינה שלכם / נקודת המפגש', saveShip:'📌 שמירת נקודת חזרה', saveLocation:'📌 שמירה', clearShip:'הסרת הספינה', min:'דק׳ הליכה', shipMin:'דק׳ בספינה', departLabel:'שעת יציאה', enough:'יש זמן, כ-{n} דק׳ רווח', notEnough:'שימו לב: איחור של כ-{n} דק׳', popupTitle:'GPS: מרחקים לשווקים', popupItems:['המרחק ממיקומכם לכל שוק','המרחק לספינה שלכם או לנקודת המפגש','האם יש מספיק זמן לפני היציאה'], shipPrompt:'שם לנקודה זו', shipDefault:'ספינה', berth:'רציף Viking'}
 };
 const XMAS_DEPART_KEY = 'xmasDepart';
+// A newly saved or removed ship must never inherit the previous ship's departure time or warning acknowledgement.
+function xmasClearDepartureState() {
+  try {
+    localStorage.removeItem(XMAS_DEPART_KEY);
+    localStorage.removeItem(XMAS_RETURN_ACK_KEY);
+  } catch (e) {}
+  const input = document.getElementById('xmasDepart');
+  if (input) input.value = '';
+  const notice = document.getElementById('xmasDepartNotice');
+  if (notice) notice.remove();
+  const badge = document.getElementById('xmasReturnCountdown');
+  if (badge) badge.hidden = true;
+  const screenBadge = document.getElementById('xmasReturnCountdownScreen');
+  if (screenBadge) screenBadge.hidden = true;
+  const modal = document.getElementById('xmasReturnWarningModal');
+  if (modal) modal.hidden = true;
+}
 const XMAS_EXPLAIN = {
   de: '<b>KARTE ERKUNDEN</b><br>Tippen Sie auf eine nummerierte Marktmarkierung oder eine Ortskarte unten, um die Marktseite dieses Ortes zu öffnen.<br><br><b>ORIENTIERUNG</b><br>GPS zeigt die Entfernung von Ihrem Standort zum Markt.<br><br><b>IHR SCHIFF IM BLICK</b><br>Tippen Sie auf „Mein Schiff ist hier“, um den Standort Ihres Schiffes zu speichern und vor der Abfahrt Ihre Rückkehrzeit zu prüfen.',
   fr: '<b>EXPLORER LA CARTE</b><br>Touchez un marché numéroté sur la carte ou une carte de ville ci-dessous pour ouvrir la page du marché de cette ville.<br><br><b>SE REPÉRER</b><br>Le GPS indique la distance entre votre position et le marché.<br><br><b>GARDER UN ŒIL SUR VOTRE BATEAU</b><br>Touchez « Mon bateau est ici » pour enregistrer la position de votre bateau et vérifier votre heure de retour avant le départ.',
@@ -4839,12 +4961,7 @@ function xmasTownListHtml() {
 }
 
 let xmasPendingMarketKey = null;
-document.addEventListener('pointerdown',e=>{
- const keep=e.target.closest('.poi-toggle-btn.apotheke,.poi-toggle-btn.wc,.poi-marker.poi-apotheke,.poi-marker.poi-wc');
- if(keep)return;
- if(apothekenLayer||toilettenLayer)clearMainPoiMode();
- if(xmasApoLayer||xmasWcLayer)clearXmasPoiMode();
-},true);
+// Do not clear POI layers on generic pointerdown; visitors need to inspect the map after finding an address.
 function xmasOpenMarketContent(k){
  xmasPendingMarketKey=null;
  const toast=document.getElementById('xmasNearestToast');
@@ -4892,12 +5009,41 @@ function updateXmasFloatingNavContent(){
  const nav=document.querySelector('.xmas-floating-nav');if(!nav)return;
  const cat=nav.dataset.category||'explore',p=nav.querySelector('.xmas-floating-content'),gp=p.querySelector('#xmasGpsPanel'),save=p.querySelector('#xmasSaveLocationBtn'),towns=p.querySelector('.xmas-town-list'),empty=nav.querySelector('.xmas-floating-empty'),saved=getSavedSpot();
  nav.querySelectorAll('.xmas-floating-tab').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
- if(gp){gp.querySelectorAll('.xmas-gps-row').forEach(r=>{const ship=r.classList.contains('xmas-gps-ship');r.hidden=cat==='ship'?!ship:ship;});gp.querySelectorAll('.xmas-gps-depart,.xmas-gps-time,.xmas-gps-clear').forEach(e=>e.hidden=cat!=='ship');}
- if(save)save.hidden=cat!=='ship'||!xmasGpsPos||!!saved;
+ if(gp){gp.querySelectorAll('.xmas-gps-row').forEach(r=>{const ship=r.classList.contains('xmas-gps-ship');r.hidden=cat==='ship'?!ship:ship;});gp.querySelectorAll('.xmas-gps-depart,.xmas-gps-time').forEach(e=>e.hidden=cat!=='ship');}
+ const clear=nav.querySelector('.xmas-gps-clear');if(clear)clear.hidden=cat!=='ship';
+ if(save)save.hidden=cat!=='ship'||!xmasGpsPos;
+ const actions=nav.querySelector('.xmas-ship-actions');if(actions)actions.hidden=(!save||save.hidden)&&(!clear||clear.hidden);
  if(towns)towns.hidden=cat!=='explore';
- if(empty){if(cat==='ship'){empty.hidden=!!saved;empty.textContent=xmasFloatingText('noShip');}else{const has=!!(gp&&gp.querySelector('.xmas-gps-row:not(.xmas-gps-ship)'));empty.hidden=has;empty.textContent=xmasFloatingText('gps');}}
+ if(empty){if(cat==='ship'){empty.hidden=!!saved;empty.textContent=xmasFloatingText('noShip');}else{const has=!!(gp&&gp.querySelector('.xmas-gps-row:not(.xmas-gps-ship)'));empty.hidden=has;if(!has){const setup=XMAS_SHIP_SETUP_TEXT[xmasLang]||XMAS_SHIP_SETUP_TEXT.en;empty.innerHTML='<span>'+xmasFloatingEsc(xmasFloatingText('gps'))+'</span><button type="button" class="xmas-enable-gps">'+xmasFloatingEsc(setup.gps)+'</button>';const enable=empty.querySelector('.xmas-enable-gps');if(enable)enable.addEventListener('click',()=>{const gpsButton=document.getElementById('xmasGpsBtn');if(gpsButton)gpsButton.click();});}else empty.textContent='';}}
  const staticSaved=nav.querySelector('.xmas-floating-static-saved');
- if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">⚓ '+xmasFloatingEsc(xmasFloatingText('backShip')||xmasFloatingText('show'))+' · '+xmasFloatingEsc(saved.label)+'</button>';staticSaved.querySelector('button').onclick=()=>{xmasFloatingCollapse();if(xmasMapObj){xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});setTimeout(()=>xmasMapObj.invalidateSize(),280);}};}}
+ if(staticSaved){staticSaved.hidden=cat!=='ship'||!saved;if(saved){staticSaved.innerHTML='<button type="button" class="xmas-floating-static-link">⚓ '+xmasFloatingEsc(xmasFloatingText('backShip')||xmasFloatingText('show'))+'</button>';staticSaved.querySelector('button').onclick=()=>{xmasFloatingCollapse();if(xmasMapObj){xmasMapObj.setView([saved.lat,saved.lng],17,{animate:true});setTimeout(()=>xmasMapObj.invalidateSize(),280);}};}}
+ const knownBerths=nav.querySelector('#xmasKnownKoblenzBerths');
+ if(knownBerths){
+  const KBT={
+   de:{title:'Bekannte Fahrgastschiffsanleger · Koblenz',confirmed:'Vom Betreiber bestätigt · genaue Kartenposition folgt',viking:'Viking · Brücke 1 am Deutschen Eck',note:'Liegeplätze können sich ändern. Bitte beachten Sie stets die aktuellen Angaben Ihres Schiffes oder Veranstalters.'},
+   en:{title:'Known passenger-ship berths · Koblenz',confirmed:'Operator-confirmed · exact map position pending',viking:'Viking · Berth 1 at Deutsches Eck',note:'Berth assignments can change. Always follow the current ship or operator information.'},
+   fr:{title:'Débarcadères connus · Coblence',confirmed:'Confirmé par l’opérateur · position exacte à ajouter',viking:'Entrée cartographique existante · attribution à vérifier',note:'Les emplacements peuvent changer. Suivez toujours les informations actuelles de votre bateau ou opérateur.'},
+   nl:{title:'Bekende aanlegplaatsen · Koblenz',confirmed:'Door exploitant bevestigd · exacte kaartpositie volgt',viking:'Bestaande kaartvermelding · toewijzing nog te controleren',note:'Aanlegplaatsen kunnen wijzigen. Volg altijd de actuele informatie van uw schip of rederij.'},
+   ru:{title:'Известные пассажирские причалы · Кобленц',confirmed:'Подтверждено оператором · точная позиция на карте будет добавлена',viking:'Viking · причал № 1 у Deutsches Eck',note:'Места стоянки могут меняться. Всегда сверяйтесь с актуальной информацией вашего судна или компании.'},
+   zh:{title:'已知客船码头 · 科布伦茨',confirmed:'运营方已确认 · 地图精确位置待补充',viking:'现有地图条目 · 运营方及泊位归属仍待核实',note:'停靠位置可能变化，请始终以船只或运营方的最新信息为准。'},
+   he:{title:'רציפי נוסעים ידועים · קובלנץ',confirmed:'אושר על ידי המפעיל · מיקום מדויק במפה יתווסף',viking:'רישום קיים במפה · שיוך הרציף עדיין בבדיקה',note:'מקומות העגינה עשויים להשתנות. יש לפעול לפי המידע העדכני של הספינה או המפעיל.'}
+  };
+  const kt=KBT[xmasLang]||KBT.en;
+  knownBerths.hidden=cat!=='ship';
+
+  knownBerths.innerHTML='<h3>'+kt.title+'</h3>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>KD · Landebrücke Nr. 4</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>KD · Landebrücke Nr. 5</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>KD · Rheinanlagen</strong><small>'+kt.confirmed+'</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>Viking · Brücke 1, Konrad-Adenauer-Ufer</strong><small>'+kt.viking+'</small></button>'+
+   '<p>'+kt.note+'</p>';
+  knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
+   const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
+   if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
+   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363360010510355'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
+   xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();const marker=xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[berthId];if(marker)marker.openPopup();},280);
+  }));
+ }
  const sub=nav.querySelector('[data-shortcut-sub="ship"]');if(sub)sub.textContent=saved?saved.label:xmasFloatingText('shipSub');
 }
 
@@ -4926,6 +5072,7 @@ function xmasShowShipSetupDialog(error=false){
 }
 function xmasSaveShipAt(lat,lng,source='gps'){
  const label=window.prompt(xmasG('shipPrompt'),xmasG('shipDefault'));if(label===null)return false;
+ xmasClearDepartureState();
  setSavedSpot({lat,lng,label:(label||xmasG('shipDefault')).trim(),source});
  xmasManualPickMode=false;xmasDrawGpsLayers();xmasUpdateGpsPanel();
  if(typeof updateXmasFloatingNavContent==='function')updateXmasFloatingNavContent();
@@ -4950,7 +5097,7 @@ function xmasFloatingOpen(cat){
  const content=nav.querySelector('.xmas-floating-content');if(content)content.scrollTop=0;
  const townList=nav.querySelector('.xmas-town-list');if(townList)townList.scrollTop=0;
  const back=document.querySelector('.xmas-back-to-map');if(back)back.hidden=true;
- clearXmasPoiMode();
+ // Opening or switching the bottom panel must not erase visible pharmacy/toilet markers.
  nav.style.setProperty('--sheet-height','54%');nav.style.setProperty('--sheet-side','7px');nav.dataset.category=cat;nav.classList.add('open');nav.classList.remove('expanded','is-dragging');const stage=nav.closest('.xmas-map-stage');if(stage){stage.classList.add('xmas-sheet-open');stage.classList.remove('xmas-sheet-expanded');}
  nav.querySelectorAll('.xmas-floating-shortcut').forEach(b=>b.classList.toggle('active',b.dataset.category===cat));
  updateXmasFloatingNavContent();
@@ -4965,7 +5112,8 @@ function initXmasFloatingNav(){
  const gp=document.getElementById('xmasGpsPanel'),towns=document.querySelector('#view-christmas .xmas-town-list'),save=document.getElementById('xmasSaveLocationBtn');if(!gp)return;
  const nav=document.createElement('div');nav.className='xmas-floating-nav';nav.dataset.category='explore';
  nav.innerHTML='<div class="xmas-floating-shortcuts"><button type="button" class="xmas-floating-shortcut" data-category="ship"><span class="xfs-icon">⚓</span><span><strong data-shortcut-title="ship">'+xmasFloatingText('ship')+'</strong><small data-shortcut-sub="ship"></small></span></button><button type="button" class="xmas-floating-shortcut" data-category="explore"><span class="xfs-icon">⌖</span><span><strong>'+xmasFloatingText('explore')+'</strong><small>'+xmasFloatingText('exploreSub')+'</small></span></button></div><section class="xmas-floating-sheet" aria-label="Map navigation panel"><button type="button" class="xmas-floating-handle" aria-label="Drag panel up or down"><span class="xmas-floating-grip"></span></button><div class="xmas-floating-head"><button type="button" class="xmas-floating-tab" data-category="ship">'+xmasFloatingText('ship')+'</button><button type="button" class="xmas-floating-tab active" data-category="explore">'+xmasFloatingText('explore')+'</button><button type="button" class="xmas-floating-close" aria-label="Close panel">×</button></div><div class="xmas-floating-hint" hidden>'+xmasFloatingText('swipe')+'</div><div class="xmas-floating-content"><div class="xmas-floating-empty"></div><div class="xmas-floating-static-saved" hidden></div></div></section>';
- stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');content.appendChild(gp);if(save)content.insertBefore(save,gp);if(towns)content.appendChild(towns);
+ stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');const nearestToast=document.getElementById('xmasNearestToast');if(nearestToast)content.appendChild(nearestToast);const actions=document.createElement('div');actions.className='xmas-ship-actions';content.appendChild(actions);if(save)actions.appendChild(save);content.appendChild(gp);const initialClear=gp.querySelector('.xmas-gps-clear');if(initialClear)actions.appendChild(initialClear);if(towns)content.appendChild(towns);
+ const known=document.createElement('section');known.id='xmasKnownKoblenzBerths';known.className='xmas-known-berths';known.hidden=true;content.appendChild(known);
  if(towns)towns.addEventListener('click',e=>{const card=e.target.closest('.xmas-town-card');if(!card)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();xmasSelectMarket(card.dataset.xc);},true);
  nav.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>xmasFloatingOpen(b.dataset.category)));
  nav.querySelector('.xmas-floating-close').addEventListener('click',xmasFloatingCollapse);
@@ -4989,7 +5137,7 @@ function xmasTravelInfo(d) {
 const XMAS_RETURN_ACK_KEY = 'xmasReturnWarningAckV1';
 const XMAS_RETURN_TEXT = {
  de:{title:'Sie müssen jetzt zurück',late:'Sie kommen voraussichtlich zu spät. Gehen Sie sofort zurück zum Schiff.',left:'Nur noch wenig Zeitreserve. Kehren Sie jetzt zum Schiff zurück.',leftLabel:'MIN. ZEITPUFFER',lateLabel:'MIN. ZU SPÄT',button:'Verstanden — weiter'},
- en:{title:'Return to your ship now',late:'You are likely to be late. Head back to your ship immediately.',left:'Very little time remains. Please return to your ship now.',leftLabel:'MINUTES TO SPARE',lateLabel:'MINUTES LATE',button:'I understand — continue'},
+ en:{title:'Return to your ship now',late:'You are likely to be late. Head back to your ship immediately.',left:'Very little time remains. Please return to your ship now.',leftLabel:'MINUTES IN BUFFER',lateLabel:'MINUTES LATE',button:'I understand — continue'},
  ru:{title:'Пора возвращаться на корабль',late:'Вы, вероятно, опоздаете. Немедленно направляйтесь обратно к кораблю.',left:'Запас времени почти закончился. Пожалуйста, возвращайтесь к кораблю сейчас.',leftLabel:'МИН. В ЗАПАСЕ',lateLabel:'МИН. ОПОЗДАНИЕ',button:'Понятно — продолжить'},
  fr:{title:'Retournez à votre bateau',late:'Vous risquez d’être en retard. Retournez immédiatement à votre bateau.',left:'Il reste très peu de temps. Retournez maintenant à votre bateau.',leftLabel:'MIN. DE MARGE',lateLabel:'MIN. DE RETARD',button:'Compris — continuer'},
  nl:{title:'Ga nu terug naar uw schip',late:'U komt waarschijnlijk te laat. Ga onmiddellijk terug naar uw schip.',left:'Er is nog maar weinig tijd. Ga nu terug naar uw schip.',leftLabel:'MIN. OVER',lateLabel:'MIN. TE LAAT',button:'Begrepen — doorgaan'},
@@ -5012,9 +5160,11 @@ function xmasUpdateReturnWarning(margin,depart,sp){
  }
  const countdownText=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
  if(badge){badge.hidden=false;badge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
- if(screenBadge){screenBadge.hidden=currentView!=='guide';screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
+ const splashEl=document.getElementById('splash');
+ const splashVisible=!!(splashEl&&!splashEl.classList.contains('hide')&&getComputedStyle(splashEl).display!=='none');
+ if(screenBadge){screenBadge.hidden=!(currentView==='guide'||splashVisible);screenBadge.innerHTML=margin<0?`${Math.abs(margin)}<small>${countdownText.lateLabel}</small>`:`${margin}<small>${countdownText.leftLabel}</small>`;}
  let modal=document.getElementById('xmasReturnWarningModal');
- if(margin>15||currentView!=='christmas'){if(modal)modal.hidden=true;return;}
+ if(margin>15||(currentView!=='christmas'&&!splashVisible)){if(modal)modal.hidden=true;return;}
  if(!modal){
   modal=document.createElement('div');modal.id='xmasReturnWarningModal';modal.className='xmas-return-warning';modal.setAttribute('role','alertdialog');modal.setAttribute('aria-modal','true');
   modal.innerHTML='<div class="xmas-return-warning-card"><div class="xmas-return-warning-kicker">⚠ WARNING</div><h2></h2><div class="xmas-return-warning-time"></div><p></p><button type="button"></button></div>';
@@ -5023,6 +5173,7 @@ function xmasUpdateReturnWarning(margin,depart,sp){
    try{if(modal.dataset.signature)localStorage.setItem(XMAS_RETURN_ACK_KEY,modal.dataset.signature);}catch(e){}
    modal.hidden=true;
    const b=document.getElementById('xmasReturnCountdown');if(b)b.hidden=true;
+   const sb=document.getElementById('xmasReturnCountdownScreen');if(sb)sb.hidden=true;
   });
  }
  const t=XMAS_RETURN_TEXT[xmasLang]||XMAS_RETURN_TEXT.en;
@@ -5136,12 +5287,17 @@ function syncXmasGpsMarkerOverlap() {
 }
 function xmasDrawGpsLayers() {
   if (!xmasMapObj || typeof L === 'undefined') return;
-  if (xmasSpotCircle && xmasMapObj.hasLayer(xmasSpotCircle)) xmasMapObj.removeLayer(xmasSpotCircle);
+  // Remove previous layers before rebuilding them; do not leave stale GPS/ship markers behind.
+  [xmasSpotCircle, xmasGpsMarker, xmasSpotMarker, ...xmasBerthMarkers].forEach(layer => {
+    if (layer && xmasMapObj.hasLayer(layer)) xmasMapObj.removeLayer(layer);
+  });
   xmasSpotCircle = null;
-  xmasGpsMarker = null; xmasSpotMarker = null; xmasBerthMarkers = [];
+  xmasGpsMarker = null;
+  xmasSpotMarker = null;
+  xmasBerthMarkers = [];
   xmasBerthList().forEach(b => {
-    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: `<div class="xmas-berth" style="--bc:${xmasCompanyStyle(b.co).bg}"><span class="xmas-berth-letter">${xmasCompanyStyle(b.co).letter}</span>${b.co} PIER</div>`, iconSize: null, iconAnchor: [0, 0] }) })
-      .bindTooltip(`${b.co} PIER: ${b.name}`).addTo(xmasMapObj));
+    const berthHtml = '<div class="xmas-berth" style="--bc:' + xmasCompanyStyle(b.co).bg + '"><span class="xmas-berth-letter">' + xmasCompanyStyle(b.co).letter + '</span>' + b.co + ' PIER</div>';
+    xmasBerthMarkers.push(L.marker(b.ll, { icon: L.divIcon({ className: '', html: berthHtml, iconSize: null, iconAnchor: [0, 0] }) }).bindTooltip(b.co + ' PIER: ' + b.name).addTo(xmasMapObj));
   });
   if (xmasGpsPos) {
     xmasGpsMarker = L.marker([xmasGpsPos.lat, xmasGpsPos.lng], { icon: L.divIcon({ className: '', html: '<div class="gps-user-halo"></div>', iconSize: [66, 66], iconAnchor: [33, 33] }), zIndexOffset: 1000 }).addTo(xmasMapObj);
@@ -5149,7 +5305,9 @@ function xmasDrawGpsLayers() {
   const sp = getSavedSpot();
   if (sp) {
     xmasSpotCircle = L.circle([sp.lat, sp.lng], { radius: 150, color: '#ff8a00', weight: 4, opacity: 1, fillColor: '#ff8a00', fillOpacity: 0.035, interactive: false, className: 'xmas-return-zone' }).addTo(xmasMapObj);
-    xmasSpotMarker = L.marker([sp.lat, sp.lng], { icon: L.divIcon({ className: '', html: '<div class="saved-spot-marker">📌</div>', iconSize: [30, 30], iconAnchor: [15, 28] }), zIndexOffset: 900 }).addTo(xmasMapObj);
+    // Offset the anchor above the live GPS pulse, even when both share the same coordinates.
+    xmasSpotMarker = L.marker([sp.lat, sp.lng], { icon: L.divIcon({ className: '', html: '<div class="xmas-ship-anchor" aria-label="Saved ship">⚓</div>', iconSize: [40, 40], iconAnchor: [20, 42] }), zIndexOffset: 1800 }).addTo(xmasMapObj);
+    xmasSpotMarker.bindTooltip(String(sp.label || xmasG('ship')));
   }
 }
 
@@ -5240,6 +5398,9 @@ function xmasUpdateGpsPanel() {
     const selected = activeDepart.value;
     let saved = ''; try { saved = localStorage.getItem(XMAS_DEPART_KEY) || ''; } catch (e) {}
     const spNow = getSavedSpot();
+    const walkTimeEl=document.querySelector('.xmas-ship-walk-time');
+    if(walkTimeEl&&spNow){const walkDistance=distanceMeters(p.lat,p.lng,spNow.lat,spNow.lng);walkTimeEl.textContent='≈ '+xmasWalkMin(walkDistance)+' '+xmasG('min');}
+    else if(walkTimeEl)walkTimeEl.remove();
     if (spNow && selected && /^\d{2}:\d{2}$/.test(selected)) {
       const [hh,mm] = selected.split(':').map(Number);const depTime=new Date();depTime.setHours(hh,mm,0,0);
       const dNow=distanceMeters(p.lat,p.lng,spNow.lat,spNow.lng);
@@ -5276,17 +5437,22 @@ function xmasUpdateGpsPanel() {
   } else {
     xmasUpdateReturnWarning(null, '', null);
   }
-  let html = `<label class="xmas-gps-depart">${xmasG('departLabel')} <input type="text" id="xmasDepart" class="xmas-departure-time" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}" style="font-size:16px;min-height:44px;max-width:116px;touch-action:manipulation"></label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
+  const shipWalkTime=sp?`<span class="xmas-ship-walk-time">≈ ${xmasWalkMin(distanceMeters(p.lat,p.lng,sp.lat,sp.lng))} ${xmasG('min')}</span>`:'';
+  let html = `<label class="xmas-gps-depart"><span>${xmasG('departLabel')}</span><input type="text" id="xmasDepart" class="xmas-departure-time" value="${depart}" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="5" placeholder="HH:MM" aria-label="${xmasG('departLabel')}" style="font-size:16px;min-height:44px;max-width:116px;touch-action:manipulation">${shipWalkTime}</label>` + timeNotice + rows.map((r, i) => `<div class="xmas-gps-row xmas-gps-link${i === 0 ? ' xmas-gps-nearest' : ''}" data-lat="${r.t.ll[0]}" data-lng="${r.t.ll[1]}"><span>${r.t.label}</span>${fmt(r.t.ll)}</div>`).join('');
   xmasBerthList().forEach(b => { html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${b.ll[0]}" data-lng="${b.ll[1]}"><span>⚓ ${b.co}: ${b.name}</span>${fmt(b.ll)}</div>`; });
   if (sp) {
     const d = distanceMeters(p.lat, p.lng, sp.lat, sp.lng);
     const returned = d <= 60;
     const savedSpotStatus = returned ? `<strong class="xmas-gps-arrived">${xmasG('backAt').replace('{name}', sp.label)}</strong>` : fmt([sp.lat, sp.lng]);
-    html += `<div class="xmas-gps-row xmas-gps-ship xmas-gps-link" data-lat="${sp.lat}" data-lng="${sp.lng}"><span>📌 ${sp.label}</span>${savedSpotStatus}</div>`;
+    // The return-to-ship action is already available as the anchor shortcut in row 2.
+    // Keep the clear control here, but do not repeat a second tappable ship destination row.
     html += `<button class="xmas-gps-clear" id="xmasShipClear">${xmasG('clearShip')}</button>`;
   }
 
+  const previousClear=document.querySelector('.xmas-floating-nav .xmas-gps-clear');if(previousClear)previousClear.remove();
   panel.innerHTML = html;
+  const shipActions=document.querySelector('.xmas-floating-nav .xmas-ship-actions');
+  const newClear=panel.querySelector('.xmas-gps-clear');if(newClear&&shipActions)shipActions.appendChild(newClear);
   // Клик на строку — центрировать карту на этой точке
   panel.querySelectorAll('.xmas-gps-link').forEach(row => {
     row.addEventListener('click', () => {
@@ -5296,7 +5462,7 @@ function xmasUpdateGpsPanel() {
     });
   });
   const clr = document.getElementById('xmasShipClear');
-  if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
+  if (clr) clr.addEventListener('click', () => { clearSavedSpot(); xmasClearDepartureState(); xmasDrawGpsLayers(); xmasUpdateGpsPanel(); });
   const dep = document.getElementById('xmasDepart');
   if (dep) {
     const parseDeparture = raw => {
@@ -5492,10 +5658,42 @@ function renderChristmas(townKey) {
   // При выборе города из общей карты/списка всегда показываем карту в начале его раздела,
   // а не сохраняем прежнюю прокрутку до фотогалереи.
   if (focusTownMap) {
-    const mapStage = el.querySelector('.xmas-map-stage');
-    if (mapStage) {
-      mapStage.style.scrollMarginTop = '12px';
-      mapStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const pendingPhotoKey = xmasPendingCardPhotoKey;
+    if (pendingPhotoKey) {
+      // Resolve the requested card by its stable photo key, never by translated text or card index.
+      const targetGrid = Array.from(el.querySelectorAll('.xmas-grid')).find(node => node.dataset.photo === pendingPhotoKey);
+      const targetCard = targetGrid && targetGrid.closest('.xmas-card');
+      if (targetCard) {
+        xmasPendingCardPhotoKey = null;
+        targetCard.style.scrollMarginTop = '14px';
+        // Mobile Safari/iPadOS can change the scroll geometry while the view and Leaflet map initialize.
+        // Re-apply the exact-card position after layout settles so the deep link cannot stop at the map/top.
+        [450, 850, 1350].forEach(delay => {
+          setTimeout(() => {
+            if (currentView !== 'christmas' || xmasTown !== townKey) return;
+            const liveGrid = Array.from(el.querySelectorAll('.xmas-grid')).find(node => node.dataset.photo === pendingPhotoKey);
+            const liveCard = liveGrid && liveGrid.closest('.xmas-card');
+            if (!liveCard) return;
+            liveCard.style.scrollMarginTop = '14px';
+            liveCard.scrollIntoView({ behavior: delay === 1350 ? 'auto' : 'smooth', block: 'start' });
+          }, delay);
+        });
+      } else {
+        xmasPendingCardPhotoKey = null;
+        const mapStage = el.querySelector('.xmas-map-stage');
+        if (mapStage) {
+          mapStage.style.scrollMarginTop = '12px';
+          mapStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    } else {
+      // Normal town entry (including the dedicated "Christmas market Koblenz" button)
+      // intentionally opens at the town map, not at a market card.
+      const mapStage = el.querySelector('.xmas-map-stage');
+      if (mapStage) {
+        mapStage.style.scrollMarginTop = '12px';
+        mapStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }
 }
@@ -5551,11 +5749,10 @@ const XMAS_FOOD_INTRO = {
   he: 'בתי קפה, מסעדות וברי יין בעיר העתיקה. כאן יוצגו השותפים. הנקודות האדומות מראות את המיקומים על המפה.',
 };
 const XMAS_FOOD_PLACES = [
+  // Only confirmed partner locations with real information are shown.
   { ll: [50.36000, 7.60203], mia: true },
   { ll: [50.36177, 7.59643], buta: true },
-  { ll: [50.359953, 7.595844], stoa: true }, { ll: [50.36133, 7.59590] }, { ll: [50.36106, 7.59460] },
-  { ll: [50.36178, 7.59470] }, { ll: [50.36070, 7.59684] }, { ll: [50.36183, 7.59597] },
-  { ll: [50.36144, 7.60450] },
+  { ll: [50.359953, 7.595844], stoa: true },
 ];
 // STOA Café: griechische Feinkost, Kaffee, Kuchen. Adresse folgt, Fotos: stoa-main.webp / stoa-1.webp (Platzhalter, werden ersetzt)
 const STOA_CARD = {
@@ -5618,7 +5815,6 @@ function renderFood() {
         `<div class="food-mia-text"><h3 class="buta-name">${STOA_CARD.title}</h3>` +
         `<p class="xmas-meta" style="margin:0 0 6px;opacity:.85">${STOA_CARD.place}</p><p style="margin:0">${st}</p></div></div></div>`;
     }
-    if (!p.mia) return `<div class="route-card xmas-card">${kicker}<div class="xmas-ph">${ph}</div></div>`;
     const mainPhoto = (XMAS_PHOTOS[miaCard.photo] || [])[0];
     const couponLbl = { de: 'Gutschein holen', en: 'Get voucher', fr: 'Obtenir le bon', nl: 'Kortingsbon ophalen', ru: 'Получить купон', zh: '领取优惠券', he: 'קבלת קופון' }[xmasLang] || 'Get voucher';
     const couponLink = `<button type="button" class="food-coupon" data-mia-voucher>${couponLbl}</button>`;
@@ -5925,7 +6121,7 @@ function switchView(viewName) {
   const scrollBox = document.querySelector('.content');
   if (scrollBox) scrollBox.scrollTop = 0;
   window.scrollTo(0, 0);
-  if (viewName === 'christmas') renderChristmas();
+  if (viewName === 'christmas') renderChristmas(xmasTown || null);
   if (viewName === 'food') { renderFood(); hideFoodPromo(); }
   if (viewName === 'wine') { renderWine(); hideFoodPromo(); }
   if (viewName === 'links') { renderLinks(); hideFoodPromo(); }
@@ -6414,7 +6610,15 @@ function renderQuickLinksText() {
     if (el) el.textContent = text;
   };
   setLbl('qlLocationsLabel', t.tabs[2]);
-  setLbl('qlMapLabel', t.tabs[6]);
+  setLbl('qlMapLabel', ({
+    en: 'Castles',
+    ru: 'Замки',
+    de: 'Burgen',
+    fr: 'Châteaux',
+    nl: 'Kastelen',
+    zh: '城堡',
+    he: 'טירות'
+  })[lang] || 'Castles');
   setLbl('qlInfoLabel', t.tabs[4]);
   xmasWhereUpdate();
   xmasSyncLangFromApp();
@@ -6516,7 +6720,8 @@ if (qlToursBtn) qlToursBtn.addEventListener('click', () => openInfoPopup('tours'
 const qlContactBtn = document.getElementById('qlContact');
 if (qlContactBtn) qlContactBtn.addEventListener('click', () => openInfoPopup('contact'));
 const qlChristmasBtn = document.getElementById('qlChristmas');
-if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => xmasOpen('koblenz'));
+// The framed star image is a direct shortcut to the Zentralplatz card, not just the top of Koblenz.
+if (qlChristmasBtn) qlChristmasBtn.addEventListener('click', () => xmasOpen('koblenz', 'koblenz-zentralplatz'));
 const xmasHomeMapBtn = document.getElementById('xmasHomeMap');
 if (xmasHomeMapBtn) xmasHomeMapBtn.addEventListener('click', () => xmasOpen(null));
 const xmasHomeKoblenzBtn = document.getElementById('xmasHomeKoblenz');
@@ -7135,7 +7340,7 @@ function initMap() {
   // POI buttons inside map container
   const poiBar = document.createElement('div');
   poiBar.className = 'poi-toggle-bar';
-  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\');this.classList.toggle(\'active\')" title="Apotheken">💊</button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\');this.classList.toggle(\'active\')" title="WC">🚻</button>';
+  poiBar.innerHTML = '<button class="poi-toggle-btn apotheke" onclick="togglePoiLayer(\'apotheke\')" title="Apotheken" aria-label="Apotheken"><span class="poi-toggle-face">💊</span></button><button class="poi-toggle-btn wc" onclick="togglePoiLayer(\'wc\')" title="WC" aria-label="WC"><span class="poi-toggle-face">🚻</span></button>';
   leafletMap.getContainer().appendChild(poiBar);
 
   const points = [];
@@ -8217,9 +8422,13 @@ applySpotFromUrl();
 // (Splash wird übersprungen, Bereich öffnet sich sofort).
 function applyViewFromUrl() {
   try {
-    const v = new URLSearchParams(window.location.search).get('view');
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get('view');
     const ALLOWED_DEEPLINK_VIEWS = ['food', 'wine', 'map', 'castles', 'christmas'];
     if (!v || !ALLOWED_DEEPLINK_VIEWS.includes(v)) return;
+    // In Christmas mode, "map" belongs to the classic castle navigator.
+    // Ignore stale ?view=map links so the Christmas splash and home screen remain visible.
+    if (XMAS_MODE && v === 'map') return;
     dismissSplash();
     switchView(v);
   } catch (e) {}
@@ -8359,6 +8568,19 @@ if ('serviceWorker' in navigator) {
     text-orientation: mixed !important;
     word-break: normal !important;
   }
+  /* GPS nearest-object title: prevent the Leaflet tooltip from collapsing
+     into a one-character-wide vertical column on narrow mobile layouts. */
+  .leaflet-tooltip.xmas-gps-target-label {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    width: max-content !important;
+    max-width: min(190px, calc(100vw - 32px)) !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
   .leaflet-tooltip.xmas-pin-label {
     width: max-content;
     max-width: min(180px, 60vw);
@@ -8441,5 +8663,67 @@ if ('serviceWorker' in navigator) {
   setInterval(tick, 15000);
 })();
 </script>
+
+<style id="map-navi-sheet-map-shift-test-v1">
+  /* Experimental Preview: lift the map slightly as the lower sheet opens.
+     This is a visual-only transform: no Leaflet bounds, center or zoom recalculation. */
+  .xmas-map-stage #xmasMap {
+    transition: transform .28s ease;
+  }
+  .xmas-map-stage.xmas-sheet-open #xmasMap {
+    transform: translateY(-32px);
+  }
+  .xmas-map-stage.xmas-sheet-expanded #xmasMap {
+    transform: translateY(-52px);
+  }
+  .xmas-map-stage .xmas-floating-nav.is-dragging ~ #xmasMap {
+    transition: none;
+  }
+</style>
+
+
+<style id="map-navi-compact-poi-controls-v1">
+  /* Keep the original 72px finger target; shrink only the visible control face. */
+  .poi-toggle-bar { gap: 10px; }
+  .poi-toggle-btn {
+    width: 72px !important; height: 72px !important;
+    min-width: 72px; min-height: 72px; flex: 0 0 72px;
+    padding: 0 !important; border: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+    font-size: 0 !important; overflow: visible;
+    transform: none;
+  }
+  .poi-toggle-face {
+    width: 90%; height: 90%; flex: 0 0 90%;
+    display: flex; align-items: center; justify-content: center;
+    box-sizing: border-box; border: 3px solid #fff; border-radius: 50%;
+    background: #e8f5e9; color: #263238;
+    box-shadow: 0 2px 12px rgba(0,0,0,.4);
+    font: 32.4px/1 var(--sans); transition: background .2s, color .2s, box-shadow .2s;
+  }
+  .poi-toggle-btn.wc .poi-toggle-face { background: #e3f2fd; }
+  .poi-toggle-btn.map-reset-btn .poi-toggle-face {
+    background: rgba(246,238,221,.97); border-color: var(--gold);
+    color: var(--ink); font-size: 39.6px;
+  }
+  .poi-toggle-btn.active { animation: none !important; transform: none !important; }
+  .poi-toggle-btn.active .poi-toggle-face {
+    background: #B42332 !important; color: #fff !important;
+    border-color: #fff;
+    box-shadow: 0 0 0 3px #B42332, 0 3px 12px rgba(0,0,0,.45);
+  }
+  .poi-toggle-btn.active::before, .poi-toggle-btn.active::after {
+    width: 90%; height: 90%;
+  }
+  .poi-toggle-btn.active::before { animation: poiRing1 1.5s ease-out infinite; }
+  .poi-toggle-btn.active::after { animation: poiRing2 1.5s ease-out .4s infinite; }
+  .poi-toggle-btn.active:focus-visible { outline: 3px solid #1677D2; outline-offset: 2px; }
+</style>
+
+
+<style id="map-navi-poi-controls-follow-spacing-v1">
+  /* Move the three quick controls 15px upward, closer to the Follow control. */
+  .poi-toggle-bar { transform: translateY(calc(-50% - 15px)) !important; }
+</style>
 </body>
 </html>
