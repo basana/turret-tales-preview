@@ -8416,9 +8416,13 @@ applySpotFromUrl();
 // (Splash wird übersprungen, Bereich öffnet sich sofort).
 function applyViewFromUrl() {
   try {
-    const v = new URLSearchParams(window.location.search).get('view');
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get('view');
     const ALLOWED_DEEPLINK_VIEWS = ['food', 'wine', 'map', 'castles', 'christmas'];
     if (!v || !ALLOWED_DEEPLINK_VIEWS.includes(v)) return;
+    // In Christmas mode, "map" belongs to the classic castle navigator.
+    // Ignore stale ?view=map links so the Christmas splash and home screen remain visible.
+    if (XMAS_MODE && v === 'map') return;
     dismissSplash();
     switchView(v);
   } catch (e) {}
