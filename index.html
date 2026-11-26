@@ -4802,8 +4802,11 @@ function xmasDrawMap(opts) {
     xmasMapObj._xmasKnownBerthMarkers[b.id] = marker;
   });
 
-  // Übersicht: genug Rand, damit Koblenz (oben) und Rüdesheim (rechts) mit ihren Beschriftungen ganz sichtbar bleiben
-     if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
+  // For Koblenz, include every passenger berth in the initial camera bounds as well as the market pins.
+  if (xmasTown === 'koblenz' && opts.pins && opts.pins.length) {
+    const koblenzPoints = opts.pins.map(p => p.ll).concat(berthSpecs.map(b => [b.lat,b.lng]));
+    xmasMapObj.fitBounds(L.latLngBounds(koblenzPoints), { padding: [76, 76], maxZoom: 13, animate: false });
+  } else if (opts.bounds) xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12 });
   else if (opts.pins && opts.pins.length > 1) {
     // Все точки города сразу видны, с запасом по краям (подписи и маркеры не обрезаются)
     const pb = L.latLngBounds(opts.pins.map(p => p.ll));
@@ -4825,7 +4828,10 @@ function xmasDrawMap(opts) {
     // A deliberate reset is the user's camera choice, even while GPS is running.
     xmasMapObj._xmasGpsFitDone = true;
     xmasMapObj._poiGpsZoomed = true;
-    if (opts.bounds) {
+    if (xmasTown === 'koblenz' && opts.pins && opts.pins.length) {
+      const koblenzPoints = opts.pins.map(p => p.ll).concat(berthSpecs.map(b => [b.lat,b.lng]));
+      xmasMapObj.fitBounds(L.latLngBounds(koblenzPoints), { padding: [76, 76], maxZoom: 13, animate: false });
+    } else if (opts.bounds) {
       xmasMapObj.fitBounds(opts.bounds, { paddingTopLeft: [145, 70], paddingBottomRight: [55, 70], maxZoom: 12, animate: false });
     } else if (opts.pins && opts.pins.length > 1) {
       xmasMapObj.fitBounds(L.latLngBounds(opts.pins.map(p => p.ll)), { padding: [76, 76], maxZoom: opts.zoom || 15, animate: false });
