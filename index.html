@@ -4733,10 +4733,10 @@ function xmasSearchEntries() {
   // Upcoming cruise calls are searchable even when the exact berth is not confirmed.
   const koblenzCenter = (XMAS_GEO.koblenz && XMAS_GEO.koblenz.center) || [50.359,7.598];
   [
-    {label:'27 Nov · Great Rail Journeys · MS Cara on MS Amadeus Riva',aliases:['Great Rail Journeys','MS Cara','MS Amadeus Riva','27 Nov','27 November','2026-11-27','RLM2702'],ll:[50.360863,7.605562],key:'koblenz',berthId:'kd4'},
-    {label:'28 Nov · EMERALD · Emerald Star on Luna',aliases:['Emerald Star','Luna','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
+    {label:'27 Nov · Great Rail Journeys · MS Cara on MS Amadeus Riva',aliases:['Great Rail Journeys','MS Cara','MS Amadeus Riva','27 Nov','27 November','2026-11-27','27.11','RLM2702'],ll:[50.360863,7.605562],key:'koblenz',berthId:'kd4'},
+    {label:'28 Nov · EMERALD · Emerald Star on Luna',aliases:['Emerald Star','Luna','EMERALD','28 Nov','28 November','2026-11-28','28.11'],ll:koblenzCenter,key:'koblenz'},
     {label:'28 Nov · EMERALD · Emerald Destiny on Astra',aliases:['Emerald Destiny','Astra','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
-    {label:'30 Nov · Trafalgar River Cruises · ship not specified',aliases:['Trafalgar','Trafalgar River Cruises','30 Nov','30 November','2026-11-30'],ll:koblenzCenter,key:'koblenz'}
+    {label:'30 Nov · Trafalgar River Cruises · ship not specified',aliases:['Trafalgar','Trafalgar River Cruises','30 Nov','30 November','2026-11-30','30.11'],ll:koblenzCenter,key:'koblenz'}
   ].forEach(c=>out.push({...c,callId:true}));
   berths.forEach(b=>out.push({label:b.label,key:xmasTown,ll:b.ll,berthId:b.id,aliases:b.aliases}));
   return out;
@@ -4782,7 +4782,7 @@ function xmasNormalizeSearch(value) {
 }
 function xmasSearchMatches(value) {
   const q=xmasNormalizeSearch(value);
-  if(q.length<3)return [];
+  if(q.length<2)return [];
   const seen=new Set();
   return xmasSearchEntries().map(e=>({...e,n:xmasNormalizeSearch(e.label),terms:[e.label,...(e.aliases||[])].map(xmasNormalizeSearch)}))
     .filter(e=>e.terms.some(term=>term.includes(q)))
@@ -4824,7 +4824,7 @@ document.addEventListener('input',e=>{
  if(!box)return;
  const q=e.target.value;
  const matches=xmasSearchMatches(q);
- if(xmasNormalizeSearch(q).length<3){xmasSearchHideResults();return;}
+ if(xmasNormalizeSearch(q).length<2){xmasSearchHideResults();return;}
  if(!matches.length){box.innerHTML='<div class="xmas-search-empty">No matching place. Try another name.</div>';box.hidden=false;return;}
  box._matches=matches;
  box.innerHTML=matches.map((m,i)=>'<button type="button" class="xmas-search-result" data-search-index="'+i+'">'+m.label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</button>').join('');
