@@ -4716,13 +4716,13 @@ let xmasPendingFocus = null;
 const XMAS_SEARCH_PH = { de: 'Markt oder Stadt suchen …', en: 'Search a market or town …', fr: 'Chercher un marché ou une ville …', nl: 'Zoek een markt of stad …', ru: 'Поиск рынка или города …', zh: '搜索市集或城镇…', he: 'חיפוש שוק או עיר…' };
 // Alle Suchbegriffe: Städte und einzelne Märkte (Titel der Karten)
 const XMAS_BERTH_LABELS = {
- de:{kd4:'KD · Landebrücke Nr. 4',kd5:'KD · Landebrücke Nr. 5',kdR:'KD · Anleger Rheinanlagen',viking:'Viking · Anleger 1, Konrad-Adenauer-Ufer'},
- en:{kd4:'KD · Berth No. 4',kd5:'KD · Berth No. 5',kdR:'KD · Rheinanlagen landing stage',viking:'Viking · Berth 1, Konrad-Adenauer-Ufer'},
- fr:{kd4:'KD · Débarcadère n° 4',kd5:'KD · Débarcadère n° 5',kdR:'KD · Débarcadère Rheinanlagen',viking:'Viking · Débarcadère 1, Konrad-Adenauer-Ufer'},
- nl:{kd4:'KD · Aanlegsteiger nr. 4',kd5:'KD · Aanlegsteiger nr. 5',kdR:'KD · Aanlegplaats Rheinanlagen',viking:'Viking · Aanlegsteiger 1, Konrad-Adenauer-Ufer'},
- ru:{kd4:'KD · причал № 4',kd5:'KD · причал № 5',kdR:'KD · причал Rheinanlagen',viking:'Viking · причал № 1, Konrad-Adenauer-Ufer'},
- zh:{kd4:'KD · 4号客船码头',kd5:'KD · 5号客船码头',kdR:'KD · Rheinanlagen码头',viking:'Viking · 1号泊位，Konrad-Adenauer-Ufer'},
- he:{kd4:'KD · רציף מס׳ 4',kd5:'KD · רציף מס׳ 5',kdR:'KD · רציף Rheinanlagen',viking:'Viking · רציף 1, Konrad-Adenauer-Ufer'}
+ de:{kd4:'KD · Landebrücke Nr. 4',kd5:'KD · Landebrücke Nr. 5',kdR:'KD · Anleger Rheinanlagen',viking:'Viking · Anleger 1, Konrad-Adenauer-Ufer',mosel2:'Mosel · Liegeplatz 2, Peter-Altmeier-Ufer (Bereich)'},
+ en:{kd4:'KD · Berth No. 4',kd5:'KD · Berth No. 5',kdR:'KD · Rheinanlagen landing stage',viking:'Viking · Berth 1, Konrad-Adenauer-Ufer',mosel2:'Moselle · Berth 2, Peter-Altmeier-Ufer (area)'},
+ fr:{kd4:'KD · Débarcadère n° 4',kd5:'KD · Débarcadère n° 5',kdR:'KD · Débarcadère Rheinanlagen',viking:'Viking · Débarcadère 1, Konrad-Adenauer-Ufer',mosel2:'Moselle · Poste 2, Peter-Altmeier-Ufer (zone)'},
+ nl:{kd4:'KD · Aanlegsteiger nr. 4',kd5:'KD · Aanlegsteiger nr. 5',kdR:'KD · Aanlegplaats Rheinanlagen',viking:'Viking · Aanlegsteiger 1, Konrad-Adenauer-Ufer',mosel2:'Moezel · Ligplaats 2, Peter-Altmeier-Ufer (gebied)'},
+ ru:{kd4:'KD · причал № 4',kd5:'KD · причал № 5',kdR:'KD · причал Rheinanlagen',viking:'Viking · причал № 1, Konrad-Adenauer-Ufer',mosel2:'Мозель · причал 2, Peter-Altmeier-Ufer (район)'},
+ zh:{kd4:'KD · 4号客船码头',kd5:'KD · 5号客船码头',kdR:'KD · Rheinanlagen码头',viking:'Viking · 1号泊位，Konrad-Adenauer-Ufer',mosel2:'摩泽尔河 · 2号泊位，Peter-Altmeier-Ufer（区域）'},
+ he:{kd4:'KD · רציף מס׳ 4',kd5:'KD · רציף מס׳ 5',kdR:'KD · רציף Rheinanlagen',viking:'Viking · רציף 1, Konrad-Adenauer-Ufer',mosel2:'מוזל · רציף 2, Peter-Altmeier-Ufer (אזור)'}
 };
 function xmasBerthLabel(id){const d=XMAS_BERTH_LABELS[xmasLang]||XMAS_BERTH_LABELS.en;return d[id]||XMAS_BERTH_LABELS.en[id]||id;}
 function xmasSearchEntries() {
@@ -4741,6 +4741,7 @@ function xmasSearchEntries() {
   // operator and (where confirmed) ship/call aliases. Coordinates are only
   // included for berths already represented by a map marker.
   const berths = [
+    {id:'mosel2',label:xmasBerthLabel('mosel2'),aliases:['Liegeplatz 2','Anlegestelle 2','Mosel 2','Moselle berth 2','Peter-Altmeier-Ufer','Mosel Anleger'],ll:[50.36346,7.60208]},
     {id:'kd4',label:xmasBerthLabel('kd4'),aliases:['KD4','KD 4','KD-4','Landebrücke 4','KD Landebrücke Nummer 4','Great Rail Journeys','MS Cara','MS Amadeus Riva'],ll:[50.360863,7.605562]},
     {id:'kd5',label:xmasBerthLabel('kd5'),aliases:['KD5','KD 5','KD-5','Landebrücke 5','KD Landebrücke Nummer 5'],ll:[50.359770,7.605171]},
     {id:'kd-rheinanlagen',label:xmasBerthLabel('kdR'),aliases:['KD Rheinanlagen','Rheinanlagen Anleger','Rhein Anleger'],ll:[50.348845,7.598990]},
@@ -4877,6 +4878,7 @@ function xmasDrawMap(opts) {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(xmasMapObj);
   // Permanent layer: every Koblenz passenger berth is visible from the first map render.
   const berthSpecs = [
+    {id:'mosel2',lat:50.36346,lng:7.60208,label:xmasBerthLabel('mosel2'),detail:'General Moselle berth area · Peter-Altmeier-Ufer · individual ship position not confirmed'},
     {id:'kd4',lat:50.360863,lng:7.605562,label:xmasBerthLabel('kd4'),detail:'Great Rail Journeys · MS Cara on MS Amadeus Riva · 27 Nov 2026'},
     {id:'kd5',lat:50.359770,lng:7.605171,label:xmasBerthLabel('kd5')},
     {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:xmasBerthLabel('kdR')},
@@ -5059,12 +5061,13 @@ function xmasOpenMarketContent(k, cardIndex=0){
  xmasPendingMarketKey=null;
  const toast=document.getElementById('xmasNearestToast');
  if(toast){toast.classList.remove('show');delete toast.dataset.marketKey;}
+ // Resolve the clicked overview pin to its stable photo key. Reuse the
+ // renderer's multi-pass deep-link scroll after the map and cards initialize.
+ const tx=XMAS_CITY[k] && (XMAS_CITY[k].text[xmasLang]||XMAS_CITY[k].text.en||XMAS_CITY[k].text.de);
+ const cards=(tx&&tx.cards||[]).filter(card=>card.title!=='Mia Gelateria');
+ const photoKey=cards[cardIndex]&&cards[cardIndex].photo;
+ xmasPendingCardPhotoKey=photoKey||null;
  renderChristmas(k);
- setTimeout(()=>{
-  const index=Number.isInteger(cardIndex)&&cardIndex>=0?cardIndex:0;
-  const target=document.getElementById('xmasCard'+index);
-  if(target){target.style.scrollMarginTop='14px';target.scrollIntoView({behavior:'smooth',block:'start'});}
- },650);
 }
 function xmasSelectMarket(k,targetLL=null){
  const g=XMAS_GEO[k],city=XMAS_CITY[k];if(!g||!city||!xmasMapObj)return;
@@ -5139,9 +5142,9 @@ function updateXmasFloatingNavContent(){
    '<div class="xmas-scheduled-calls" style="margin-top:10px;padding-top:9px;border-top:1px solid #c8a878">'+
    '<strong style="display:block;margin-bottom:6px">Upcoming calls · 27–30 Nov 2026</strong>'+
    '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.360863" data-berth-lng="7.605562"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></button>'+
-   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Moselle · Peter-Altmeier-Ufer, Koblenz · exact berth unknown</small></div>'+
-   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Moselle · Peter-Altmeier-Ufer, Koblenz · exact berth unknown</small></div>'+
-   '<div style="padding:6px 0"><b>30 Nov · Trafalgar River Cruises</b><br>Trafalgar Verity<br><small>Moselle · Peter-Altmeier-Ufer, Koblenz · exact berth unknown</small></div>'+
+   '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.36346" data-berth-lng="7.60208"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Moselle · Liegeplatz 2, Peter-Altmeier-Ufer · general area, exact bollard unknown</small></button>'+
+   '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.36346" data-berth-lng="7.60208"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Moselle · Liegeplatz 2, Peter-Altmeier-Ufer · general area, exact bollard unknown</small></button>'+
+   '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.36346" data-berth-lng="7.60208"><b>30 Nov · Trafalgar River Cruises</b><br>Trafalgar Verity<br><small>Moselle · Liegeplatz 2, Peter-Altmeier-Ufer · general area, exact bollard unknown</small></button>'+
    '</div>'+'<p>'+kt.note+'</p>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>'+xmasBerthLabel('kd4')+'</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>'+xmasBerthLabel('kd5')+'</strong><small>'+kt.confirmed+'</small></button>'+
@@ -5152,7 +5155,7 @@ function updateXmasFloatingNavContent(){
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
-   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363278'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
+   const berthId=button.dataset.berthLat==='50.36346'?'mosel2':button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363278'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
    xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();const marker=xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[berthId];if(marker)marker.openPopup();},280);
   }));
  }
