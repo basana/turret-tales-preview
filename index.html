@@ -4742,7 +4742,7 @@ function xmasSearchEntries() {
   // included for berths already represented by a map marker.
   const berths = [
     {id:'mosel2',label:xmasBerthLabel('mosel2'),aliases:['Liegeplatz 2','Anlegestelle 2','Mosel 2','Moselle berth 2','Peter-Altmeier-Ufer','Mosel Anleger'],ll:[50.36346,7.60208]},
-    {id:'kd4',label:xmasBerthLabel('kd4'),aliases:['KD4','KD 4','KD-4','Landebrücke 4','KD Landebrücke Nummer 4','Great Rail Journeys','MS Cara','MS Amadeus Riva'],ll:[50.360863,7.605562]},
+    {id:'kd4',label:xmasBerthLabel('kd4'),aliases:['KD4','KD 4','KD-4','Landebrücke 4','KD Landebrücke Nummer 4'],ll:[50.360863,7.605562]},
     {id:'kd5',label:xmasBerthLabel('kd5'),aliases:['KD5','KD 5','KD-5','Landebrücke 5','KD Landebrücke Nummer 5'],ll:[50.359770,7.605171]},
     {id:'kd-rheinanlagen',label:xmasBerthLabel('kdR'),aliases:['KD Rheinanlagen','Rheinanlagen Anleger','Rhein Anleger'],ll:[50.348845,7.598990]},
     {id:'viking',label:xmasBerthLabel('viking'),aliases:['Viking 1','Viking Brücke 1','Viking Berth 1','Viking Anleger 1','Konrad-Adenauer-Ufer'],ll:[50.363278,7.606472]}
@@ -4750,7 +4750,6 @@ function xmasSearchEntries() {
   // Upcoming cruise calls are searchable even when the exact berth is not confirmed.
   const koblenzCenter = (XMAS_GEO.koblenz && XMAS_GEO.koblenz.center) || [50.359,7.598];
   [
-    {label:'27 Nov · Great Rail Journeys · MS Cara on MS Amadeus Riva',aliases:['Great Rail Journeys','MS Cara','MS Amadeus Riva','27 Nov','27 November','2026-11-27','27.11','RLM2702'],ll:[50.360863,7.605562],key:'koblenz',berthId:'kd4'},
     {label:'28 Nov · EMERALD · Emerald Star on Luna · Moselle, Peter-Altmeier-Ufer · berth unknown',aliases:['Emerald Star','Luna','EMERALD','28 Nov','28 November','2026-11-28','28.11'],ll:koblenzCenter,key:'koblenz'},
     {label:'28 Nov · EMERALD · Emerald Destiny on Astra · Moselle, Peter-Altmeier-Ufer · berth unknown',aliases:['Emerald Destiny','Astra','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
     {label:'30 Nov · Trafalgar Verity · Moselle, Peter-Altmeier-Ufer · berth unknown',aliases:['Trafalgar','Trafalgar River Cruises','30 Nov','30 November','2026-11-30','30.11'],ll:koblenzCenter,key:'koblenz'}
@@ -4879,7 +4878,7 @@ function xmasDrawMap(opts) {
   // Permanent layer: every Koblenz passenger berth is visible from the first map render.
   const berthSpecs = [
     {id:'mosel2',lat:50.36346,lng:7.60208,label:xmasBerthLabel('mosel2'),detail:'General Moselle berth area · Peter-Altmeier-Ufer · individual ship position not confirmed'},
-    {id:'kd4',lat:50.360863,lng:7.605562,label:xmasBerthLabel('kd4'),detail:'Great Rail Journeys · MS Cara on MS Amadeus Riva · 27 Nov 2026'},
+    {id:'kd4',lat:50.360863,lng:7.605562,label:xmasBerthLabel('kd4')},
     {id:'kd5',lat:50.359770,lng:7.605171,label:xmasBerthLabel('kd5')},
     {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:xmasBerthLabel('kdR')},
     {id:'viking',lat:50.363278,lng:7.606472,label:xmasBerthLabel('viking')}
@@ -5140,13 +5139,13 @@ function updateXmasFloatingNavContent(){
    ' <button type="button" class="xmas-floating-static-link" data-open-ship-setup="1">Set my ship location</button>'+
 
    '<div class="xmas-scheduled-calls" style="margin-top:10px;padding-top:9px;border-top:1px solid #c8a878">'+
-   '<strong style="display:block;margin-bottom:6px">Upcoming calls · 27–30 Nov 2026</strong>'+
-   '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.360863" data-berth-lng="7.605562"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></button>'+
+   '<strong style="display:block;margin-bottom:6px">Upcoming calls · 28–30 Nov 2026</strong>'+
+   
    '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.36346" data-berth-lng="7.60208"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Moselle · Liegeplatz 2, Peter-Altmeier-Ufer · general area, exact bollard unknown</small></button>'+
    '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.36346" data-berth-lng="7.60208"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Moselle · Liegeplatz 2, Peter-Altmeier-Ufer · general area, exact bollard unknown</small></button>'+
    '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.36346" data-berth-lng="7.60208"><b>30 Nov · Trafalgar River Cruises</b><br>Trafalgar Verity<br><small>Moselle · Liegeplatz 2, Peter-Altmeier-Ufer · general area, exact bollard unknown</small></button>'+
    '</div>'+'<p>'+kt.note+'</p>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>'+xmasBerthLabel('kd4')+'</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>'+xmasBerthLabel('kd4')+'</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>'+xmasBerthLabel('kd5')+'</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>'+xmasBerthLabel('kdR')+'</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.363278" data-berth-lng="7.606472"><strong>'+xmasBerthLabel('viking')+'</strong><small>'+kt.viking+'</small></button>';
