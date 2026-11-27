@@ -4253,7 +4253,7 @@ const XMAS_PHOTOS = {
   'koblenz-jesuitenplatz': ["https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7737.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7740.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7741.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7743.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7744.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7746.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7748.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/jesuiten26_7749.jpeg"],
   'koblenz-am-plan': ['https://raw.githubusercontent.com/basana/turret-tales-christmas/main/markt-foto-4.jpg'],
   'koblenz-goerresplatz': ['koblenz-goerresplatz-1.webp','koblenz-goerresplatz-2.webp'],
-  'koblenz-muenzplatz': ['koblenz-muenzplatz-1.webp','koblenz-muenzplatz-2.webp'],
+  'koblenz-muenzplatz': ['https://raw.githubusercontent.com/basana/turret-tales-christmas/main/koblenz-muenzplatz-1.webp','https://raw.githubusercontent.com/basana/turret-tales-christmas/main/koblenz-muenzplatz-2.webp'],
   'koblenz-zentralplatz': [,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7762.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7763.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7766.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7768.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7770.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7771.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7772.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7773.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7774.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7775.jpeg",,"https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7777.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7778.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7779.jpeg","https://raw.githubusercontent.com/basana/turret-tales-experimental-preview/main/zentralplatz26_7780.jpeg"],
   'koblenz-liebfrauen': ['koblenz-liebfrauen-1.webp','markt-foto-3.jpg'],
   'koblenz-festung': ['ehrenbreitstein-xmas-1.webp','christmas-garden-purple.webp','ehrenbreitstein-xmas-3.webp','ehrenbreitstein-xmas-4.webp','ehrenbreitstein-xmas-5.webp','ehrenbreitstein-xmas-6.webp'],
@@ -5638,7 +5638,11 @@ function renderChristmas(townKey) {
             ll,
             html: `<div class="xmas-overview-market"><span class="xmas-overview-num">${i + 1}</span><span class="xmas-overview-tree">${isAngel ? '<img src="schaengel-angel.svg" alt="">' : '🎄'}</span></div>`,
             anchor: [60, 18],
-            onClick: () => xmasSelectMarket(k, ll)
+            onClick: () => {
+              // The fifth Koblenz marker is Münzplatz: open its own photo card directly.
+              if (k === 'koblenz' && i === 4) { xmasOpen('koblenz', 'koblenz-muenzplatz'); return; }
+              xmasSelectMarket(k, ll);
+            }
           };
         });
       })
