@@ -1,0 +1,43 @@
+name: Build complete Netlify ZIP
+on:
+  push:
+    branches:
+      - map-navi/netlify-complete-package-20261127
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout MAP NAVI source
+        uses: actions/checkout@v4
+        with:
+          ref: 3bff0c2cd4c9c8de38c17bce4f9659ad441d6ff2
+          path: site
+      - name: Checkout Christmas market and winery photos
+        uses: actions/checkout@v4
+        with:
+          repository: basana/turret-tales-christmas
+          ref: main
+          path: market-assets
+      - name: Checkout recently uploaded market photos
+        uses: actions/checkout@v4
+        with:
+          repository: basana/turret-tales-experimental-preview
+          ref: main
+          path: recent-assets
+      - name: Assemble complete site folder
+        run: |
+          rsync -a --ignore-existing --exclude='.git/' market-assets/ site/
+          rsync -a --ignore-existing --exclude='.git/' recent-assets/ site/
+          rm -rf site/.git site/.github
+          cd site
+          zip -qr ../MAP-NAVI-Netlify-complete.zip .
+      - name: Upload Netlify ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAP-NAVI-Netlify-complete
+          path: MAP-NAVI-Netlify-complete.zip
+          if-no-files-found: error
+          retention-days: 14
