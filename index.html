@@ -4750,9 +4750,9 @@ function xmasSearchEntries() {
   const koblenzCenter = (XMAS_GEO.koblenz && XMAS_GEO.koblenz.center) || [50.359,7.598];
   [
     {label:'27 Nov · Great Rail Journeys · MS Cara on MS Amadeus Riva',aliases:['Great Rail Journeys','MS Cara','MS Amadeus Riva','27 Nov','27 November','2026-11-27','27.11','RLM2702'],ll:[50.360863,7.605562],key:'koblenz',berthId:'kd4'},
-    {label:'28 Nov · EMERALD · Emerald Star on Luna',aliases:['Emerald Star','Luna','EMERALD','28 Nov','28 November','2026-11-28','28.11'],ll:koblenzCenter,key:'koblenz'},
-    {label:'28 Nov · EMERALD · Emerald Destiny on Astra',aliases:['Emerald Destiny','Astra','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
-    {label:'30 Nov · Trafalgar River Cruises · ship not specified',aliases:['Trafalgar','Trafalgar River Cruises','30 Nov','30 November','2026-11-30','30.11'],ll:koblenzCenter,key:'koblenz'}
+    {label:'28 Nov · EMERALD · Emerald Star on Luna · Moselle, Peter-Altmeier-Ufer · berth unknown',aliases:['Emerald Star','Luna','EMERALD','28 Nov','28 November','2026-11-28','28.11'],ll:koblenzCenter,key:'koblenz'},
+    {label:'28 Nov · EMERALD · Emerald Destiny on Astra · Moselle, Peter-Altmeier-Ufer · berth unknown',aliases:['Emerald Destiny','Astra','EMERALD','28 Nov','28 November','2026-11-28'],ll:koblenzCenter,key:'koblenz'},
+    {label:'30 Nov · Trafalgar Verity · Moselle, Peter-Altmeier-Ufer · berth unknown',aliases:['Trafalgar','Trafalgar River Cruises','30 Nov','30 November','2026-11-30','30.11'],ll:koblenzCenter,key:'koblenz'}
   ].forEach(c=>out.push({...c,callId:true}));
   berths.forEach(b=>out.push({label:b.label,key:xmasTown,ll:b.ll,berthId:b.id,aliases:b.aliases}));
   return out;
@@ -5139,9 +5139,9 @@ function updateXmasFloatingNavContent(){
    '<div class="xmas-scheduled-calls" style="margin-top:10px;padding-top:9px;border-top:1px solid #c8a878">'+
    '<strong style="display:block;margin-bottom:6px">Upcoming calls · 27–30 Nov 2026</strong>'+
    '<button type="button" class="xmas-scheduled-call-link" data-berth-lat="50.360863" data-berth-lng="7.605562"><b>27 Nov · Great Rail Journeys</b><br>MS Cara on MS Amadeus Riva<br><small>Rhein KD4 · exact berth already marked on map</small></button>'+
-   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Mosel (KO) · exact berth not specified</small></div>'+
-   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Mosel (KO) · exact berth not specified</small></div>'+
-   '<div style="padding:6px 0"><b>30 Nov · Trafalgar River Cruises</b><br><small>Koblenz · ship and exact berth not specified</small></div>'+
+   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Star on Luna<br><small>Moselle · Peter-Altmeier-Ufer, Koblenz · exact berth unknown</small></div>'+
+   '<div style="padding:6px 0;border-bottom:1px dashed #d8c8aa"><b>28 Nov · EMERALD</b><br>Emerald Destiny on Astra<br><small>Moselle · Peter-Altmeier-Ufer, Koblenz · exact berth unknown</small></div>'+
+   '<div style="padding:6px 0"><b>30 Nov · Trafalgar River Cruises</b><br>Trafalgar Verity<br><small>Moselle · Peter-Altmeier-Ufer, Koblenz · exact berth unknown</small></div>'+
    '</div>'+'<p>'+kt.note+'</p>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>'+xmasBerthLabel('kd4')+'</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>'+xmasBerthLabel('kd5')+'</strong><small>'+kt.confirmed+'</small></button>'+
