@@ -5766,7 +5766,7 @@ function renderChristmas(townKey) {
     const g = XMAS_GEO[xmasTown];
     xmasDrawMap({
       center: g.center, zoom: g.zoom,
-      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { xmasFloatingCollapse(); const el = document.getElementById('xmasCard' + i); if (el) setTimeout(()=>el.scrollIntoView({ behavior: 'smooth', block: 'start' }),260); } }))
+      pins: g.pins.map((ll, i) => ({ ll, label: (() => { const cs = (XMAS_CITY[xmasTown].text[xmasLang] || XMAS_CITY[xmasTown].text.en || XMAS_CITY[xmasTown].text.de).cards; return (cs.length >= g.pins.length && cs[i]) ? cs[i].title : null; })(), html: XMAS_ANGEL_PIN[xmasTown] === i ? '<img class="xmas-pin-angel" src="schaengel-angel.svg" alt="">' : XMAS_MAIN_PIN[xmasTown] === i ? `<div class="xmas-pin xmas-pin-main">${i + 1}<span class="xmas-pin-main-star">⭐</span></div>` : `<div class="xmas-pin">${i + 1}</div>`, onClick: () => { xmasFloatingCollapse(); xmasOpenMarketContent(xmasTown, i); } }))
     });
   }
   initXmasFloatingNav();
