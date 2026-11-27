@@ -4744,7 +4744,7 @@ function xmasSearchEntries() {
     {id:'kd4',label:xmasBerthLabel('kd4'),aliases:['KD4','KD 4','KD-4','Landebrücke 4','KD Landebrücke Nummer 4','Great Rail Journeys','MS Cara','MS Amadeus Riva'],ll:[50.360863,7.605562]},
     {id:'kd5',label:xmasBerthLabel('kd5'),aliases:['KD5','KD 5','KD-5','Landebrücke 5','KD Landebrücke Nummer 5'],ll:[50.359770,7.605171]},
     {id:'kd-rheinanlagen',label:xmasBerthLabel('kdR'),aliases:['KD Rheinanlagen','Rheinanlagen Anleger','Rhein Anleger'],ll:[50.348845,7.598990]},
-    {id:'viking',label:xmasBerthLabel('viking'),aliases:['Viking 1','Viking Brücke 1','Viking Berth 1','Viking Anleger 1','Konrad-Adenauer-Ufer'],ll:[50.363360010510355,7.6062045007751475]}
+    {id:'viking',label:xmasBerthLabel('viking'),aliases:['Viking 1','Viking Brücke 1','Viking Berth 1','Viking Anleger 1','Konrad-Adenauer-Ufer'],ll:[50.363278,7.606472]}
   ];
   // Upcoming cruise calls are searchable even when the exact berth is not confirmed.
   const koblenzCenter = (XMAS_GEO.koblenz && XMAS_GEO.koblenz.center) || [50.359,7.598];
@@ -4880,7 +4880,7 @@ function xmasDrawMap(opts) {
     {id:'kd4',lat:50.360863,lng:7.605562,label:xmasBerthLabel('kd4'),detail:'Great Rail Journeys · MS Cara on MS Amadeus Riva · 27 Nov 2026'},
     {id:'kd5',lat:50.359770,lng:7.605171,label:xmasBerthLabel('kd5')},
     {id:'kd-rheinanlagen',lat:50.348845,lng:7.598990,label:xmasBerthLabel('kdR')},
-    {id:'viking',lat:50.363360010510355,lng:7.6062045007751475,label:xmasBerthLabel('viking')}
+    {id:'viking',lat:50.363278,lng:7.606472,label:xmasBerthLabel('viking')}
   ];
   xmasMapObj._xmasKnownBerthLayerGroup = L.layerGroup().addTo(xmasMapObj);
   xmasMapObj._xmasKnownBerthMarkers = {};
@@ -4993,7 +4993,7 @@ const XMAS_COMPANY_STYLE = {
 function xmasCompanyStyle(co) {
   return XMAS_COMPANY_STYLE[co] || { bg: '#555555', letter: (co || '?').charAt(0).toUpperCase() };
 }
-const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer · Brücke 1', ll: [50.363360010510355, 7.6062045007751475] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
+const VIKING_BERTHS = { koblenz: [{ co: 'Viking', name: 'Konrad-Adenauer-Ufer · Brücke 1', ll: [50.363278, 7.606472] }], oberwesel: [], boppard: [{ co: 'KD', name: 'KD Landebrücke 7', ll: null }], bacharach: [], lahnstein: [], ruedesheim: [] };
 
 const XG = {
   de: {backAt:'Sie sind wieder bei {name}', btn:'GPS', locating:'Standort wird ermittelt …', err:'GPS nicht verfügbar', ship:'Ihr Schiff / Treffpunkt', saveShip:'📌 Rückkehrpunkt speichern', saveLocation:'📌 Speichern', clearShip:'Schiff entfernen', min:'Min. zu Fuß', shipMin:'Min. mit dem Schiff', departLabel:'Abfahrtszeit', enough:'Zeit reicht, ca. {n} Min. Reserve', notEnough:'Achtung: ca. {n} Min. zu spät', popupTitle:'GPS: Entfernungen zu den Märkten', popupItems:['Entfernung von Ihrem Standort zu jedem Markt','Entfernung zu Ihrem Schiff oder Treffpunkt','Ob die Zeit bis zur Abfahrt reicht'], shipPrompt:'Name für diesen Punkt', shipDefault:'Schiff', berth:'Viking-Anleger'},
@@ -5145,13 +5145,13 @@ function updateXmasFloatingNavContent(){
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.360863" data-berth-lng="7.605562"><strong>'+xmasBerthLabel('kd4')+'</strong><small>'+kt.confirmed+'</small><small style="display:block;margin-top:4px;color:#7A1026;font-weight:700">27 Nov 2026 · Great Rail Journeys</small><small style="display:block">MS Cara on MS Amadeus Riva</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.359770" data-berth-lng="7.605171"><strong>'+xmasBerthLabel('kd5')+'</strong><small>'+kt.confirmed+'</small></button>'+
    '<button type="button" class="xmas-known-berth" data-berth-lat="50.348845" data-berth-lng="7.598990"><strong>'+xmasBerthLabel('kdR')+'</strong><small>'+kt.confirmed+'</small></button>'+
-   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363360010510355" data-berth-lng="7.6062045007751475"><strong>'+xmasBerthLabel('viking')+'</strong><small>'+kt.viking+'</small></button>';
+   '<button type="button" class="xmas-known-berth" data-berth-lat="50.363278" data-berth-lng="7.606472"><strong>'+xmasBerthLabel('viking')+'</strong><small>'+kt.viking+'</small></button>';
 
   const setupBtn=knownBerths.querySelector('[data-open-ship-setup]');if(setupBtn)setupBtn.addEventListener('click',()=>xmasShowShipSetupDialog());
   knownBerths.querySelectorAll('[data-berth-lat]').forEach(button=>button.addEventListener('click',()=>{
    const lat=Number(button.dataset.berthLat),lng=Number(button.dataset.berthLng);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!xmasMapObj)return;
-   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363360010510355'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
+   const berthId=button.dataset.berthLat==='50.360863'?'kd4':button.dataset.berthLat==='50.359770'?'kd5':button.dataset.berthLat==='50.363278'?'viking':button.dataset.berthLat==='50.348845'?'kd-rheinanlagen':'viking';
    xmasFloatingCollapse();setTimeout(()=>{xmasMapObj.setView([lat,lng],17,{animate:true});xmasMapObj.invalidateSize();const marker=xmasMapObj._xmasKnownBerthMarkers&&xmasMapObj._xmasKnownBerthMarkers[berthId];if(marker)marker.openPopup();},280);
   }));
  }
