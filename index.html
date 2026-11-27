@@ -5055,14 +5055,15 @@ function xmasTownListHtml() {
 
 let xmasPendingMarketKey = null;
 // Do not clear POI layers on generic pointerdown; visitors need to inspect the map after finding an address.
-function xmasOpenMarketContent(k){
+function xmasOpenMarketContent(k, cardIndex=0){
  xmasPendingMarketKey=null;
  const toast=document.getElementById('xmasNearestToast');
  if(toast){toast.classList.remove('show');delete toast.dataset.marketKey;}
  renderChristmas(k);
  setTimeout(()=>{
-  const first=document.getElementById('xmasCard0');
-  if(first){first.style.scrollMarginTop='14px';first.scrollIntoView({behavior:'smooth',block:'start'});}
+  const index=Number.isInteger(cardIndex)&&cardIndex>=0?cardIndex:0;
+  const target=document.getElementById('xmasCard'+index);
+  if(target){target.style.scrollMarginTop='14px';target.scrollIntoView({behavior:'smooth',block:'start'});}
  },650);
 }
 function xmasSelectMarket(k,targetLL=null){
@@ -5754,7 +5755,7 @@ function renderChristmas(townKey) {
             ll,
             html: `<div class="xmas-overview-market"><span class="xmas-overview-num">${i + 1}</span><span class="xmas-overview-tree">${isAngel ? '<img src="schaengel-angel.svg" alt="">' : '🎄'}</span></div>`,
             anchor: [60, 18],
-            onClick: () => xmasSelectMarket(k, ll)
+            onClick: () => xmasOpenMarketContent(k, i)
           };
         });
       })
