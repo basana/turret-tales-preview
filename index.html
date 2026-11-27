@@ -2447,7 +2447,7 @@ function _showPoiToast(mapObj, poi, emoji) {
   if (userPos) {
     const d = distanceMeters(userPos[0], userPos[1], poi.lat, poi.lng);
     const walkMin = Math.ceil(d * 1.3 / 75);
-    const routeHint = ({de:'Tippen für gestrichelte Linie',en:'Tap for dashed line',ru:'Нажмите, чтобы показать пунктирную линию',fr:'Appuyez pour afficher la ligne pointillée',nl:'Tik voor stippellijn',zh:'点击显示虚线',he:'לחצו להצגת קו מקווקו'}[poiPopupLang()] || 'Tap for dashed route');
+    const routeHint = ({de:'Gestrichelte Linie zeigt den Weg',en:'Dashed line shows the way',ru:'Пунктир показывает путь',fr:'La ligne pointillée indique le chemin',nl:'De stippellijn toont de route',zh:'虚线显示前往路线',he:'הקו המקווקו מציג את הדרך'}[poiPopupLang()] || 'Dashed line shows the way');
     toast.innerHTML = `${emoji} ${poi.name}<br><span class="toast-dist">≈ ${formatDistance(d)} · ${walkMin} min 🚶</span><br><span class="toast-route-hint">${routeHint}</span>`;
   } else {
     toast.innerHTML = `${emoji} ${poi.name} · ${poi.city}`;
@@ -2543,12 +2543,10 @@ function _hideGpsHint(mapObj) {
   if (h) h.classList.remove('show');
 }
 function _zoomToNearestPoi(mapObj, poiList, emoji) {
-  // determine reference point: GPS position ONLY — never map center
-  let ref;
-  if (typeof gpsLastLat !== 'undefined' && gpsLastLat !== null) ref = [gpsLastLat, gpsLastLng];
-  else if (typeof xmasGpsPos !== 'undefined' && xmasGpsPos) ref = [xmasGpsPos.lat, xmasGpsPos.lng];
-  else {
-    // No GPS — show hint, don't zoom to random location
+  // Use the same live GPS source for nearest-place selection and the route line.
+  // Never substitute the map center or the saved ship berth for the visitor's position.
+  const ref = _getPoiUserPosition(mapObj);
+  if (!ref || !Number.isFinite(ref[0]) || !Number.isFinite(ref[1])) {
     _showGpsHint(mapObj);
     return;
   }
@@ -2564,6 +2562,7 @@ function _zoomToNearestPoi(mapObj, poiList, emoji) {
     // GPS continues updating in the background but must not pull the camera away.
     mapObj._poiGpsZoomed = true;
     _focusPoiOnMap(mapObj, nearest);
+    _showPoiRoute(mapObj, nearest);
     _showPoiToast(mapObj, nearest, emoji);
   }
 }
@@ -5224,8 +5223,8 @@ function initXmasFloatingNav(){
  const gp=document.getElementById('xmasGpsPanel'),towns=document.querySelector('#view-christmas .xmas-town-list'),save=document.getElementById('xmasSaveLocationBtn');if(!gp)return;
  const nav=document.createElement('div');nav.className='xmas-floating-nav';nav.dataset.category='explore';
  nav.innerHTML='<div class="xmas-floating-shortcuts"><button type="button" class="xmas-floating-shortcut" data-category="ship"><span class="xfs-icon">⚓</span><span><strong data-shortcut-title="ship">'+xmasFloatingText('ship')+'</strong><small data-shortcut-sub="ship"></small></span></button><button type="button" class="xmas-floating-shortcut" data-category="explore"><span class="xfs-icon">⌖</span><span><strong>'+xmasFloatingText('explore')+'</strong><small>'+xmasFloatingText('exploreSub')+'</small></span></button></div><section class="xmas-floating-sheet" aria-label="Map navigation panel"><button type="button" class="xmas-floating-handle" aria-label="Drag panel up or down"><span class="xmas-floating-grip"></span></button><div class="xmas-floating-head"><button type="button" class="xmas-floating-tab" data-category="ship">'+xmasFloatingText('ship')+'</button><button type="button" class="xmas-floating-tab active" data-category="explore">'+xmasFloatingText('explore')+'</button><button type="button" class="xmas-floating-close" aria-label="Close panel">×</button></div><div class="xmas-floating-hint" hidden>'+xmasFloatingText('swipe')+'</div><div class="xmas-floating-content"><div class="xmas-floating-empty" hidden></div><div class="xmas-floating-gps-prompt"><span class="gps-prompt-icon">📍</span><span class="gps-prompt-copy"><strong>GPS</strong><span class="gps-prompt-message"></span></span><button type="button" class="gps-prompt-enable">Enable GPS</button></div><div class="xmas-floating-static-saved" hidden></div></div></section>';
- stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');const nearestToast=document.getElementById('xmasNearestToast');if(nearestToast)content.appendChild(nearestToast);const actions=document.createElement('div');actions.className='xmas-ship-actions';content.appendChild(actions);if(save)actions.appendChild(save);content.appendChild(gp);const initialClear=gp.querySelector('.xmas-gps-clear');if(initialClear)actions.appendChild(initialClear);if(towns)content.appendChild(towns);
- const known=document.createElement('section');known.id='xmasKnownKoblenzBerths';known.className='xmas-known-berths';known.hidden=true;content.appendChild(known);
+ stage.appendChild(nav);const content=nav.querySelector('.xmas-floating-content');const nearestToast=document.getElementById('xmasNearestToast');if(nearestToast)content.appendChild(nearestToast);const actions=document.createElement('div');actions.className='xmas-ship-actions';content.appendChild(actions);if(save)actions.appendChild(save);content.appendChild(gp);const initialClear=gp.querySelector('.xmas-gps-clear');if(initialClear)actions.appendChild(initialClear);const known=document.createElement('section');known.id='xmasKnownKoblenzBerths';known.className='xmas-known-berths';known.hidden=true;content.insertBefore(known,gp);
+ if(towns)content.appendChild(towns);
  if(towns)towns.addEventListener('click',e=>{const card=e.target.closest('.xmas-town-card');if(!card)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();xmasSelectMarket(card.dataset.xc);},true);
  nav.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>xmasFloatingOpen(b.dataset.category)));
  nav.querySelector('.xmas-floating-close').addEventListener('click',xmasFloatingCollapse);
